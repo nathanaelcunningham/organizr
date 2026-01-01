@@ -17,14 +17,19 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 		Monitor:     "running",
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	respondWithJSON(w, http.StatusOK, resp)
 }
 
 func (s *Server) handleCreateDownload(w http.ResponseWriter, r *http.Request) {
 	var req CreateDownloadRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Invalid request body", err)
+		return
+	}
+
+	// Validate request
+	if err := validateDownloadRequest(req); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Validation failed", err)
 		return
 	}
 
@@ -39,52 +44,58 @@ func (s *Server) handleCreateDownload(w http.ResponseWriter, r *http.Request) {
 
 	created, err := s.downloadService.CreateDownload(r.Context(), download)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Failed to create download", err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(CreateDownloadResponse{Download: toDTO(created)})
+	respondWithJSON(w, http.StatusCreated, CreateDownloadResponse{Download: toDTO(created)})
 }
 
 func (s *Server) handleListDownloads(w http.ResponseWriter, r *http.Request) {
 	downloads, err := s.downloadService.ListDownloads(r.Context())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Failed to list downloads", err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(ListDownloadsResponse{Downloads: toDTOList(downloads)})
+	respondWithJSON(w, http.StatusOK, ListDownloadsResponse{Downloads: toDTOList(downloads)})
 }
 
 func (s *Server) handleGetDownload(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		http.Error(w, "id is required", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Download ID is required", nil)
+		return
+	}
+
+	if err := validateUUID(id); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid download ID", err)
 		return
 	}
 
 	download, err := s.downloadService.GetDownload(r.Context(), id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		respondWithError(w, http.StatusNotFound, "Download not found", err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(GetDownloadResponse{Download: toDTO(download)})
+	respondWithJSON(w, http.StatusOK, GetDownloadResponse{Download: toDTO(download)})
 }
 
 func (s *Server) handleCancelDownload(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		http.Error(w, "id is required", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Download ID is required", nil)
+		return
+	}
+
+	if err := validateUUID(id); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid download ID", err)
 		return
 	}
 
 	if err := s.downloadService.CancelDownload(r.Context(), id); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Failed to cancel download", err)
 		return
 	}
 
@@ -94,12 +105,17 @@ func (s *Server) handleCancelDownload(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleOrganize(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		http.Error(w, "id is required", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Download ID is required", nil)
+		return
+	}
+
+	if err := validateUUID(id); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid download ID", err)
 		return
 	}
 
 	if err := s.downloadService.OrganizeDownload(r.Context(), id); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Failed to organize download", err)
 		return
 	}
 
@@ -109,46 +125,59 @@ func (s *Server) handleOrganize(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleGetConfig(w http.ResponseWriter, r *http.Request) {
 	key := chi.URLParam(r, "key")
 	if key == "" {
-		http.Error(w, "key is required", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Config key is required", nil)
+		return
+	}
+
+	if err := validateConfigKey(key); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid config key", err)
 		return
 	}
 
 	value, err := s.configService.Get(r.Context(), key)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		respondWithError(w, http.StatusNotFound, "Config not found", err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(GetConfigResponse{Key: key, Value: value})
+	respondWithJSON(w, http.StatusOK, GetConfigResponse{Key: key, Value: value})
 }
 
 func (s *Server) handleGetAllConfig(w http.ResponseWriter, r *http.Request) {
 	configs, err := s.configService.GetAll(r.Context())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Failed to get configuration", err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(GetAllConfigResponse{Configs: configs})
+	respondWithJSON(w, http.StatusOK, GetAllConfigResponse{Configs: configs})
 }
 
 func (s *Server) handleUpdateConfig(w http.ResponseWriter, r *http.Request) {
 	key := chi.URLParam(r, "key")
 	if key == "" {
-		http.Error(w, "key is required", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Config key is required", nil)
+		return
+	}
+
+	if err := validateConfigKey(key); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid config key", err)
 		return
 	}
 
 	var req UpdateConfigRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Invalid request body", err)
+		return
+	}
+
+	if req.Value == "" {
+		respondWithError(w, http.StatusBadRequest, "Config value cannot be empty", nil)
 		return
 	}
 
 	if err := s.configService.Set(r.Context(), key, req.Value); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Failed to update config", err)
 		return
 	}
 
@@ -158,7 +187,12 @@ func (s *Server) handleUpdateConfig(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
 	if query == "" {
-		http.Error(w, "query parameter 'q' is required", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Query parameter 'q' is required", nil)
+		return
+	}
+
+	if len(query) < 2 {
+		respondWithError(w, http.StatusBadRequest, "Query must be at least 2 characters", nil)
 		return
 	}
 
@@ -166,12 +200,11 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 
 	results, err := s.searchService.Search(r.Context(), query, provider)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Search failed", err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(SearchResponse{
+	respondWithJSON(w, http.StatusOK, SearchResponse{
 		Results: searchResultsToDTOList(results),
 		Count:   len(results),
 	})
@@ -180,8 +213,7 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleListProviders(w http.ResponseWriter, r *http.Request) {
 	providers := s.searchService.ListProviders()
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(ListProvidersResponse{
+	respondWithJSON(w, http.StatusOK, ListProvidersResponse{
 		Providers: providers,
 	})
 }
