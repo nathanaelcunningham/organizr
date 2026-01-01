@@ -19,5 +19,10 @@ func (s *Server) registerRoutes() {
 			r.Get("/{key}", s.handleGetConfig)
 			r.Put("/{key}", s.handleUpdateConfig)
 		})
+
+		r.Route("/search", func(r chi.Router) {
+			r.Get("/", s.handleSearch)
+			r.Get("/providers", s.handleListProviders)
+		})
 	})
 }

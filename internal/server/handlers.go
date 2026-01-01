@@ -154,3 +154,34 @@ func (s *Server) handleUpdateConfig(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 }
+
+func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query().Get("q")
+	if query == "" {
+		http.Error(w, "query parameter 'q' is required", http.StatusBadRequest)
+		return
+	}
+
+	provider := r.URL.Query().Get("provider")
+
+	results, err := s.searchService.Search(r.Context(), query, provider)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(SearchResponse{
+		Results: searchResultsToDTOList(results),
+		Count:   len(results),
+	})
+}
+
+func (s *Server) handleListProviders(w http.ResponseWriter, r *http.Request) {
+	providers := s.searchService.ListProviders()
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(ListProvidersResponse{
+		Providers: providers,
+	})
+}

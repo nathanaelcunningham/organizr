@@ -43,3 +43,33 @@ func toDTOList(downloads []*models.Download) []downloadDTO {
 	}
 	return dtos
 }
+
+type searchResultDTO struct {
+	Title      string `json:"title"`
+	Author     string `json:"author"`
+	TorrentURL string `json:"torrent_url,omitempty"`
+	MagnetLink string `json:"magnet_link,omitempty"`
+	Size       string `json:"size"`
+	Seeders    int    `json:"seeders"`
+	Provider   string `json:"provider"`
+}
+
+func searchResultToDTO(s *models.SearchResult) searchResultDTO {
+	return searchResultDTO{
+		Title:      s.Title,
+		Author:     s.Author,
+		TorrentURL: s.TorrentURL,
+		MagnetLink: s.MagnetLink,
+		Size:       s.Size,
+		Seeders:    s.Seeders,
+		Provider:   s.Provider,
+	}
+}
+
+func searchResultsToDTOList(results []*models.SearchResult) []searchResultDTO {
+	dtos := make([]searchResultDTO, len(results))
+	for i, r := range results {
+		dtos[i] = searchResultToDTO(r)
+	}
+	return dtos
+}

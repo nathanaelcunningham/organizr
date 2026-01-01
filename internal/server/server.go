@@ -11,12 +11,14 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/nathanael/organizr/internal/config"
 	"github.com/nathanael/organizr/internal/downloads"
+	"github.com/nathanael/organizr/internal/search"
 )
 
 type Config struct {
 	Port            string
 	AllowedOrigins  []string
 	DownloadService *downloads.Service
+	SearchService   *search.Service
 	ConfigService   *config.Service
 }
 
@@ -24,6 +26,7 @@ type Server struct {
 	router          chi.Router
 	httpServer      *http.Server
 	downloadService *downloads.Service
+	searchService   *search.Service
 	configService   *config.Service
 }
 
@@ -49,6 +52,7 @@ func New(cfg Config) *Server {
 	s := &Server{
 		router:          router,
 		downloadService: cfg.DownloadService,
+		searchService:   cfg.SearchService,
 		configService:   cfg.ConfigService,
 	}
 

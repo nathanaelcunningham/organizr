@@ -14,6 +14,7 @@ import (
 	"github.com/nathanael/organizr/internal/downloads"
 	"github.com/nathanael/organizr/internal/persistence/sqlite"
 	"github.com/nathanael/organizr/internal/qbittorrent"
+	"github.com/nathanael/organizr/internal/search"
 	"github.com/nathanael/organizr/internal/server"
 )
 
@@ -63,6 +64,13 @@ func run() error {
 	downloadService := downloads.NewService(db, qbClient, downloadRepo, configService)
 	monitor := downloads.NewMonitor(db, qbClient, downloadRepo, configService)
 
+	// Initialize search providers (users can add their own)
+	providers := []search.Provider{
+		// User implements their own providers here
+		// Example: providers.NewAudiobookBayProvider("https://example.com", "api-key")
+	}
+	searchService := search.NewService(providers)
+
 	// 7. Start background monitor
 	monitorCtx, cancelMonitor := context.WithCancel(context.Background())
 	monitorDone := make(chan error, 1)
@@ -78,6 +86,7 @@ func run() error {
 		Port:            "8080",
 		AllowedOrigins:  []string{"*"},
 		DownloadService: downloadService,
+		SearchService:   searchService,
 		ConfigService:   configService,
 	})
 

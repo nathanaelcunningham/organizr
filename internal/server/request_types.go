@@ -34,8 +34,17 @@ type GetAllConfigResponse struct {
 }
 
 type HealthResponse struct {
-	Status     string `json:"status"`
-	Database   string `json:"database"`
+	Status      string `json:"status"`
+	Database    string `json:"database"`
 	QBittorrent string `json:"qbittorrent"`
-	Monitor    string `json:"monitor"`
+	Monitor     string `json:"monitor"`
+}
+
+type SearchResponse struct {
+	Results []searchResultDTO `json:"results"`
+	Count   int               `json:"count"`
+}
+
+type ListProvidersResponse struct {
+	Providers []string `json:"providers"`
 }
