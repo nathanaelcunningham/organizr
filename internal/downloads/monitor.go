@@ -1,0 +1,129 @@
+package downloads
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"log"
+	"strconv"
+	"time"
+
+	"github.com/nathanael/organizr/internal/config"
+	"github.com/nathanael/organizr/internal/models"
+	"github.com/nathanael/organizr/internal/persistence"
+	"github.com/nathanael/organizr/internal/qbittorrent"
+)
+
+type Monitor struct {
+	db            *sql.DB
+	qbClient      *qbittorrent.Client
+	downloadRepo  persistence.DownloadRepository
+	orgService    *OrganizationService
+	configService *config.Service
+	interval      time.Duration
+	maxConcurrent int
+}
+
+func NewMonitor(db *sql.DB, qbClient *qbittorrent.Client, downloadRepo persistence.DownloadRepository, configService *config.Service) *Monitor {
+	return &Monitor{
+		db:            db,
+		qbClient:      qbClient,
+		downloadRepo:  downloadRepo,
+		orgService:    NewOrganizationService(qbClient, configService),
+		configService: configService,
+		interval:      30 * time.Second,
+		maxConcurrent: 3,
+	}
+}
+
+func (m *Monitor) Run(ctx context.Context) error {
+	// Get interval from config
+	intervalStr, err := m.configService.Get(ctx, "monitor.interval_seconds")
+	if err == nil {
+		if seconds, err := strconv.Atoi(intervalStr); err == nil {
+			m.interval = time.Duration(seconds) * time.Second
+		}
+	}
+
+	ticker := time.NewTicker(m.interval)
+	defer ticker.Stop()
+
+	log.Println("Download monitor started")
+
+	for {
+		select {
+		case <-ticker.C:
+			if err := m.checkDownloads(ctx); err != nil {
+				log.Printf("Monitor error: %v", err)
+			}
+		case <-ctx.Done():
+			log.Println("Monitor stopped")
+			return ctx.Err()
+		}
+	}
+}
+
+func (m *Monitor) checkDownloads(ctx context.Context) error {
+	// Get active downloads
+	downloads, err := m.downloadRepo.GetActive(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get active downloads: %w", err)
+	}
+
+	for _, dl := range downloads {
+		// Check status in qBittorrent
+		status, progress, err := m.qbClient.GetTorrentStatus(ctx, dl.QBitHash)
+		if err != nil {
+			log.Printf("Failed to get status for download %s: %v", dl.ID, err)
+			continue
+		}
+
+		// Update progress
+		if err := m.downloadRepo.UpdateProgress(ctx, dl.ID, progress); err != nil {
+			log.Printf("Failed to update progress for download %s: %v", dl.ID, err)
+		}
+
+		// Check if completed
+		if (status == "uploading" || status == "stalledUP" || status == "pausedUP") && dl.Status != models.StatusOrganized {
+			log.Printf("Download %s completed, starting organization", dl.ID)
+
+			// Mark completed
+			if err := m.downloadRepo.UpdateCompleted(ctx, dl.ID); err != nil {
+				log.Printf("Failed to mark download as completed: %v", err)
+			}
+
+			// Trigger organization in goroutine
+			go m.organizeDownload(context.Background(), dl)
+		}
+	}
+
+	return nil
+}
+
+func (m *Monitor) organizeDownload(ctx context.Context, dl *models.Download) {
+	// Mark as organizing
+	if err := m.downloadRepo.UpdateStatus(ctx, dl.ID, models.StatusOrganizing); err != nil {
+		log.Printf("Failed to update status for download %s: %v", dl.ID, err)
+		return
+	}
+
+	// Perform organization
+	if err := m.orgService.Organize(ctx, dl); err != nil {
+		log.Printf("Failed to organize download %s: %v", dl.ID, err)
+		m.downloadRepo.UpdateError(ctx, dl.ID, err.Error())
+		m.downloadRepo.UpdateStatus(ctx, dl.ID, models.StatusFailed)
+		return
+	}
+
+	// Mark as organized
+	if err := m.downloadRepo.UpdateStatus(ctx, dl.ID, models.StatusOrganized); err != nil {
+		log.Printf("Failed to update status for download %s: %v", dl.ID, err)
+		return
+	}
+
+	if err := m.downloadRepo.UpdateOrganizedPath(ctx, dl.ID, dl.OrganizedPath); err != nil {
+		log.Printf("Failed to update organized path for download %s: %v", dl.ID, err)
+	}
+
+	log.Printf("Download %s organized successfully to %s", dl.ID, dl.OrganizedPath)
+}
