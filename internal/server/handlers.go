@@ -211,9 +211,175 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleListProviders(w http.ResponseWriter, r *http.Request) {
-	providers := s.searchService.ListProviders()
+	providers := s.searchService.ListActiveProviders()
 
 	respondWithJSON(w, http.StatusOK, ListProvidersResponse{
 		Providers: providers,
+	})
+}
+
+// Provider configuration handlers
+
+func (s *Server) handleListProviderConfigs(w http.ResponseWriter, r *http.Request) {
+	configs, err := s.searchService.ListProviders(r.Context())
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Failed to list providers", err)
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, ListProvidersConfigResponse{
+		Providers: providerConfigListToDTO(configs),
+	})
+}
+
+func (s *Server) handleListProviderTypes(w http.ResponseWriter, r *http.Request) {
+	types, err := s.searchService.GetAvailableTypes(r.Context())
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Failed to list provider types", err)
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, ListProviderTypesResponse{
+		Types: providerTypeListToDTO(types),
+	})
+}
+
+func (s *Server) handleGetProviderConfig(w http.ResponseWriter, r *http.Request) {
+	providerType := chi.URLParam(r, "type")
+	if err := validateProviderType(providerType); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid provider type", err)
+		return
+	}
+
+	config, err := s.searchService.GetProvider(r.Context(), providerType)
+	if err != nil {
+		respondWithError(w, http.StatusNotFound, "Provider not found", err)
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, GetProviderConfigResponse{
+		Provider: providerConfigToDTO(config),
+	})
+}
+
+func (s *Server) handleCreateProvider(w http.ResponseWriter, r *http.Request) {
+	var req CreateProviderRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request body", err)
+		return
+	}
+
+	if err := validateCreateProviderRequest(req); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Validation failed", err)
+		return
+	}
+
+	config := &models.ProviderConfig{
+		ProviderType: req.ProviderType,
+		DisplayName:  req.DisplayName,
+		Enabled:      req.Enabled,
+		ConfigJSON:   req.Config,
+	}
+
+	if err := s.searchService.CreateProvider(r.Context(), config); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Failed to create provider", err)
+		return
+	}
+
+	respondWithJSON(w, http.StatusCreated, GetProviderConfigResponse{
+		Provider: providerConfigToDTO(config),
+	})
+}
+
+func (s *Server) handleUpdateProvider(w http.ResponseWriter, r *http.Request) {
+	providerType := chi.URLParam(r, "type")
+	if err := validateProviderType(providerType); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid provider type", err)
+		return
+	}
+
+	var req UpdateProviderRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request body", err)
+		return
+	}
+
+	if err := validateUpdateProviderRequest(req); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Validation failed", err)
+		return
+	}
+
+	config := &models.ProviderConfig{
+		ProviderType: providerType,
+		DisplayName:  req.DisplayName,
+		Enabled:      req.Enabled,
+		ConfigJSON:   req.Config,
+	}
+
+	if err := s.searchService.UpdateProvider(r.Context(), config); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Failed to update provider", err)
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, GetProviderConfigResponse{
+		Provider: providerConfigToDTO(config),
+	})
+}
+
+func (s *Server) handleDeleteProvider(w http.ResponseWriter, r *http.Request) {
+	providerType := chi.URLParam(r, "type")
+	if err := validateProviderType(providerType); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid provider type", err)
+		return
+	}
+
+	if err := s.searchService.DeleteProvider(r.Context(), providerType); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Failed to delete provider", err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (s *Server) handleToggleProvider(w http.ResponseWriter, r *http.Request) {
+	providerType := chi.URLParam(r, "type")
+	if err := validateProviderType(providerType); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid provider type", err)
+		return
+	}
+
+	var req ToggleProviderRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request body", err)
+		return
+	}
+
+	if err := s.searchService.ToggleProvider(r.Context(), providerType, req.Enabled); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Failed to toggle provider", err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func (s *Server) handleTestProviderConnection(w http.ResponseWriter, r *http.Request) {
+	providerType := chi.URLParam(r, "type")
+	if err := validateProviderType(providerType); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid provider type", err)
+		return
+	}
+
+	err := s.searchService.TestProvider(r.Context(), providerType)
+	if err != nil {
+		respondWithJSON(w, http.StatusOK, TestConnectionResponse{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, TestConnectionResponse{
+		Success: true,
+		Message: "Connection successful",
 	})
 }

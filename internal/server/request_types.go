@@ -48,3 +48,64 @@ type SearchResponse struct {
 type ListProvidersResponse struct {
 	Providers []string `json:"providers"`
 }
+
+// Provider configuration requests/responses
+type CreateProviderRequest struct {
+	ProviderType string                 `json:"provider_type"`
+	DisplayName  string                 `json:"display_name"`
+	Enabled      bool                   `json:"enabled"`
+	Config       map[string]interface{} `json:"config"`
+}
+
+type UpdateProviderRequest struct {
+	DisplayName string                 `json:"display_name"`
+	Enabled     bool                   `json:"enabled"`
+	Config      map[string]interface{} `json:"config"`
+}
+
+type ToggleProviderRequest struct {
+	Enabled bool `json:"enabled"`
+}
+
+type ProviderConfigDTO struct {
+	ProviderType string                 `json:"provider_type"`
+	DisplayName  string                 `json:"display_name"`
+	Enabled      bool                   `json:"enabled"`
+	Config       map[string]interface{} `json:"config"`
+	CreatedAt    string                 `json:"created_at"`
+	UpdatedAt    string                 `json:"updated_at"`
+}
+
+type ProviderTypeDTO struct {
+	Type         string                   `json:"type"`
+	DisplayName  string                   `json:"display_name"`
+	Description  string                   `json:"description"`
+	RequiresAuth bool                     `json:"requires_auth"`
+	ConfigSchema []ProviderConfigFieldDTO `json:"config_schema"`
+}
+
+type ProviderConfigFieldDTO struct {
+	Name        string `json:"name"`
+	DisplayName string `json:"display_name"`
+	Type        string `json:"type"`
+	Required    bool   `json:"required"`
+	Default     string `json:"default,omitempty"`
+	Description string `json:"description"`
+}
+
+type ListProvidersConfigResponse struct {
+	Providers []ProviderConfigDTO `json:"providers"`
+}
+
+type GetProviderConfigResponse struct {
+	Provider ProviderConfigDTO `json:"provider"`
+}
+
+type ListProviderTypesResponse struct {
+	Types []ProviderTypeDTO `json:"types"`
+}
+
+type TestConnectionResponse struct {
+	Success bool   `json:"success"`
+	Message string `json:"message,omitempty"`
+}

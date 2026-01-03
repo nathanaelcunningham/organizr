@@ -14,4 +14,7 @@ type Provider interface {
 
 	// Search queries the provider's API for audiobook torrents
 	Search(ctx context.Context, query string) ([]*models.SearchResult, error)
+
+	// TestConnection verifies provider credentials and connectivity
+	TestConnection(ctx context.Context) error
 }

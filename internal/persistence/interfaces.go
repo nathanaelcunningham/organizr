@@ -24,3 +24,14 @@ type ConfigRepository interface {
 	GetAll(ctx context.Context) (map[string]string, error)
 	Set(ctx context.Context, key, value string) error
 }
+
+type ProviderRepository interface {
+	Create(ctx context.Context, config *models.ProviderConfig) error
+	GetByType(ctx context.Context, providerType string) (*models.ProviderConfig, error)
+	List(ctx context.Context) ([]*models.ProviderConfig, error)
+	ListEnabled(ctx context.Context) ([]*models.ProviderConfig, error)
+	Update(ctx context.Context, config *models.ProviderConfig) error
+	UpdateEnabled(ctx context.Context, providerType string, enabled bool) error
+	Delete(ctx context.Context, providerType string) error
+	Exists(ctx context.Context, providerType string) (bool, error)
+}

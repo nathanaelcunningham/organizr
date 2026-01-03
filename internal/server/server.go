@@ -18,7 +18,7 @@ type Config struct {
 	Port            string
 	AllowedOrigins  []string
 	DownloadService *downloads.Service
-	SearchService   *search.Service
+	SearchService   *search.SearchService
 	ConfigService   *config.Service
 }
 
@@ -26,7 +26,7 @@ type Server struct {
 	router          chi.Router
 	httpServer      *http.Server
 	downloadService *downloads.Service
-	searchService   *search.Service
+	searchService   *search.SearchService
 	configService   *config.Service
 }
 
