@@ -30,3 +30,5 @@ Thumbs.db
 # Temporary files
 tmp/
 organizr
+organizr.db-shm
+organizr.db-wal
