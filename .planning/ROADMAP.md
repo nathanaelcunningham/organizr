@@ -17,6 +17,7 @@ None
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: qBittorrent Integration** - Connect to qBittorrent Web API with authentication and torrent submission
+- [x] **Phase 1.1: qBittorrent Connection Testing (INSERTED)** - Add connection test endpoint and frontend UI for diagnostics
 - [ ] **Phase 2: Download Monitoring** - Poll qBittorrent for status updates and detect completion
 - [ ] **Phase 3: Configuration System** - Build settings for folder templates and destination paths
 - [ ] **Phase 4: File Organization Engine** - Create folder structures and copy files on completion
@@ -34,7 +35,19 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 Plans:
 - [x] 01-01: Torrent file upload and category support
-- [ ] 01-02: Integration testing and error handling
+- [x] 01-02: Integration testing and error handling
+
+### Phase 1.1: qBittorrent Connection Testing (INSERTED)
+**Goal**: Add backend test endpoint and frontend UI to verify qBittorrent connectivity and authentication
+**Depends on**: Phase 1
+**Addresses**: ISS-001 (discovered during Phase 1 integration testing)
+**Plans**: 1 plan
+
+Plans:
+- [x] 01.1-01: Diagnostic endpoint and connection test UI
+
+**Details:**
+Urgent insertion to address ISS-001. During Phase 1 testing, qBittorrent authentication issues were encountered. A frontend connection test button helps users diagnose connectivity and authentication problems before attempting downloads. This phase added a dedicated test endpoint and UI component for troubleshooting qBittorrent configuration.
 
 ### Phase 2: Download Monitoring
 **Goal**: Background monitor that polls qBittorrent for download progress and detects completion
@@ -84,11 +97,12 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
+Phases execute in numeric order: 1 → 1.1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. qBittorrent Integration | 2/2 | Complete | 2026-01-06 |
+| 1.1 Connection Testing (INSERTED) | 1/1 | Complete | 2026-01-06 |
 | 2. Download Monitoring | 0/TBD | Not started | - |
 | 3. Configuration System | 0/TBD | Not started | - |
 | 4. File Organization Engine | 0/TBD | Not started | - |
