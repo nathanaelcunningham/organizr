@@ -33,7 +33,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: Torrent file upload and category support
+- [x] 01-01: Torrent file upload and category support
 - [ ] 01-02: Integration testing and error handling
 
 ### Phase 2: Download Monitoring
@@ -88,7 +88,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. qBittorrent Integration | 0/2 | Not started | - |
+| 1. qBittorrent Integration | 1/2 | In progress | - |
 | 2. Download Monitoring | 0/TBD | Not started | - |
 | 3. Configuration System | 0/TBD | Not started | - |
 | 4. File Organization Engine | 0/TBD | Not started | - |
