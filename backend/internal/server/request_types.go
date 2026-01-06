@@ -7,6 +7,7 @@ type CreateDownloadRequest struct {
 	TorrentID  string `json:"torrent_id,omitempty"`
 	TorrentURL string `json:"torrent_url,omitempty"`
 	MagnetLink string `json:"magnet_link,omitempty"`
+	Category   string `json:"category,omitempty"`
 }
 
 type UpdateConfigRequest struct {

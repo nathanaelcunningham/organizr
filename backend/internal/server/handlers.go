@@ -58,6 +58,7 @@ func (s *Server) handleCreateDownload(w http.ResponseWriter, r *http.Request) {
 		TorrentURL:   req.TorrentURL,
 		MagnetLink:   req.MagnetLink,
 		TorrentBytes: torrentBytes,
+		Category:     req.Category,
 		CreatedAt:    time.Now(),
 	}
 
