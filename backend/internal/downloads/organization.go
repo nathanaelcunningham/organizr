@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/nathanael/organizr/internal/config"
 	"github.com/nathanael/organizr/internal/fileutil"
@@ -75,6 +76,21 @@ func (o *OrganizationService) Organize(ctx context.Context, dl *models.Download)
 	files, err := o.qbClient.GetTorrentFiles(ctx, dl.QBitHash)
 	if err != nil {
 		return fmt.Errorf("failed to get torrent files: %w", err)
+	}
+
+	// Get path prefix configuration for remote qBittorrent setups
+	qbPrefix, _ := o.configService.Get(ctx, "paths.qbittorrent_prefix")
+	localMount, _ := o.configService.Get(ctx, "paths.local_mount")
+
+	// Translate paths if prefix mapping is configured
+	if qbPrefix != "" && localMount != "" {
+		for _, file := range files {
+			// Strip qBittorrent's prefix and prepend local mount point
+			if strings.HasPrefix(file.Path, qbPrefix) {
+				relativePath := strings.TrimPrefix(file.Path, qbPrefix)
+				file.Path = filepath.Join(localMount, relativePath)
+			}
+		}
 	}
 
 	// Create destination directory

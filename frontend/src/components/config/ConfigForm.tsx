@@ -20,6 +20,8 @@ const FIELD_CONFIG = {
     pathsTemplate: { key: CONFIG_KEYS.PATHS_TEMPLATE, default: '{author}/{series}/{title}' },
     pathsNoSeriesTemplate: { key: CONFIG_KEYS.PATHS_NO_SERIES_TEMPLATE, default: '{author}/{title}' },
     pathsOperation: { key: CONFIG_KEYS.PATHS_OPERATION, default: 'copy' },
+    pathsQbittorrentPrefix: { key: CONFIG_KEYS.PATHS_QBITTORRENT_PREFIX, default: '' },
+    pathsLocalMount: { key: CONFIG_KEYS.PATHS_LOCAL_MOUNT, default: '' },
     monitorInterval: { key: CONFIG_KEYS.MONITOR_INTERVAL, default: '30' },
     monitorAutoOrganize: { key: CONFIG_KEYS.MONITOR_AUTO_ORGANIZE, default: 'true' },
     mamBaseUrl: { key: CONFIG_KEYS.MAM_BASEURL, default: 'https://www.myanonamouse.net' },
@@ -235,6 +237,26 @@ export function ConfigForm() {
                     ]}
                     help="Whether to copy or move files to the organized location"
                 />
+                <div className="pt-4 border-t border-gray-200">
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Remote qBittorrent Path Mapping</h4>
+                    <p className="text-xs text-gray-500 mb-4">
+                        For remote qBittorrent instances: configure path translation to access downloaded files
+                    </p>
+                    <Input
+                        label="qBittorrent Path Prefix"
+                        type="text"
+                        {...register('pathsQbittorrentPrefix')}
+                        placeholder="/mnt/user/downloads"
+                        help="The path prefix qBittorrent uses (e.g., /mnt/user/downloads). Leave empty if running locally."
+                    />
+                    <Input
+                        label="Local Mount Point"
+                        type="text"
+                        {...register('pathsLocalMount')}
+                        placeholder="/Volumes/downloads"
+                        help="Where the qBittorrent downloads are mounted locally (e.g., /Volumes/downloads on macOS). Leave empty if running locally."
+                    />
+                </div>
             </ConfigSection>
 
             {/* Monitor Settings */}

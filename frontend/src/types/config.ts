@@ -23,6 +23,8 @@ export const CONFIG_KEYS = {
     PATHS_TEMPLATE: 'paths.template',
     PATHS_NO_SERIES_TEMPLATE: 'paths.no_series_template',
     PATHS_OPERATION: 'paths.operation',
+    PATHS_QBITTORRENT_PREFIX: 'paths.qbittorrent_prefix',
+    PATHS_LOCAL_MOUNT: 'paths.local_mount',
     MONITOR_INTERVAL: 'monitor.interval_seconds',
     MONITOR_AUTO_ORGANIZE: 'monitor.auto_organize',
     MAM_BASEURL: 'mam.baseurl',
