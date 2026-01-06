@@ -1,13 +1,15 @@
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { Select } from '../common/Select';
+import { Spinner } from '../common/Spinner';
 import { ConfigSection } from './ConfigSection';
 import { useConfigStore } from '../../stores/useConfigStore';
 import { useNotificationStore } from '../../stores/useNotificationStore';
 import { CONFIG_KEYS } from '../../types/config';
 import { searchApi } from '../../api/search';
+import { qbittorrentApi } from '../../api/qbittorrent';
 
 // Field configuration for cleaner form management
 const FIELD_CONFIG = {
@@ -37,6 +39,8 @@ const getDefaultValues = (): FormData => {
 
 export function ConfigForm() {
     const { config, loading, updateMultipleConfigs } = useConfigStore();
+    const [qbTestLoading, setQbTestLoading] = useState(false);
+    const [qbTestResult, setQbTestResult] = useState<{ success: boolean; message: string } | null>(null);
 
     const { register, handleSubmit, reset, formState: { isSubmitting, dirtyFields } } = useForm<FormData>({
         defaultValues: getDefaultValues(),
@@ -103,6 +107,22 @@ export function ConfigForm() {
 
     }
 
+    const testQBittorrentConnection = async () => {
+        setQbTestResult(null);
+        setQbTestLoading(true);
+        try {
+            const res = await qbittorrentApi.testConnection();
+            setQbTestResult(res);
+        } catch (error) {
+            setQbTestResult({
+                success: false,
+                message: error instanceof Error ? error.message : 'Unknown error'
+            });
+        } finally {
+            setQbTestLoading(false);
+        }
+    }
+
 
     if (loading) {
         return <div className="text-gray-500">Loading configuration...</div>;
@@ -156,6 +176,28 @@ export function ConfigForm() {
                     {...register('qbittorrentPassword')}
                     help="Leave blank to keep existing password"
                 />
+                <div className="space-y-2">
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={testQBittorrentConnection}
+                        disabled={qbTestLoading}
+                    >
+                        {qbTestLoading ? 'Testing...' : 'Test Connection'}
+                    </Button>
+                    {qbTestLoading && (
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Spinner size="sm" />
+                            <span>Testing connection...</span>
+                        </div>
+                    )}
+                    {qbTestResult && !qbTestLoading && (
+                        <div className={`flex items-center gap-2 text-sm ${qbTestResult.success ? 'text-green-600' : 'text-red-600'}`}>
+                            <span>{qbTestResult.success ? '✓' : '✗'}</span>
+                            <span>{qbTestResult.message}</span>
+                        </div>
+                    )}
+                </div>
             </ConfigSection>
 
             {/* File Organization */}
