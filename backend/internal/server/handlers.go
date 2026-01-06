@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/nathanael/organizr/internal/models"
+	"github.com/nathanael/organizr/internal/qbittorrent"
 )
 
 func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
@@ -254,5 +255,50 @@ func (s *Server) handleTestConnection(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, TestConnectionResponse{
 		Success: true,
 		Message: "Connection successful",
+	})
+}
+
+func (s *Server) handleTestQBittorrentConnection(w http.ResponseWriter, r *http.Request) {
+	// Get qBittorrent config from ConfigService
+	url, err := s.configService.Get(r.Context(), "qbittorrent.url")
+	if err != nil || url == "" {
+		respondWithJSON(w, http.StatusOK, TestConnectionResponse{
+			Success: false,
+			Message: "qBittorrent URL not configured",
+		})
+		return
+	}
+
+	username, err := s.configService.Get(r.Context(), "qbittorrent.username")
+	if err != nil || username == "" {
+		respondWithJSON(w, http.StatusOK, TestConnectionResponse{
+			Success: false,
+			Message: "qBittorrent username not configured",
+		})
+		return
+	}
+
+	password, err := s.configService.Get(r.Context(), "qbittorrent.password")
+	if err != nil || password == "" {
+		respondWithJSON(w, http.StatusOK, TestConnectionResponse{
+			Success: false,
+			Message: "qBittorrent password not configured",
+		})
+		return
+	}
+
+	// Create qBittorrent client and test connection
+	client := qbittorrent.NewClient(url, username, password)
+	if err := client.Login(r.Context()); err != nil {
+		respondWithJSON(w, http.StatusOK, TestConnectionResponse{
+			Success: false,
+			Message: fmt.Sprintf("Connection failed: %v", err),
+		})
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, TestConnectionResponse{
+		Success: true,
+		Message: "Connected successfully",
 	})
 }

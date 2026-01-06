@@ -24,5 +24,9 @@ func (s *Server) registerRoutes() {
 			r.Get("/", s.handleSearch)
 			r.Post("/test", s.handleTestConnection)
 		})
+
+		r.Route("/qbittorrent", func(r chi.Router) {
+			r.Get("/test", s.handleTestQBittorrentConnection)
+		})
 	})
 }
