@@ -1,13 +1,16 @@
 package qbittorrent
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+	"sort"
 	"strings"
 	"time"
 )
@@ -105,6 +108,103 @@ func (c *Client) AddTorrent(ctx context.Context, magnetLink, torrentURL string) 
 	// If we can't extract hash, we'd need to query the torrent list
 	// For now, return empty and let caller handle it
 	return "", fmt.Errorf("unable to determine torrent hash")
+}
+
+func (c *Client) AddTorrentFromFile(ctx context.Context, torrentData []byte, category string) (string, error) {
+	// Authenticate first
+	if err := c.Login(ctx); err != nil {
+		return "", fmt.Errorf("failed to authenticate: %w", err)
+	}
+
+	// Create multipart form data
+	var buf bytes.Buffer
+	writer := multipart.NewWriter(&buf)
+
+	// Add torrent file
+	fileWriter, err := writer.CreateFormFile("torrents", "torrent.torrent")
+	if err != nil {
+		return "", fmt.Errorf("failed to create form file: %w", err)
+	}
+	if _, err := fileWriter.Write(torrentData); err != nil {
+		return "", fmt.Errorf("failed to write torrent data: %w", err)
+	}
+
+	// Add category if provided
+	if category != "" {
+		if err := writer.WriteField("category", category); err != nil {
+			return "", fmt.Errorf("failed to write category field: %w", err)
+		}
+	}
+
+	// Close the writer to finalize the multipart message
+	if err := writer.Close(); err != nil {
+		return "", fmt.Errorf("failed to close multipart writer: %w", err)
+	}
+
+	// Create HTTP request
+	req, err := http.NewRequestWithContext(ctx, "POST", c.baseURL+"/api/v2/torrents/add", &buf)
+	if err != nil {
+		return "", fmt.Errorf("failed to create add torrent request: %w", err)
+	}
+
+	// Set Content-Type with boundary
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	// Send request
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("failed to add torrent: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Check response status
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return "", fmt.Errorf("add torrent failed with status %d: %s", resp.StatusCode, string(body))
+	}
+
+	// Read response body (should be "Ok." on success)
+	body, _ := io.ReadAll(resp.Body)
+	if string(body) != "Ok." {
+		return "", fmt.Errorf("unexpected response from qBittorrent: %s", string(body))
+	}
+
+	// Query torrents to get the hash of the just-added torrent
+	// We query recently-added torrents sorted by added_on descending
+	listReq, err := http.NewRequestWithContext(ctx, "GET", c.baseURL+"/api/v2/torrents/info?sort=added_on&reverse=true&limit=10", nil)
+	if err != nil {
+		return "", fmt.Errorf("failed to create torrent list request: %w", err)
+	}
+
+	listResp, err := c.client.Do(listReq)
+	if err != nil {
+		return "", fmt.Errorf("failed to query torrent list: %w", err)
+	}
+	defer listResp.Body.Close()
+
+	if listResp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("torrent list query failed with status: %d", listResp.StatusCode)
+	}
+
+	var torrents []TorrentInfo
+	if err := json.NewDecoder(listResp.Body).Decode(&torrents); err != nil {
+		return "", fmt.Errorf("failed to decode torrent list: %w", err)
+	}
+
+	if len(torrents) == 0 {
+		return "", fmt.Errorf("torrent not found after upload")
+	}
+
+	// Sort by added time descending (most recent first)
+	// Even though we requested sorted in the query, be defensive
+	if len(torrents) > 1 {
+		sort.Slice(torrents, func(i, j int) bool {
+			return torrents[i].AddedOn > torrents[j].AddedOn
+		})
+	}
+
+	// Return the most recently added torrent's hash
+	return torrents[0].Hash, nil
 }
 
 func (c *Client) GetTorrentStatus(ctx context.Context, hash string) (string, float64, error) {
