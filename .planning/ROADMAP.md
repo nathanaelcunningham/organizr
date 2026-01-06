@@ -28,12 +28,13 @@ Decimal phases appear between their surrounding integers in numeric order.
 ### Phase 1: qBittorrent Integration
 **Goal**: Authenticate with qBittorrent Web API and submit torrents from MAM search results
 **Depends on**: Nothing (first phase)
-**Research**: Likely (external API integration)
-**Research topics**: qBittorrent Web API authentication (cookie-based), torrent submission endpoints, API error handling patterns
-**Plans**: TBD
+**Research**: Skipped (client code exists, Level 0 discovery)
+**Research topics**: N/A - existing implementation
+**Plans**: 2 plans
 
 Plans:
-- [ ] TBD during planning
+- [ ] 01-01: Torrent file upload and category support
+- [ ] 01-02: Integration testing and error handling
 
 ### Phase 2: Download Monitoring
 **Goal**: Background monitor that polls qBittorrent for download progress and detects completion
@@ -87,7 +88,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. qBittorrent Integration | 0/TBD | Not started | - |
+| 1. qBittorrent Integration | 0/2 | Not started | - |
 | 2. Download Monitoring | 0/TBD | Not started | - |
 | 3. Configuration System | 0/TBD | Not started | - |
 | 4. File Organization Engine | 0/TBD | Not started | - |
