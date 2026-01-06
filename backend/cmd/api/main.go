@@ -64,7 +64,7 @@ func run() error {
 	qbClient := qbittorrent.NewClient(qbURL, qbUser, qbPass)
 
 	// 7. Initialize download services
-	downloadService := downloads.NewService(db, qbClient, downloadRepo, configService)
+	downloadService := downloads.NewService(db, qbClient, downloadRepo, configService, mamService)
 	monitor := downloads.NewMonitor(db, qbClient, downloadRepo, configService)
 
 	// 8. Start background monitor
@@ -130,6 +130,7 @@ func runMigrations(db *sql.DB) error {
 		filename string
 	}{
 		{1, "./assets/migrations/001_init.up.sql"},
+		{2, "./assets/migrations/002_add_category.up.sql"},
 	}
 
 	for _, migration := range migrations {

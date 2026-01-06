@@ -4,12 +4,15 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/nathanael/organizr/internal/config"
 	"github.com/nathanael/organizr/internal/models"
 	"github.com/nathanael/organizr/internal/persistence"
 	"github.com/nathanael/organizr/internal/qbittorrent"
+	"github.com/nathanael/organizr/internal/search"
 )
 
 type Service struct {
@@ -17,14 +20,16 @@ type Service struct {
 	qbClient      *qbittorrent.Client
 	downloadRepo  persistence.DownloadRepository
 	configService *config.Service
+	mamService    *search.MAMService
 }
 
-func NewService(db *sql.DB, qbClient *qbittorrent.Client, downloadRepo persistence.DownloadRepository, configService *config.Service) *Service {
+func NewService(db *sql.DB, qbClient *qbittorrent.Client, downloadRepo persistence.DownloadRepository, configService *config.Service, mamService *search.MAMService) *Service {
 	return &Service{
 		db:            db,
 		qbClient:      qbClient,
 		downloadRepo:  downloadRepo,
 		configService: configService,
+		mamService:    mamService,
 	}
 }
 
@@ -33,17 +38,48 @@ func (s *Service) CreateDownload(ctx context.Context, d *models.Download) (*mode
 	if d.Title == "" || d.Author == "" {
 		return nil, fmt.Errorf("title and author are required")
 	}
-	if d.TorrentURL == "" && d.MagnetLink == "" {
-		return nil, fmt.Errorf("either torrent URL or magnet link is required")
+	if d.TorrentURL == "" && d.MagnetLink == "" && len(d.TorrentBytes) == 0 {
+		return nil, fmt.Errorf("either torrent URL, magnet link, or torrent bytes is required")
 	}
 
 	// Generate ID
 	d.ID = uuid.New().String()
 
-	// Add to qBittorrent
-	hash, err := s.qbClient.AddTorrent(ctx, d.MagnetLink, d.TorrentURL)
-	if err != nil {
-		return nil, fmt.Errorf("failed to add torrent to qBittorrent: %w", err)
+	var hash string
+	var err error
+
+	// Determine the download method
+	if len(d.TorrentBytes) > 0 {
+		// Use torrent bytes (from MAM or direct upload)
+		hash, err = s.qbClient.AddTorrentFromFile(ctx, d.TorrentBytes, d.Category)
+		if err != nil {
+			return nil, fmt.Errorf("failed to add torrent from file to qBittorrent: %w", err)
+		}
+	} else if d.TorrentURL != "" && strings.Contains(d.TorrentURL, "/tor/download.php") {
+		// MAM URL - need to download the torrent file first
+		// Extract torrent ID from URL
+		torrentID, err := extractTorrentIDFromURL(d.TorrentURL)
+		if err != nil {
+			return nil, fmt.Errorf("failed to extract torrent ID from MAM URL: %w", err)
+		}
+
+		// Download torrent file from MAM
+		torrentData, err := s.mamService.DownloadTorrent(ctx, torrentID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to download torrent from MAM: %w", err)
+		}
+
+		// Add torrent from file data
+		hash, err = s.qbClient.AddTorrentFromFile(ctx, torrentData, d.Category)
+		if err != nil {
+			return nil, fmt.Errorf("failed to add torrent to qBittorrent: %w", err)
+		}
+	} else {
+		// Use magnet link or direct URL
+		hash, err = s.qbClient.AddTorrent(ctx, d.MagnetLink, d.TorrentURL)
+		if err != nil {
+			return nil, fmt.Errorf("failed to add torrent to qBittorrent: %w", err)
+		}
 	}
 
 	d.QBitHash = hash
@@ -55,6 +91,32 @@ func (s *Service) CreateDownload(ctx context.Context, d *models.Download) (*mode
 	}
 
 	return d, nil
+}
+
+// extractTorrentIDFromURL extracts the torrent ID from a MAM download URL
+// Example: https://www.myanonamouse.net/tor/download.php?tid=12345
+func extractTorrentIDFromURL(url string) (int, error) {
+	// Find the tid parameter
+	parts := strings.Split(url, "tid=")
+	if len(parts) < 2 {
+		return 0, fmt.Errorf("torrent ID not found in URL")
+	}
+
+	// Get the ID part (might have other params after it)
+	idPart := parts[1]
+
+	// Remove any additional query parameters
+	if idx := strings.Index(idPart, "&"); idx != -1 {
+		idPart = idPart[:idx]
+	}
+
+	// Convert to int
+	id, err := strconv.Atoi(idPart)
+	if err != nil {
+		return 0, fmt.Errorf("invalid torrent ID: %w", err)
+	}
+
+	return id, nil
 }
 
 func (s *Service) GetDownload(ctx context.Context, id string) (*models.Download, error) {

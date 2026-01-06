@@ -19,12 +19,12 @@ func NewDownloadRepository(db *sql.DB) *DownloadRepository {
 
 func (r *DownloadRepository) Create(ctx context.Context, d *models.Download) error {
 	query := `
-		INSERT INTO downloads (id, title, author, series, torrent_url, magnet_link, qbit_hash, status, created_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO downloads (id, title, author, series, torrent_url, magnet_link, category, qbit_hash, status, created_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	_, err := r.db.ExecContext(ctx, query,
-		d.ID, d.Title, d.Author, d.Series, d.TorrentURL, d.MagnetLink, d.QBitHash, d.Status, d.CreatedAt,
+		d.ID, d.Title, d.Author, d.Series, d.TorrentURL, d.MagnetLink, d.Category, d.QBitHash, d.Status, d.CreatedAt,
 	)
 
 	if err != nil {
@@ -36,7 +36,7 @@ func (r *DownloadRepository) Create(ctx context.Context, d *models.Download) err
 
 func (r *DownloadRepository) GetByID(ctx context.Context, id string) (*models.Download, error) {
 	query := `
-		SELECT id, title, author, series, torrent_url, magnet_link, qbit_hash, status, progress,
+		SELECT id, title, author, series, torrent_url, magnet_link, category, qbit_hash, status, progress,
 		       download_path, organized_path, error_message, created_at, completed_at, organized_at
 		FROM downloads
 		WHERE id = ?
@@ -46,7 +46,7 @@ func (r *DownloadRepository) GetByID(ctx context.Context, id string) (*models.Do
 	var completedAt, organizedAt sql.NullTime
 
 	err := r.db.QueryRowContext(ctx, query, id).Scan(
-		&d.ID, &d.Title, &d.Author, &d.Series, &d.TorrentURL, &d.MagnetLink, &d.QBitHash,
+		&d.ID, &d.Title, &d.Author, &d.Series, &d.TorrentURL, &d.MagnetLink, &d.Category, &d.QBitHash,
 		&d.Status, &d.Progress, &d.DownloadPath, &d.OrganizedPath, &d.ErrorMessage,
 		&d.CreatedAt, &completedAt, &organizedAt,
 	)
