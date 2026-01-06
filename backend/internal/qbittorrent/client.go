@@ -54,10 +54,20 @@ func (c *Client) Login(ctx context.Context) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("login failed with status: %d", resp.StatusCode)
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("login failed with status %d (failed to read response body: %w)", resp.StatusCode, err)
+		}
+		if resp.StatusCode == http.StatusForbidden || resp.StatusCode == http.StatusUnauthorized {
+			return fmt.Errorf("authentication failed: invalid username or password")
+		}
+		return fmt.Errorf("login failed with status %d: %s", resp.StatusCode, string(body))
 	}
 
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read login response: %w", err)
+	}
 	if string(body) != "Ok." {
 		return fmt.Errorf("login failed: %s", string(body))
 	}
@@ -111,6 +121,11 @@ func (c *Client) AddTorrent(ctx context.Context, magnetLink, torrentURL string) 
 }
 
 func (c *Client) AddTorrentFromFile(ctx context.Context, torrentData []byte, category string) (string, error) {
+	// Validate torrent data
+	if len(torrentData) == 0 {
+		return "", fmt.Errorf("torrent data is empty")
+	}
+
 	// Authenticate first
 	if err := c.Login(ctx); err != nil {
 		return "", fmt.Errorf("failed to authenticate: %w", err)
@@ -141,8 +156,11 @@ func (c *Client) AddTorrentFromFile(ctx context.Context, torrentData []byte, cat
 		return "", fmt.Errorf("failed to close multipart writer: %w", err)
 	}
 
-	// Create HTTP request
-	req, err := http.NewRequestWithContext(ctx, "POST", c.baseURL+"/api/v2/torrents/add", &buf)
+	// Create HTTP request with timeout
+	uploadCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(uploadCtx, "POST", c.baseURL+"/api/v2/torrents/add", &buf)
 	if err != nil {
 		return "", fmt.Errorf("failed to create add torrent request: %w", err)
 	}
@@ -159,40 +177,62 @@ func (c *Client) AddTorrentFromFile(ctx context.Context, torrentData []byte, cat
 
 	// Check response status
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return "", fmt.Errorf("add torrent failed with status %d: %s", resp.StatusCode, string(body))
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return "", fmt.Errorf("upload failed with status %d (failed to read error response: %w)", resp.StatusCode, err)
+		}
+		return "", fmt.Errorf("upload failed with status %d: %s", resp.StatusCode, string(body))
 	}
 
 	// Read response body (should be "Ok." on success)
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read upload response: %w", err)
+	}
 	if string(body) != "Ok." {
 		return "", fmt.Errorf("unexpected response from qBittorrent: %s", string(body))
 	}
 
 	// Query torrents to get the hash of the just-added torrent
-	// We query recently-added torrents sorted by added_on descending
-	listReq, err := http.NewRequestWithContext(ctx, "GET", c.baseURL+"/api/v2/torrents/info?sort=added_on&reverse=true&limit=10", nil)
-	if err != nil {
-		return "", fmt.Errorf("failed to create torrent list request: %w", err)
-	}
-
-	listResp, err := c.client.Do(listReq)
-	if err != nil {
-		return "", fmt.Errorf("failed to query torrent list: %w", err)
-	}
-	defer listResp.Body.Close()
-
-	if listResp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("torrent list query failed with status: %d", listResp.StatusCode)
-	}
-
+	// Retry up to 3 times as qBittorrent may take 1-2 seconds to process the torrent
 	var torrents []TorrentInfo
-	if err := json.NewDecoder(listResp.Body).Decode(&torrents); err != nil {
-		return "", fmt.Errorf("failed to decode torrent list: %w", err)
+	maxRetries := 3
+	retryDelay := 500 * time.Millisecond
+
+	for attempt := 1; attempt <= maxRetries; attempt++ {
+		listReq, err := http.NewRequestWithContext(ctx, "GET", c.baseURL+"/api/v2/torrents/info?sort=added_on&reverse=true&limit=10", nil)
+		if err != nil {
+			return "", fmt.Errorf("failed to create torrent list request: %w", err)
+		}
+
+		listResp, err := c.client.Do(listReq)
+		if err != nil {
+			return "", fmt.Errorf("failed to query torrent list: %w", err)
+		}
+
+		if listResp.StatusCode != http.StatusOK {
+			listResp.Body.Close()
+			return "", fmt.Errorf("torrent list query failed with status: %d", listResp.StatusCode)
+		}
+
+		if err := json.NewDecoder(listResp.Body).Decode(&torrents); err != nil {
+			listResp.Body.Close()
+			return "", fmt.Errorf("failed to decode torrent list: %w", err)
+		}
+		listResp.Body.Close()
+
+		if len(torrents) > 0 {
+			break
+		}
+
+		// If not found and not the last attempt, wait before retrying
+		if attempt < maxRetries {
+			time.Sleep(retryDelay)
+		}
 	}
 
 	if len(torrents) == 0 {
-		return "", fmt.Errorf("torrent not found after upload")
+		return "", fmt.Errorf("torrent not found after upload (tried %d times)", maxRetries)
 	}
 
 	// Sort by added time descending (most recent first)
