@@ -184,16 +184,23 @@ func (c *Client) AddTorrentFromFile(ctx context.Context, torrentData []byte, cat
 		return "", fmt.Errorf("upload failed with status %d: %s", resp.StatusCode, string(body))
 	}
 
-	// Read response body (should be "Ok." on success)
+	// Read response body (should be "Ok." on success, "Fails." on duplicate/error)
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", fmt.Errorf("failed to read upload response: %w", err)
 	}
-	if string(body) != "Ok." {
-		return "", fmt.Errorf("unexpected response from qBittorrent: %s", string(body))
+
+	responseText := strings.TrimSpace(string(body))
+
+	// Handle different responses
+	if responseText != "Ok." && responseText != "Fails." {
+		return "", fmt.Errorf("unexpected response from qBittorrent: %s", responseText)
 	}
 
-	// Query torrents to get the hash of the just-added torrent
+	// "Fails." often means duplicate - we'll check the torrent list to see if it exists
+	// "Ok." means successfully added
+
+	// Query torrents to get the hash of the just-added (or existing) torrent
 	// Retry up to 3 times as qBittorrent may take 1-2 seconds to process the torrent
 	var torrents []TorrentInfo
 	maxRetries := 3
@@ -232,6 +239,9 @@ func (c *Client) AddTorrentFromFile(ctx context.Context, torrentData []byte, cat
 	}
 
 	if len(torrents) == 0 {
+		if responseText == "Fails." {
+			return "", fmt.Errorf("qBittorrent rejected torrent (response: Fails.) - check qBittorrent logs for details. Common causes: invalid save path, disk full, or invalid torrent file")
+		}
 		return "", fmt.Errorf("torrent not found after upload (tried %d times)", maxRetries)
 	}
 
