@@ -20,7 +20,6 @@ const FIELD_CONFIG = {
     pathsTemplate: { key: CONFIG_KEYS.PATHS_TEMPLATE, default: '{author}/{series}/{title}' },
     pathsNoSeriesTemplate: { key: CONFIG_KEYS.PATHS_NO_SERIES_TEMPLATE, default: '{author}/{title}' },
     pathsOperation: { key: CONFIG_KEYS.PATHS_OPERATION, default: 'copy' },
-    pathsQbittorrentPrefix: { key: CONFIG_KEYS.PATHS_QBITTORRENT_PREFIX, default: '' },
     pathsLocalMount: { key: CONFIG_KEYS.PATHS_LOCAL_MOUNT, default: '' },
     monitorInterval: { key: CONFIG_KEYS.MONITOR_INTERVAL, default: '30' },
     monitorAutoOrganize: { key: CONFIG_KEYS.MONITOR_AUTO_ORGANIZE, default: 'true' },
@@ -238,24 +237,20 @@ export function ConfigForm() {
                     help="Whether to copy or move files to the organized location"
                 />
                 <div className="pt-4 border-t border-gray-200">
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Remote qBittorrent Path Mapping</h4>
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Remote qBittorrent Setup</h4>
                     <p className="text-xs text-gray-500 mb-4">
-                        For remote qBittorrent instances: configure path translation to access downloaded files
+                        For network shares or Docker deployments: configure where qBittorrent's files are accessible
                     </p>
                     <Input
-                        label="qBittorrent Path Prefix"
-                        type="text"
-                        {...register('pathsQbittorrentPrefix')}
-                        placeholder="/mnt/user/downloads"
-                        help="The path prefix qBittorrent uses (e.g., /mnt/user/downloads). Leave empty if running locally."
-                    />
-                    <Input
-                        label="Local Mount Point"
+                        label="Download Mount Point"
                         type="text"
                         {...register('pathsLocalMount')}
-                        placeholder="/Volumes/downloads"
-                        help="Where the qBittorrent downloads are mounted locally (e.g., /Volumes/downloads on macOS). Leave empty if running locally."
+                        placeholder="/Volumes/data"
+                        help="Where qBittorrent's download directory is mounted locally (e.g., /Volumes/data on macOS, or Docker volume mount). Leave empty if running locally."
                     />
+                    <p className="text-xs text-gray-500 mt-2">
+                        Example: If qBittorrent saves to /downloads and you mount the parent at /Volumes/data, enter /Volumes/data
+                    </p>
                 </div>
             </ConfigSection>
 
