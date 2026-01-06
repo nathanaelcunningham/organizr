@@ -70,34 +70,76 @@ func (m *Monitor) checkDownloads(ctx context.Context) error {
 		return fmt.Errorf("failed to get active downloads: %w", err)
 	}
 
+	// Track if all downloads failed (suggests qBittorrent is down)
+	allFailed := true
+	var lastErr error
+
 	for _, dl := range downloads {
 		// Check status in qBittorrent
 		status, progress, err := m.qbClient.GetTorrentStatus(ctx, dl.QBitHash)
 		if err != nil {
-			log.Printf("Failed to get status for download %s: %v", dl.ID, err)
+			log.Printf("Warning: Failed to get status for download %s (%s): %v", dl.ID, dl.Title, err)
+			lastErr = err
 			continue
 		}
+
+		// At least one download succeeded
+		allFailed = false
 
 		// Update progress
 		if err := m.downloadRepo.UpdateProgress(ctx, dl.ID, progress); err != nil {
 			log.Printf("Failed to update progress for download %s: %v", dl.ID, err)
 		}
 
+		// Map qBittorrent state to our status
+		newStatus := mapQBitStatusToModel(status)
+
+		// Log state transitions (only when state actually changes)
+		if newStatus != dl.Status && newStatus != "" {
+			log.Printf("Download %s (%s) state changed: %s → %s", dl.ID, dl.Title, dl.Status, newStatus)
+		}
+
 		// Check if completed
 		if (status == "uploading" || status == "stalledUP" || status == "pausedUP") && dl.Status != models.StatusOrganized {
-			log.Printf("Download %s completed, starting organization", dl.ID)
+			log.Printf("Download %s (%s) completed, starting organization", dl.ID, dl.Title)
 
 			// Mark completed
 			if err := m.downloadRepo.UpdateCompleted(ctx, dl.ID); err != nil {
 				log.Printf("Failed to mark download as completed: %v", err)
 			}
 
+			// Create context with timeout for organization (respects parent cancellation but prevents indefinite hanging)
+			orgCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+
 			// Trigger organization in goroutine
-			go m.organizeDownload(context.Background(), dl)
+			go func(ctx context.Context, download *models.Download) {
+				defer cancel()
+				m.organizeDownload(ctx, download)
+			}(orgCtx, dl)
 		}
 	}
 
+	// If all downloads failed, qBittorrent may be unavailable
+	if len(downloads) > 0 && allFailed {
+		log.Printf("Warning: qBittorrent may be unavailable - all %d download status checks failed (last error: %v)", len(downloads), lastErr)
+		// Don't return error - continue monitoring, qBittorrent may recover
+	}
+
 	return nil
+}
+
+// mapQBitStatusToModel maps qBittorrent state to our download status
+func mapQBitStatusToModel(qbitStatus string) models.DownloadStatus {
+	switch qbitStatus {
+	case "queuedDL", "queuedUP":
+		return models.StatusQueued
+	case "downloading", "metaDL", "allocating", "checkingDL", "forcedDL":
+		return models.StatusDownloading
+	case "uploading", "stalledUP", "pausedUP", "forcedUP", "checkingUP":
+		return models.StatusCompleted
+	default:
+		return "" // Unknown state, don't update
+	}
 }
 
 func (m *Monitor) organizeDownload(ctx context.Context, dl *models.Download) {

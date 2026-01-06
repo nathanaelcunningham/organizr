@@ -61,7 +61,10 @@ func run() error {
 		qbPass = "adminpass"
 	}
 
-	qbClient := qbittorrent.NewClient(qbURL, qbUser, qbPass)
+	qbClient, err := qbittorrent.NewClient(qbURL, qbUser, qbPass)
+	if err != nil {
+		return fmt.Errorf("failed to create qBittorrent client: %w", err)
+	}
 
 	// 7. Initialize download services
 	downloadService := downloads.NewService(db, qbClient, downloadRepo, configService, mamService)

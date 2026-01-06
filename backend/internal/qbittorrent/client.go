@@ -22,8 +22,11 @@ type Client struct {
 	client   *http.Client
 }
 
-func NewClient(baseURL, username, password string) *Client {
-	jar, _ := cookiejar.New(nil)
+func NewClient(baseURL, username, password string) (*Client, error) {
+	jar, err := cookiejar.New(nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create cookie jar: %w", err)
+	}
 	return &Client{
 		baseURL:  strings.TrimSuffix(baseURL, "/"),
 		username: username,
@@ -32,7 +35,7 @@ func NewClient(baseURL, username, password string) *Client {
 			Jar:     jar,
 			Timeout: 30 * time.Second,
 		},
-	}
+	}, nil
 }
 
 func (c *Client) Login(ctx context.Context) error {

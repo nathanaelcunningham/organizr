@@ -288,7 +288,14 @@ func (s *Server) handleTestQBittorrentConnection(w http.ResponseWriter, r *http.
 	}
 
 	// Create qBittorrent client and test connection
-	client := qbittorrent.NewClient(url, username, password)
+	client, err := qbittorrent.NewClient(url, username, password)
+	if err != nil {
+		respondWithJSON(w, http.StatusOK, TestConnectionResponse{
+			Success: false,
+			Message: fmt.Sprintf("Failed to create client: %v", err),
+		})
+		return
+	}
 	if err := client.Login(r.Context()); err != nil {
 		respondWithJSON(w, http.StatusOK, TestConnectionResponse{
 			Success: false,
