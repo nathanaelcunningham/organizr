@@ -8,8 +8,8 @@ export const SearchPage: React.FC = () => {
   const { loading, error, search, results, filters } = useSearchStore();
 
   const handleSearch = useCallback(
-    (query: string, provider?: string) => {
-      search(query, provider);
+    (query: string) => {
+      search(query);
     },
     [search]
   );
@@ -44,7 +44,7 @@ export const SearchPage: React.FC = () => {
     <div>
       <PageHeader
         title="Search"
-        subtitle="Search for audiobooks across configured providers"
+        subtitle="Search for audiobooks on MyAnonamouse"
       />
       <SearchBar onSearch={handleSearch} loading={loading} />
       <SearchResults results={filteredResults} loading={loading} error={error} />

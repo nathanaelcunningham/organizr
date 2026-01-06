@@ -40,14 +40,12 @@ func run() error {
 	// 3. Initialize repositories
 	downloadRepo := sqlite.NewDownloadRepository(db)
 	configRepo := sqlite.NewConfigRepository(db)
-	providerRepo := sqlite.NewProviderRepository(db)
 
 	// 4. Initialize config service
 	configService := config.NewService(configRepo)
 
-	// 5. Initialize search service (handles both searching and provider management)
-	providerRegistry := search.NewRegistry()
-	searchService := search.NewSearchService(providerRepo, providerRegistry)
+	// 5. Initialize MAM service
+	mamService := search.NewMAMService(configRepo)
 
 	// 6. Initialize qBittorrent client
 	qbURL, err := configRepo.Get(context.Background(), "qbittorrent.url")
@@ -84,7 +82,7 @@ func run() error {
 		Port:            "8080",
 		AllowedOrigins:  []string{"*"},
 		DownloadService: downloadService,
-		SearchService:   searchService,
+		SearchService:   mamService,
 		ConfigService:   configService,
 	})
 
@@ -132,7 +130,6 @@ func runMigrations(db *sql.DB) error {
 		filename string
 	}{
 		{1, "./assets/migrations/001_init.up.sql"},
-		{2, "./assets/migrations/002_providers.up.sql"},
 	}
 
 	for _, migration := range migrations {

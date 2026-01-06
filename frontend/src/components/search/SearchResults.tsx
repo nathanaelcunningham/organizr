@@ -1,5 +1,5 @@
 import React from 'react';
-import { SearchResultCard } from './SearchResultCard';
+import { SearchResultListItem } from './SearchResultListItem';
 import { EmptyState } from '../common/EmptyState';
 import { Spinner } from '../common/Spinner';
 import type { SearchResult } from '../../types/search';
@@ -77,9 +77,9 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
       <div className="mb-4 text-sm text-gray-600">
         Found {results.length} result{results.length === 1 ? '' : 's'}
       </div>
-      <div className="grid gap-4 grid-cols-1 xl:grid-cols-2">
+      <div className="divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
         {results.map((result, index) => (
-          <SearchResultCard key={`${result.title}-${index}`} result={result} />
+          <SearchResultListItem key={`${result.title}-${index}`} result={result} />
         ))}
       </div>
     </div>

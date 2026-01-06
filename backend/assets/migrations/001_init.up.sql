@@ -40,4 +40,6 @@ INSERT OR IGNORE INTO configs (key, value, description) VALUES
     ('paths.no_series_template', '{author}/{title}', 'Path template without series'),
     ('paths.operation', 'copy', 'File operation: copy or move'),
     ('monitor.interval_seconds', '30', 'Monitor polling interval'),
-    ('monitor.auto_organize', 'true', 'Auto-organize on download completion');
+    ('monitor.auto_organize', 'true', 'Auto-organize on download completion'),
+    ('mam.baseurl', 'https://www.myanonamouse.net', 'MyAnonamouse base URL'),
+    ('mam.secret', '', 'MyAnonamouse API secret/key');

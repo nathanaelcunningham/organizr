@@ -9,6 +9,7 @@ type Download struct {
 	Series        string
 	TorrentURL    string
 	MagnetLink    string
+	TorrentBytes  []byte
 	QBitHash      string
 	Status        DownloadStatus
 	Progress      float64

@@ -1,10 +1,10 @@
 import { api } from './client';
-import type { SearchResult } from '../types/search';
+import type { SearchResponse } from '../types/search';
 
 export const searchApi = {
-  search: (params: { q: string; provider?: string }) =>
-    api.get<SearchResult[]>('/api/search', params),
+    search: (params: { q: string }) =>
+        api.get<SearchResponse>('/api/search', params),
 
-  getProviders: () =>
-    api.get<string[] | { providers: string[] }>('/api/search/providers'),
+    testConnection: () =>
+        api.post<{ success: boolean; message?: string }>('/api/search/test', {}),
 };

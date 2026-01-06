@@ -84,10 +84,28 @@ async function apiRequest<T>(
       return undefined as T;
     }
 
-    // Parse JSON response
+    // Handle 200 with potentially empty body (defensive fallback)
+    if (response.status === 200) {
+      const text = await response.text();
+
+      // If body is empty, return undefined
+      if (!text || text.trim() === '') {
+        return undefined as T;
+      }
+
+      // Parse JSON response
+      const data = JSON.parse(text);
+
+      if (env.IS_DEV) {
+        console.log(`[API] Response:`, data);
+      }
+
+      return data as T;
+    }
+
+    // For other status codes
     const data = await response.json();
 
-    // Log response in development
     if (env.IS_DEV) {
       console.log(`[API] Response:`, data);
     }

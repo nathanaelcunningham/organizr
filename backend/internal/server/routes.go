@@ -22,20 +22,7 @@ func (s *Server) registerRoutes() {
 
 		r.Route("/search", func(r chi.Router) {
 			r.Get("/", s.handleSearch)
-			r.Get("/providers", s.handleListProviders)
-
-			// Provider configuration endpoints
-			r.Route("/providers/config", func(r chi.Router) {
-				r.Get("/", s.handleListProviderConfigs)
-				r.Post("/", s.handleCreateProvider)
-				r.Get("/{type}", s.handleGetProviderConfig)
-				r.Put("/{type}", s.handleUpdateProvider)
-				r.Delete("/{type}", s.handleDeleteProvider)
-				r.Patch("/{type}/toggle", s.handleToggleProvider)
-				r.Post("/{type}/test", s.handleTestProviderConnection)
-			})
-
-			r.Get("/providers/types", s.handleListProviderTypes)
+			r.Post("/test", s.handleTestConnection)
 		})
 	})
 }

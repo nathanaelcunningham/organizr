@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -50,13 +51,15 @@ func (p *MyAnonamouseProvider) Search(ctx context.Context, query string) ([]*mod
 
 	// Build URL with parameters
 	queryString := formatSearchParamsToURLValues(params)
-	searchURL := fmt.Sprintf("%s/tor/js/loadSearchJSONbasic.php?%s&mam_id=%s", p.baseUrl, queryString, p.secret)
+	searchURL := fmt.Sprintf("%s/tor/js/loadSearchJSONbasic.php?%s", p.baseUrl, queryString)
 
 	// Create HTTP request
 	req, err := http.NewRequestWithContext(ctx, "GET", searchURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Cookie", fmt.Sprintf("mam_id=%s", p.secret))
 
 	// Make request
 	resp, err := p.client.Do(req)
@@ -115,30 +118,44 @@ func (p *MyAnonamouseProvider) Search(ctx context.Context, query string) ([]*mod
 	return results, nil
 }
 
-func (p *MyAnonamouseProvider) TestConnection(ctx context.Context) error {
-	// Make a lightweight search to test authentication
-	params := SearchParams{
-		Description: false,
-		DLLink:      false,
-		ISBN:        false,
-		PerPage:     1, // Just need 1 result
-		Torrents: []TorrentSearchParams{
-			{
-				MainCat:    []MainCategory{CategoryAudiobooks},
-				SearchIn:   []SearchIn{SearchInTitle},
-				SearchType: SearchTypeAll,
-				Text:       "test",
-			},
-		},
+func (p *MyAnonamouseProvider) DownloadTorrent(ctx context.Context, torrent_id int) ([]byte, error) {
+	downloadUrl := fmt.Sprintf("%s/tor/download.php?tid=%d", p.baseUrl, torrent_id)
+
+	req, err := http.NewRequestWithContext(ctx, "GET", downloadUrl, nil)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Cookie", fmt.Sprintf("mam_id=%s", p.secret))
+
+	resp, err := p.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("connection failed: %w", err)
 	}
 
-	queryString := formatSearchParamsToURLValues(params)
-	searchURL := fmt.Sprintf("%s/tor/js/loadSearchJSONbasic.php?%s&mam_id=%s", p.baseUrl, queryString, p.secret)
+	defer resp.Body.Close()
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusBadRequest {
+
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("API error: status=%d, body=%s", resp.StatusCode, string(body))
+	}
+
+	respBody, _ := io.ReadAll(resp.Body)
+
+	return respBody, nil
+}
+
+func (p *MyAnonamouseProvider) TestConnection(ctx context.Context) error {
+	// Make a lightweight search to test authentication
+	searchURL := fmt.Sprintf("%s/jsonLoad.php", p.baseUrl)
 
 	req, err := http.NewRequestWithContext(ctx, "GET", searchURL, nil)
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Cookie", fmt.Sprintf("mam_id=%s", p.secret))
 
 	resp, err := p.client.Do(req)
 	if err != nil {
@@ -152,12 +169,6 @@ func (p *MyAnonamouseProvider) TestConnection(ctx context.Context) error {
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("API returned status %d", resp.StatusCode)
-	}
-
-	// Try to decode response to verify it's valid JSON
-	var searchResp SearchResponse
-	if err := json.NewDecoder(resp.Body).Decode(&searchResp); err != nil {
-		return fmt.Errorf("invalid API response: %w", err)
 	}
 
 	return nil

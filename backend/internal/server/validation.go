@@ -9,9 +9,6 @@ import (
 var (
 	// UUID v4 pattern
 	uuidPattern = regexp.MustCompile(`^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$`)
-
-	// Magnet link pattern
-	magnetPattern = regexp.MustCompile(`^magnet:\?xt=urn:btih:[a-fA-F0-9]{40}`)
 )
 
 // validateDownloadRequest validates a download creation request
@@ -28,11 +25,6 @@ func validateDownloadRequest(req CreateDownloadRequest) error {
 	// Validate torrent source
 	if req.TorrentURL == "" && req.MagnetLink == "" {
 		return fmt.Errorf("either torrent_url or magnet_link is required")
-	}
-
-	// Validate magnet link format if provided
-	if req.MagnetLink != "" && !magnetPattern.MatchString(req.MagnetLink) {
-		return fmt.Errorf("invalid magnet link format")
 	}
 
 	// Validate lengths
@@ -69,59 +61,6 @@ func validateConfigKey(key string) error {
 	validKey := regexp.MustCompile(`^[a-zA-Z0-9._-]+$`)
 	if !validKey.MatchString(key) {
 		return fmt.Errorf("config key can only contain letters, numbers, dots, underscores, and hyphens")
-	}
-
-	return nil
-}
-
-// validateProviderType validates a provider type string
-func validateProviderType(providerType string) error {
-	if strings.TrimSpace(providerType) == "" {
-		return fmt.Errorf("provider type cannot be empty")
-	}
-
-	// Only allow lowercase alphanumeric and underscores
-	validType := regexp.MustCompile(`^[a-z0-9_]+$`)
-	if !validType.MatchString(providerType) {
-		return fmt.Errorf("provider type can only contain lowercase letters, numbers, and underscores")
-	}
-
-	return nil
-}
-
-// validateCreateProviderRequest validates a provider creation request
-func validateCreateProviderRequest(req CreateProviderRequest) error {
-	if err := validateProviderType(req.ProviderType); err != nil {
-		return err
-	}
-
-	if strings.TrimSpace(req.DisplayName) == "" {
-		return fmt.Errorf("display name is required")
-	}
-
-	if len(req.DisplayName) > 100 {
-		return fmt.Errorf("display name must be 100 characters or less")
-	}
-
-	if req.Config == nil || len(req.Config) == 0 {
-		return fmt.Errorf("config is required")
-	}
-
-	return nil
-}
-
-// validateUpdateProviderRequest validates a provider update request
-func validateUpdateProviderRequest(req UpdateProviderRequest) error {
-	if strings.TrimSpace(req.DisplayName) == "" {
-		return fmt.Errorf("display name is required")
-	}
-
-	if len(req.DisplayName) > 100 {
-		return fmt.Errorf("display name must be 100 characters or less")
-	}
-
-	if req.Config == nil || len(req.Config) == 0 {
-		return fmt.Errorf("config is required")
 	}
 
 	return nil

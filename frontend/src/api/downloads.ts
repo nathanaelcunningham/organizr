@@ -1,13 +1,33 @@
 import { api } from './client';
 import type { Download, CreateDownloadRequest } from '../types/download';
 
+interface ListDownloadsResponse {
+  downloads: Download[];
+}
+
+interface GetDownloadResponse {
+  download: Download;
+}
+
+interface CreateDownloadResponse {
+  download: Download;
+}
+
 export const downloadsApi = {
-  list: () => api.get<Download[]>('/api/downloads'),
+  list: async () => {
+    const response = await api.get<ListDownloadsResponse>('/api/downloads');
+    return response.downloads;
+  },
 
-  get: (id: string) => api.get<Download>(`/api/downloads/${id}`),
+  get: async (id: string) => {
+    const response = await api.get<GetDownloadResponse>(`/api/downloads/${id}`);
+    return response.download;
+  },
 
-  create: (data: CreateDownloadRequest) =>
-    api.post<Download>('/api/downloads', data),
+  create: async (data: CreateDownloadRequest) => {
+    const response = await api.post<CreateDownloadResponse>('/api/downloads', data);
+    return response.download;
+  },
 
   cancel: (id: string) => api.delete<void>(`/api/downloads/${id}`),
 
