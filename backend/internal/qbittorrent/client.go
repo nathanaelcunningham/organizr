@@ -78,7 +78,7 @@ func (c *Client) Login(ctx context.Context) error {
 	return nil
 }
 
-func (c *Client) AddTorrent(ctx context.Context, magnetLink, torrentURL string) (string, error) {
+func (c *Client) AddTorrent(ctx context.Context, magnetLink, torrentURL, category string) (string, error) {
 	if err := c.Login(ctx); err != nil {
 		return "", fmt.Errorf("failed to authenticate: %w", err)
 	}
@@ -90,6 +90,11 @@ func (c *Client) AddTorrent(ctx context.Context, magnetLink, torrentURL string) 
 		data.Set("urls", torrentURL)
 	} else {
 		return "", fmt.Errorf("either magnet link or torrent URL must be provided")
+	}
+
+	// Add category if provided
+	if category != "" {
+		data.Set("category", category)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "POST", c.baseURL+"/api/v2/torrents/add", strings.NewReader(data.Encode()))

@@ -93,7 +93,7 @@ func (s *Service) CreateDownload(ctx context.Context, d *models.Download) (*mode
 		}
 	} else {
 		// Use magnet link or direct URL
-		hash, err = s.qbClient.AddTorrent(ctx, d.MagnetLink, d.TorrentURL)
+		hash, err = s.qbClient.AddTorrent(ctx, d.MagnetLink, d.TorrentURL, d.Category)
 		if err != nil {
 			return nil, fmt.Errorf("failed to add torrent to qBittorrent: %w", err)
 		}

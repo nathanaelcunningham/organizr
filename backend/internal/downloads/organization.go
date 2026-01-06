@@ -32,6 +32,11 @@ func (o *OrganizationService) Organize(ctx context.Context, dl *models.Download)
 		return fmt.Errorf("failed to get destination path: %w", err)
 	}
 
+	// Ensure base destination directory exists
+	if err := os.MkdirAll(destBase, 0755); err != nil {
+		return fmt.Errorf("failed to create base destination directory %s: %w", destBase, err)
+	}
+
 	template, err := o.configService.Get(ctx, "paths.template")
 	if err != nil {
 		template = "{author}/{series}/{title}"
