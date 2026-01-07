@@ -8,10 +8,12 @@ import { formatFileSize } from '../../utils/formatters';
 
 interface SearchResultListItemProps {
     result: SearchResult;
+    showSeriesNumber?: boolean;
 }
 
 export const SearchResultListItem: React.FC<SearchResultListItemProps> = ({
     result,
+    showSeriesNumber = false,
 }) => {
     const navigate = useNavigate();
     const createDownload = useDownloadStore((state) => state.createDownload);
@@ -55,6 +57,11 @@ export const SearchResultListItem: React.FC<SearchResultListItemProps> = ({
                 <div className="grow min-w-0 flex items-start justify-between md:block">
                     <div className="min-w-0 grow">
                         <h3 className="text-sm font-semibold text-gray-900 truncate">
+                            {showSeriesNumber && result.series && result.series.length > 0 && (
+                                <span className="text-gray-500 font-normal mr-2">
+                                    #{result.series[0].number}
+                                </span>
+                            )}
                             {result.title}
                         </h3>
                         <p className="text-xs text-gray-600 truncate mt-0.5">
