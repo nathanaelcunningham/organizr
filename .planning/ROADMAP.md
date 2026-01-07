@@ -20,8 +20,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1.1: qBittorrent Connection Testing (INSERTED)** - Add connection test endpoint and frontend UI for diagnostics
 - [x] **Phase 2: Download Monitoring** - Poll qBittorrent for status updates and detect completion
 - [x] **Phase 3: Configuration System** - Build settings for folder templates and destination paths
-- [ ] **Phase 4: File Organization Engine** - Create folder structures and copy files on completion
-- [ ] **Phase 5: Frontend Integration** - Connect UI to backend for real-time download status
+- [x] **Phase 4: File Organization Engine** - Create folder structures and copy files on completion
+- [x] **Phase 5: Frontend Integration** - Connect UI to backend for real-time download status
 - [ ] **Phase 6: End-to-End Testing** - Verify complete workflow from search to organized files
 
 ## Phase Details
@@ -79,11 +79,11 @@ Plans:
 ### Phase 5: Frontend Integration
 **Goal**: Real-time UI updates showing download status and organization progress
 **Depends on**: Phase 4
-**Research**: Unlikely (existing React patterns, Zustand store integration)
-**Plans**: TBD
+**Research**: Skipped (existing integration verified and enhanced)
+**Plans**: 1 plan
 
 Plans:
-- [ ] TBD during planning
+- [x] 05-01: Frontend integration verification and UX enhancements
 
 ### Phase 6: End-to-End Testing
 **Goal**: Complete workflow verification from MAM search through organized files
@@ -106,5 +106,5 @@ Phases execute in numeric order: 1 → 1.1 → 2 → 3 → 4 → 5 → 6
 | 2. Download Monitoring | 1/1 | Complete | 2026-01-06 |
 | 3. Configuration System | 1/1 | Complete | 2026-01-07 |
 | 4. File Organization Engine | 1/1 | Complete | 2026-01-07 |
-| 5. Frontend Integration | 0/TBD | Not started | - |
+| 5. Frontend Integration | 1/1 | Complete | 2026-01-07 |
 | 6. End-to-End Testing | 0/TBD | Not started | - |
