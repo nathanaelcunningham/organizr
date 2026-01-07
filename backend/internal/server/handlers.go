@@ -329,18 +329,18 @@ func (s *Server) handlePreviewPath(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Generate preview path
+	// Sanitize individual variables before parsing template (preserves directory structure)
 	vars := map[string]string{
-		"author": req.Author,
-		"series": req.Series,
-		"title":  req.Title,
+		"author": fileutil.SanitizePath(req.Author),
+		"series": fileutil.SanitizePath(req.Series),
+		"title":  fileutil.SanitizePath(req.Title),
 	}
 
+	// Parse template with sanitized values (directory separators preserved)
 	path := fileutil.ParseTemplate(req.Template, vars)
-	sanitizedPath := fileutil.SanitizePath(path)
 
 	respondWithJSON(w, http.StatusOK, PreviewPathResponse{
 		Valid: true,
-		Path:  sanitizedPath,
+		Path:  path,
 	})
 }
