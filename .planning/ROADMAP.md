@@ -3,6 +3,7 @@
 ## Milestones
 
 - ✅ [v1.0 MVP](milestones/v1.0-MVP.md) — Phases 1-6 (plus 1.1 inserted) — SHIPPED 2026-01-07
+- 🚧 **v1.1 Enhancements** — Phases 7-9 (in progress)
 
 ## Completed Milestones
 
@@ -19,7 +20,9 @@ See [milestones/v1.0-MVP.md](milestones/v1.0-MVP.md) for full details.
 
 ## Current Milestone
 
-(None - v1.0 shipped, planning next milestone)
+### 🚧 v1.1 Enhancements (In Progress)
+
+**Milestone Goal:** Polish and enhance v1.0 with MAM series support, batch operations, and series number organization
 
 ## Phases
 
@@ -36,6 +39,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: File Organization Engine** - Create folder structures and copy files on completion
 - [x] **Phase 5: Frontend Integration** - Connect UI to backend for real-time download status
 - [x] **Phase 6: End-to-End Testing** - Verify complete workflow from search to organized files
+- [ ] **Phase 7: MAM Series Detection** - Parse and display series information from MAM search results
+- [ ] **Phase 8: Batch Operations** - Support adding multiple torrents at once
+- [ ] **Phase 9: Series Number Organization** - Add series_number template variable for folder organization
 
 ## Phase Details
 
@@ -107,6 +113,34 @@ Plans:
 Plans:
 - [x] 06-01: Backend handler and monitor tests with E2E manual test scenarios
 
+### Phase 7: MAM Series Detection
+**Goal**: Parse and extract series information from MAM search results and display in UI
+**Depends on**: Previous milestone complete
+**Research**: Likely (MAM HTML parsing, series metadata extraction)
+**Research topics**: MAM page structure, series parsing patterns, metadata fields in search results
+**Plans**: TBD
+
+Plans:
+- [ ] 07-01: TBD (run /gsd:plan-phase 7 to break down)
+
+### Phase 8: Batch Operations
+**Goal**: Support adding multiple torrents simultaneously from search results
+**Depends on**: Phase 7
+**Research**: Unlikely (internal patterns, existing qBittorrent integration)
+**Plans**: TBD
+
+Plans:
+- [ ] 08-01: TBD (run /gsd:plan-phase 8 to break down)
+
+### Phase 9: Series Number Organization
+**Goal**: Add {series_number} template variable for folder organization
+**Depends on**: Phase 8
+**Research**: Unlikely (extending existing template system)
+**Plans**: TBD
+
+Plans:
+- [ ] 09-01: TBD (run /gsd:plan-phase 9 to break down)
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -118,3 +152,6 @@ Plans:
 | 4. File Organization Engine | v1.0 | 1/1 | Complete | 2026-01-07 |
 | 5. Frontend Integration | v1.0 | 1/1 | Complete | 2026-01-07 |
 | 6. End-to-End Testing | v1.0 | 1/1 | Complete | 2026-01-07 |
+| 7. MAM Series Detection | v1.1 | 0/? | Not started | - |
+| 8. Batch Operations | v1.1 | 0/? | Not started | - |
+| 9. Series Number Organization | v1.1 | 0/? | Not started | - |
