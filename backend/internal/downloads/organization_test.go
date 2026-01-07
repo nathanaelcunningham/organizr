@@ -513,6 +513,72 @@ func TestOrganize_NestedDirectoryCreation(t *testing.T) {
 	}
 }
 
+func TestOrganize_PartialFailureCleanup(t *testing.T) {
+	srcDir := t.TempDir()
+	destDir := t.TempDir()
+
+	// Create 3 source files
+	for i := 1; i <= 3; i++ {
+		filename := fmt.Sprintf("file%d.m4b", i)
+		srcPath := filepath.Join(srcDir, filename)
+		if err := os.WriteFile(srcPath, []byte(fmt.Sprintf("content %d", i)), 0644); err != nil {
+			t.Fatalf("failed to create source file: %v", err)
+		}
+	}
+
+	// Create a mock that will fail on the 3rd file
+	mockQB := &mockQBClient{
+		files: []*qbittorrent.TorrentFile{
+			{Name: "file1.m4b", Path: filepath.Join(srcDir, "file1.m4b"), Size: 100},
+			{Name: "file2.m4b", Path: filepath.Join(srcDir, "file2.m4b"), Size: 100},
+			{Name: "file3.m4b", Path: "/nonexistent/file3.m4b", Size: 100}, // This will fail
+		},
+	}
+
+	configs := map[string]string{
+		"paths.destination":        destDir,
+		"paths.template":           "{author}/{series}/{title}",
+		"paths.no_series_template": "{author}/{title}",
+		"paths.operation":          "copy",
+	}
+	mockConfig := newMockConfigService(configs)
+
+	download := &models.Download{
+		ID:       "partial-fail-test",
+		Title:    "Partial Fail Book",
+		Author:   "Test Author",
+		Series:   "Test Series",
+		QBitHash: "partial123",
+	}
+
+	svc := newTestOrganizationService(mockQB, mockConfig)
+
+	ctx := context.Background()
+	err := svc.Organize(ctx, download)
+
+	// Should fail
+	if err == nil {
+		t.Error("Expected error but got none")
+	}
+
+	// Should contain the file name that failed
+	if !contains(err.Error(), "file3.m4b") {
+		t.Errorf("Error should mention file3.m4b, got: %v", err)
+	}
+
+	// Check that previously copied files were cleaned up
+	destPath := filepath.Join(destDir, "Test Author", "Test Series", "Partial Fail Book")
+
+	// Files 1 and 2 should NOT exist (cleaned up)
+	for i := 1; i <= 2; i++ {
+		filename := fmt.Sprintf("file%d.m4b", i)
+		destFile := filepath.Join(destPath, filename)
+		if _, err := os.Stat(destFile); !os.IsNotExist(err) {
+			t.Errorf("File %s should have been cleaned up but still exists", filename)
+		}
+	}
+}
+
 func TestCopyFile(t *testing.T) {
 	tests := []struct {
 		name           string

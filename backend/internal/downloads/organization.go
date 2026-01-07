@@ -139,19 +139,49 @@ func (o *OrganizationService) Organize(ctx context.Context, dl *models.Download)
 		return fmt.Errorf("failed to create directory: %w", err)
 	}
 
+	// Track successfully copied files for cleanup on partial failure
+	var copiedFiles []string
+
+	// Defer cleanup function to handle panic during copy operations
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("Panic during organization: %v, cleaning up %d files", r, len(copiedFiles))
+			for _, path := range copiedFiles {
+				if err := os.Remove(path); err != nil {
+					log.Printf("Failed to clean up file %s: %v", path, err)
+				}
+			}
+			panic(r) // Re-panic after cleanup
+		}
+	}()
+
 	// Copy or move files
-	for _, file := range files {
+	for i, file := range files {
 		srcPath := file.Path
 		destPath := filepath.Join(fullPath, filepath.Base(file.Name))
 
 		if operation == "move" {
+			// Move operation: atomic per file, partial success is acceptable
 			if err := os.Rename(srcPath, destPath); err != nil {
-				return fmt.Errorf("failed to move file %s: %w", file.Name, err)
+				log.Printf("Failed to move file %s (%s -> %s): %v", file.Name, srcPath, destPath, err)
+				return fmt.Errorf("failed to move file %s (%s -> %s): %w", file.Name, srcPath, destPath, err)
 			}
 		} else {
+			// Copy operation: all-or-nothing, clean up on failure
 			if err := copyFile(srcPath, destPath); err != nil {
-				return fmt.Errorf("failed to copy file %s: %w", file.Name, err)
+				// Cleanup: delete all previously copied files
+				log.Printf("Failed to copy file %s (%s -> %s): %v, cleaning up %d previously copied files",
+					file.Name, srcPath, destPath, err, len(copiedFiles))
+				for _, path := range copiedFiles {
+					if removeErr := os.Remove(path); removeErr != nil {
+						log.Printf("Failed to clean up file %s: %v", path, removeErr)
+					}
+				}
+				return fmt.Errorf("failed to copy file %s (%s -> %s): %w", file.Name, srcPath, destPath, err)
 			}
+			// Track successfully copied file
+			copiedFiles = append(copiedFiles, destPath)
+			log.Printf("Successfully copied file %d/%d: %s", i+1, len(files), file.Name)
 		}
 	}
 
