@@ -1,5 +1,11 @@
 package models
 
+type SeriesInfo struct {
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Number string `json:"number"`
+}
+
 type SearchResult struct {
 	// Basic info
 	ID         string
@@ -10,7 +16,7 @@ type SearchResult struct {
 	Provider   string
 
 	// Metadata
-	Series      string
+	Series      []SeriesInfo
 	Narrator    string
 	Category    string
 	FileType    string
