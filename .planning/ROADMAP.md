@@ -52,11 +52,11 @@ Urgent insertion to address ISS-001. During Phase 1 testing, qBittorrent authent
 ### Phase 2: Download Monitoring
 **Goal**: Background monitor that polls qBittorrent for download progress and detects completion
 **Depends on**: Phase 1
-**Research**: Unlikely (established polling patterns exist in codebase)
-**Plans**: TBD
+**Research**: Skipped (existing monitor code, refinement only)
+**Plans**: 1 plan
 
 Plans:
-- [ ] TBD during planning
+- [x] 02-01: Monitor refinement with resilience and remote path support
 
 ### Phase 3: Configuration System
 **Goal**: User-configurable folder structure templates and destination paths
