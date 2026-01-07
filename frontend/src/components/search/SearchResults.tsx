@@ -1,5 +1,6 @@
-import React from 'react';
-import { SearchResultListItem } from './SearchResultListItem';
+import React, { useMemo } from 'react';
+import { SeriesGroup } from './SeriesGroup';
+import { groupBySeries } from '../../utils/groupSeries';
 import { EmptyState } from '../common/EmptyState';
 import { Spinner } from '../common/Spinner';
 import type { SearchResult } from '../../types/search';
@@ -15,6 +16,9 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   loading,
   error,
 }) => {
+  // Group results by series using useMemo for performance
+  const grouped = useMemo(() => groupBySeries(results), [results]);
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -75,11 +79,15 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   return (
     <div>
       <div className="mb-4 text-sm text-gray-600">
-        Found {results.length} result{results.length === 1 ? '' : 's'}
+        Found {results.length} result{results.length === 1 ? '' : 's'} in {grouped.length} {grouped.length === 1 ? 'group' : 'groups'}
       </div>
-      <div className="divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
-        {results.map((result, index) => (
-          <SearchResultListItem key={`${result.title}-${index}`} result={result} />
+      <div>
+        {grouped.map((group, index) => (
+          <SeriesGroup
+            key={`${group.seriesName}-${index}`}
+            seriesName={group.seriesName}
+            books={group.books}
+          />
         ))}
       </div>
     </div>
