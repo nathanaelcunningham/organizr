@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/nathanael/organizr/internal/fileutil"
 	"github.com/nathanael/organizr/internal/models"
 	"github.com/nathanael/organizr/internal/qbittorrent"
 )
@@ -307,5 +308,39 @@ func (s *Server) handleTestQBittorrentConnection(w http.ResponseWriter, r *http.
 	respondWithJSON(w, http.StatusOK, TestConnectionResponse{
 		Success: true,
 		Message: "Connected successfully",
+	})
+}
+
+func (s *Server) handlePreviewPath(w http.ResponseWriter, r *http.Request) {
+	var req PreviewPathRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request body", err)
+		return
+	}
+
+	allowedVars := []string{"author", "series", "title"}
+
+	// Validate template
+	if err := fileutil.ValidateTemplate(req.Template, allowedVars); err != nil {
+		respondWithJSON(w, http.StatusOK, PreviewPathResponse{
+			Valid: false,
+			Error: err.Error(),
+		})
+		return
+	}
+
+	// Generate preview path
+	vars := map[string]string{
+		"author": req.Author,
+		"series": req.Series,
+		"title":  req.Title,
+	}
+
+	path := fileutil.ParseTemplate(req.Template, vars)
+	sanitizedPath := fileutil.SanitizePath(path)
+
+	respondWithJSON(w, http.StatusOK, PreviewPathResponse{
+		Valid: true,
+		Path:  sanitizedPath,
 	})
 }

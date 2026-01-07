@@ -18,6 +18,7 @@ func (s *Server) registerRoutes() {
 			r.Get("/", s.handleGetAllConfig)
 			r.Get("/{key}", s.handleGetConfig)
 			r.Put("/{key}", s.handleUpdateConfig)
+			r.Post("/preview-path", s.handlePreviewPath)
 		})
 
 		r.Route("/search", func(r chi.Router) {

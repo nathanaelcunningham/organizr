@@ -51,3 +51,16 @@ type TestConnectionResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message,omitempty"`
 }
+
+type PreviewPathRequest struct {
+	Template string `json:"template"`
+	Author   string `json:"author"`
+	Series   string `json:"series,omitempty"`
+	Title    string `json:"title"`
+}
+
+type PreviewPathResponse struct {
+	Valid bool   `json:"valid"`
+	Path  string `json:"path,omitempty"`
+	Error string `json:"error,omitempty"`
+}
