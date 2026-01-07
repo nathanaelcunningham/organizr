@@ -371,7 +371,7 @@ func TestOrganize(t *testing.T) {
 				},
 			},
 			wantErr:        true,
-			wantErrContain: "failed to copy file",
+			wantErrContain: "source file does not exist",
 		},
 	}
 

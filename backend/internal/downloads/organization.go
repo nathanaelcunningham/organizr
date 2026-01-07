@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
+	"syscall"
 
 	"github.com/nathanael/organizr/internal/config"
 	"github.com/nathanael/organizr/internal/fileutil"
@@ -99,6 +101,39 @@ func (o *OrganizationService) Organize(ctx context.Context, dl *models.Download)
 		}
 	}
 
+	// Pre-organization validation: check source files exist and are readable
+	var totalSize int64
+	for _, file := range files {
+		info, err := os.Stat(file.Path)
+		if err != nil {
+			if os.IsNotExist(err) {
+				return fmt.Errorf("source file does not exist: %s", file.Path)
+			}
+			return fmt.Errorf("source file is not accessible: %s: %w", file.Path, err)
+		}
+		totalSize += info.Size()
+	}
+
+	// Check available disk space at destination
+	var stat syscall.Statfs_t
+	if err := syscall.Statfs(destBase, &stat); err != nil {
+		return fmt.Errorf("failed to check disk space at destination: %w", err)
+	}
+
+	// Available space = block size * available blocks
+	availableSpace := int64(stat.Bavail) * int64(stat.Bsize)
+
+	// Return error if insufficient space (with buffer of 10% for filesystem overhead)
+	requiredSpace := int64(float64(totalSize) * 1.1)
+	if availableSpace < requiredSpace {
+		return fmt.Errorf("insufficient disk space: need %s, only %s available",
+			formatBytes(requiredSpace), formatBytes(availableSpace))
+	}
+
+	// Log organization start
+	log.Printf("Organizing %d files (%.2f MB) from torrent %s to %s",
+		len(files), float64(totalSize)/(1024*1024), dl.QBitHash, fullPath)
+
 	// Create destination directory
 	if err := os.MkdirAll(fullPath, 0755); err != nil {
 		return fmt.Errorf("failed to create directory: %w", err)
@@ -147,4 +182,18 @@ func copyFile(src, dst string) error {
 	}
 
 	return nil
+}
+
+// formatBytes converts bytes to human-readable format
+func formatBytes(bytes int64) string {
+	const unit = 1024
+	if bytes < unit {
+		return fmt.Sprintf("%d B", bytes)
+	}
+	div, exp := int64(unit), 0
+	for n := bytes / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(bytes)/float64(div), "KMGTPE"[exp])
 }
