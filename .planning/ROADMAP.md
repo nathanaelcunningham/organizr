@@ -122,7 +122,7 @@ Plans:
 
 Plans:
 - [x] 07-01: Backend series parsing - return structured series data
-- [ ] 07-02: Frontend series grouping and display
+- [x] 07-02: Frontend series grouping and display
 
 ### Phase 8: Batch Operations
 **Goal**: Support adding multiple torrents simultaneously from search results
@@ -153,6 +153,6 @@ Plans:
 | 4. File Organization Engine | v1.0 | 1/1 | Complete | 2026-01-07 |
 | 5. Frontend Integration | v1.0 | 1/1 | Complete | 2026-01-07 |
 | 6. End-to-End Testing | v1.0 | 1/1 | Complete | 2026-01-07 |
-| 7. MAM Series Detection | v1.1 | 1/2 | In progress | 2026-01-07 |
+| 7. MAM Series Detection | v1.1 | 2/2 | Complete | 2026-01-07 |
 | 8. Batch Operations | v1.1 | 0/? | Not started | - |
 | 9. Series Number Organization | v1.1 | 0/? | Not started | - |
