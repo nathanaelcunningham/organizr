@@ -101,21 +101,36 @@ func (m *Monitor) checkDownloads(ctx context.Context) error {
 
 		// Check if completed
 		if (status == "uploading" || status == "stalledUP" || status == "pausedUP") && dl.Status != models.StatusOrganized {
-			log.Printf("Download %s (%s) completed, starting organization", dl.ID, dl.Title)
+			log.Printf("Download %s (%s) completed, marking as complete", dl.ID, dl.Title)
 
 			// Mark completed
 			if err := m.downloadRepo.UpdateCompleted(ctx, dl.ID); err != nil {
 				log.Printf("Failed to mark download as completed: %v", err)
+				continue
 			}
 
-			// Create context with timeout for organization (respects parent cancellation but prevents indefinite hanging)
-			orgCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+			// Check if auto-organization is enabled (default: true for backward compatibility)
+			autoOrganize := true
+			if autoOrganizeStr, err := m.configService.Get(ctx, "organization.auto_organize"); err == nil {
+				if autoOrganizeStr == "false" {
+					autoOrganize = false
+					log.Printf("Auto-organization disabled for download %s (%s), skipping organization", dl.ID, dl.Title)
+				}
+			}
 
-			// Trigger organization in goroutine
-			go func(ctx context.Context, download *models.Download) {
-				defer cancel()
-				m.organizeDownload(ctx, download)
-			}(orgCtx, dl)
+			// Only auto-organize if enabled
+			if autoOrganize {
+				log.Printf("Auto-organizing download %s (%s)", dl.ID, dl.Title)
+
+				// Create context with timeout for organization (respects parent cancellation but prevents indefinite hanging)
+				orgCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+
+				// Trigger organization in goroutine
+				go func(ctx context.Context, download *models.Download) {
+					defer cancel()
+					m.organizeDownload(ctx, download)
+				}(orgCtx, dl)
+			}
 		}
 	}
 

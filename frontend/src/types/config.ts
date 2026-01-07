@@ -25,7 +25,7 @@ export const CONFIG_KEYS = {
     PATHS_OPERATION: 'paths.operation',
     PATHS_LOCAL_MOUNT: 'paths.local_mount',
     MONITOR_INTERVAL: 'monitor.interval_seconds',
-    MONITOR_AUTO_ORGANIZE: 'monitor.auto_organize',
+    ORGANIZATION_AUTO_ORGANIZE: 'organization.auto_organize',
     MAM_BASEURL: 'mam.baseurl',
     MAM_SECRET: 'mam.secret',
 } as const;

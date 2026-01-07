@@ -23,7 +23,7 @@ const FIELD_CONFIG = {
     pathsOperation: { key: CONFIG_KEYS.PATHS_OPERATION, default: 'copy' },
     pathsLocalMount: { key: CONFIG_KEYS.PATHS_LOCAL_MOUNT, default: '' },
     monitorInterval: { key: CONFIG_KEYS.MONITOR_INTERVAL, default: '30' },
-    monitorAutoOrganize: { key: CONFIG_KEYS.MONITOR_AUTO_ORGANIZE, default: 'true' },
+    organizationAutoOrganize: { key: CONFIG_KEYS.ORGANIZATION_AUTO_ORGANIZE, default: 'true' },
     mamBaseUrl: { key: CONFIG_KEYS.MAM_BASEURL, default: 'https://www.myanonamouse.net' },
     mamSecret: { key: CONFIG_KEYS.MAM_SECRET, default: '' },
 } as const;
@@ -142,13 +142,21 @@ export function ConfigForm() {
 
             Object.entries(FIELD_CONFIG).forEach(([field, { key }]) => {
                 if (dirtyFields[field as FormFieldKey]) {
-                    updates[key] = data[field as FormFieldKey];
+                    let value = data[field as FormFieldKey];
+
+                    // Handle checkbox fields - convert boolean-like values to string
+                    if (field === 'organizationAutoOrganize') {
+                        // Checkbox can be empty string (unchecked) or "on"/"true" (checked)
+                        value = value ? 'true' : 'false';
+                    }
+
+                    updates[key] = value;
                 }
             });
 
-            // Remove any empty values
+            // Remove any empty values (except 'false' for booleans)
             Object.keys(updates).forEach(key => {
-                if (updates[key] === '') {
+                if (updates[key] === '' && key !== 'organization.auto_organize') {
                     delete updates[key];
                 }
             });
@@ -345,20 +353,24 @@ export function ConfigForm() {
                     required
                     help="How often to check for completed downloads"
                 />
-                <div className="flex items-center gap-3">
-                    <input
-                        type="checkbox"
-                        id="autoOrganize"
-                        {...register('monitorAutoOrganize')}
-                        value="true"
-                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                    />
-                    <label
-                        htmlFor="autoOrganize"
-                        className="text-sm font-medium text-gray-700"
-                    >
-                        Automatically organize completed downloads
-                    </label>
+                <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                        <input
+                            type="checkbox"
+                            id="autoOrganize"
+                            {...register('organizationAutoOrganize')}
+                            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                        />
+                        <label
+                            htmlFor="autoOrganize"
+                            className="text-sm font-medium text-gray-700"
+                        >
+                            Automatically organize completed downloads
+                        </label>
+                    </div>
+                    <p className="text-xs text-gray-500 ml-7">
+                        When enabled, downloads will be automatically organized after completion. Disable to organize manually.
+                    </p>
                 </div>
             </ConfigSection>
 
