@@ -13,9 +13,19 @@ import (
 	"github.com/nathanael/organizr/internal/qbittorrent"
 )
 
+// qbittorrentClient interface defines the methods we need from qbittorrent.Client
+type qbittorrentClient interface {
+	GetTorrentFiles(ctx context.Context, hash string) ([]*qbittorrent.TorrentFile, error)
+}
+
+// configService interface defines the methods we need from config.Service
+type configService interface {
+	Get(ctx context.Context, key string) (string, error)
+}
+
 type OrganizationService struct {
-	qbClient      *qbittorrent.Client
-	configService *config.Service
+	qbClient      qbittorrentClient
+	configService configService
 }
 
 func NewOrganizationService(qbClient *qbittorrent.Client, configService *config.Service) *OrganizationService {
@@ -58,15 +68,15 @@ func (o *OrganizationService) Organize(ctx context.Context, dl *models.Download)
 		pathTemplate = noSeriesTemplate
 	}
 
-	// Parse template
-	path := fileutil.ParseTemplate(pathTemplate, map[string]string{
-		"author": dl.Author,
-		"series": dl.Series,
-		"title":  dl.Title,
-	})
+	// Sanitize variables BEFORE template parsing (preserves directory structure)
+	sanitizedVars := map[string]string{
+		"author": fileutil.SanitizePath(dl.Author),
+		"series": fileutil.SanitizePath(dl.Series),
+		"title":  fileutil.SanitizePath(dl.Title),
+	}
 
-	// Sanitize path components
-	path = fileutil.SanitizePath(path)
+	// Parse template with sanitized variables
+	path := fileutil.ParseTemplate(pathTemplate, sanitizedVars)
 
 	// Build full destination
 	fullPath := filepath.Join(destBase, path)
