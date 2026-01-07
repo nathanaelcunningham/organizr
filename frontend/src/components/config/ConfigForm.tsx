@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { Select } from '../common/Select';
@@ -10,6 +10,7 @@ import { useNotificationStore } from '../../stores/useNotificationStore';
 import { CONFIG_KEYS } from '../../types/config';
 import { searchApi } from '../../api/search';
 import { qbittorrentApi } from '../../api/qbittorrent';
+import { configApi, type PreviewPathResponse } from '../../api/config';
 
 // Field configuration for cleaner form management
 const FIELD_CONFIG = {
@@ -38,14 +39,86 @@ const getDefaultValues = (): FormData => {
     }, {} as FormData);
 };
 
+// PathPreview component for real-time template preview
+function PathPreview({ template, hasSeries }: { template: string; hasSeries: boolean }) {
+    const [preview, setPreview] = useState<PreviewPathResponse | null>(null);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (!template) {
+            setPreview(null);
+            return;
+        }
+
+        // Debounce the preview API call
+        const timeoutId = setTimeout(async () => {
+            setLoading(true);
+            try {
+                const result = await configApi.previewPath({
+                    template,
+                    author: 'Example Author',
+                    series: hasSeries ? 'Example Series' : undefined,
+                    title: 'Example Book Title',
+                });
+                setPreview(result);
+            } catch (error) {
+                setPreview({
+                    valid: false,
+                    error: error instanceof Error ? error.message : 'Failed to preview path',
+                });
+            } finally {
+                setLoading(false);
+            }
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    }, [template, hasSeries]);
+
+    if (!template) return null;
+
+    if (loading) {
+        return (
+            <div className="text-xs text-gray-500 mt-1">
+                Generating preview...
+            </div>
+        );
+    }
+
+    if (!preview) return null;
+
+    if (preview.valid && preview.path) {
+        return (
+            <div className="text-xs text-gray-600 mt-1">
+                <span className="font-medium">Preview:</span>{' '}
+                <span className="font-mono">/audiobooks/{preview.path}</span>
+            </div>
+        );
+    }
+
+    if (preview.error) {
+        return (
+            <div className="text-xs text-red-600 mt-1">
+                {preview.error}
+            </div>
+        );
+    }
+
+    return null;
+}
+
 export function ConfigForm() {
     const { config, loading, updateMultipleConfigs } = useConfigStore();
     const [qbTestLoading, setQbTestLoading] = useState(false);
     const [qbTestResult, setQbTestResult] = useState<{ success: boolean; message: string } | null>(null);
 
-    const { register, handleSubmit, reset, formState: { isSubmitting, dirtyFields } } = useForm<FormData>({
+    const { register, handleSubmit, reset, control, formState: { isSubmitting, dirtyFields } } = useForm<FormData>({
         defaultValues: getDefaultValues(),
     });
+
+    // Watch template fields for preview
+    const pathsTemplate = useWatch({ control, name: 'pathsTemplate' });
+    const pathsNoSeriesTemplate = useWatch({ control, name: 'pathsNoSeriesTemplate' });
+
     console.log(config)
 
     // When config loads, populate the form
@@ -213,20 +286,26 @@ export function ConfigForm() {
                     required
                     help="Base directory where audiobooks will be organized"
                 />
-                <Input
-                    label="Path Template (with series)"
-                    type="text"
-                    {...register('pathsTemplate')}
-                    required
-                    help="Template for organizing files with series. Variables: {author}, {series}, {title}"
-                />
-                <Input
-                    label="Path Template (without series)"
-                    type="text"
-                    {...register('pathsNoSeriesTemplate')}
-                    required
-                    help="Template for organizing files without series. Variables: {author}, {title}"
-                />
+                <div>
+                    <Input
+                        label="Path Template (with series)"
+                        type="text"
+                        {...register('pathsTemplate')}
+                        required
+                        help="Template for organizing files with series. Variables: {author}, {series}, {title}"
+                    />
+                    <PathPreview template={pathsTemplate || ''} hasSeries={true} />
+                </div>
+                <div>
+                    <Input
+                        label="Path Template (without series)"
+                        type="text"
+                        {...register('pathsNoSeriesTemplate')}
+                        required
+                        help="Template for organizing files without series. Variables: {author}, {title}"
+                    />
+                    <PathPreview template={pathsNoSeriesTemplate || ''} hasSeries={false} />
+                </div>
                 <Select
                     label="Operation"
                     {...register('pathsOperation')}
