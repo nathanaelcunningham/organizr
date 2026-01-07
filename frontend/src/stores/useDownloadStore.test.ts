@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { useDownloadStore } from './useDownloadStore';
 import { downloadsApi } from '../api/downloads';
-import { useNotificationStore } from './useNotificationStore';
 import type { Download, CreateDownloadRequest } from '../types/download';
 
 // Mock the APIs
