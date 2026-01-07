@@ -85,7 +85,7 @@ func (p *MyAnonamouseProvider) Search(ctx context.Context, query string) ([]*mod
 			ID:             fmt.Sprintf("%d", torrent.ID),
 			Title:          torrent.Title,
 			Author:         formatAuthorInfo(torrent.AuthorInfo),
-			Series:         formatSeriesInfo(torrent.SeriesInfo),
+			Series:         parseSeriesInfo(torrent.SeriesInfo),
 			Category:       torrent.CategoryName,
 			FileType:       torrent.FileType,
 			Language:       torrent.LanguageCode,
@@ -275,28 +275,38 @@ func formatAuthorInfo(authorInfo string) string {
 	return strings.Join(authors, ", ")
 }
 
-func formatSeriesInfo(seriesInfo string) string {
+func parseSeriesInfo(seriesInfo string) []models.SeriesInfo {
 	if seriesInfo == "" {
-		return ""
-	}
-	seriesMap := make(map[string][]string)
-	if err := json.Unmarshal([]byte(seriesInfo), &seriesMap); err != nil {
-		return ""
+		return []models.SeriesInfo{}
 	}
 
-	series := []string{}
-	for _, s := range seriesMap {
-		seriesStr := ""
+	// MAM format: {"123": ["Series Name", "Book Number", numeric_value]}
+	seriesMap := make(map[string][]interface{})
+	if err := json.Unmarshal([]byte(seriesInfo), &seriesMap); err != nil {
+		return []models.SeriesInfo{}
+	}
+
+	result := []models.SeriesInfo{}
+	for id, s := range seriesMap {
+		info := models.SeriesInfo{ID: id}
+
 		if len(s) > 0 {
-			seriesStr = s[0]
+			if name, ok := s[0].(string); ok {
+				info.Name = name
+			}
 		}
 		if len(s) > 1 {
-			seriesStr += fmt.Sprintf(" (%s)", s[1])
+			if number, ok := s[1].(string); ok {
+				info.Number = number
+			}
 		}
-		series = append(series, seriesStr)
+
+		if info.Name != "" {
+			result = append(result, info)
+		}
 	}
 
-	return strings.Join(series, ", ")
+	return result
 }
 
 func parseTags(tagsStr string) []string {
