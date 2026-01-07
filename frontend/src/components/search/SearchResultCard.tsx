@@ -22,10 +22,16 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = ({
   const handleDownload = async () => {
     setDownloading(true);
     try {
+      // Convert series array to string representation
+      const seriesString = result.series && result.series.length > 0
+        ? result.series.map(s => `${s.name} #${s.number}`).join(', ')
+        : undefined;
+
       await createDownload({
         title: result.title,
         author: result.author,
-        series: result.series,
+        series: seriesString,
+        category: 'Audiobooks',
         torrent_url: result.torrent_url,
         magnet_link: result.magnet_link,
       });
@@ -47,9 +53,9 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = ({
             {result.title}
           </h3>
           <p className="text-sm text-gray-600 mt-1">by {result.author}</p>
-          {result.series && (
+          {result.series && result.series.length > 0 && (
             <p className="text-sm text-gray-500 mt-1">
-              Series: {result.series}
+              Series: {result.series.map(s => `${s.name} #${s.number}`).join(', ')}
             </p>
           )}
           {result.narrator && (

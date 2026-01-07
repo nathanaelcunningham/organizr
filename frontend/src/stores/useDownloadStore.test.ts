@@ -109,6 +109,7 @@ describe('useDownloadStore', () => {
       const request: CreateDownloadRequest = {
         title: 'Test Book',
         author: 'Test Author',
+        category: 'Audiobooks',
         magnet_link: 'magnet:...',
       };
 
@@ -131,6 +132,7 @@ describe('useDownloadStore', () => {
       const request: CreateDownloadRequest = {
         title: 'Test Book',
         author: 'Test Author',
+        category: 'Audiobooks',
         magnet_link: 'magnet:...',
       };
 
@@ -151,6 +153,7 @@ describe('useDownloadStore', () => {
       const request: CreateDownloadRequest = {
         title: 'Test Book',
         author: 'Test Author',
+        category: 'Audiobooks',
         magnet_link: 'magnet:...',
       };
 
@@ -168,6 +171,7 @@ describe('useDownloadStore', () => {
       const request: CreateDownloadRequest = {
         title: 'Test Book',
         author: 'Test Author',
+        category: 'Audiobooks',
         magnet_link: 'magnet:...',
       };
 

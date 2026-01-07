@@ -1,3 +1,9 @@
+export interface SeriesInfo {
+    id: string;
+    name: string;
+    number: string;
+}
+
 export interface SearchResponse {
     results: SearchResult[]
 }
@@ -5,7 +11,7 @@ export interface SearchResult {
     id?: string;
     title: string;
     author: string;
-    series?: string;
+    series?: SeriesInfo[];
     narrator?: string;
     torrent_url?: string;
     magnet_link?: string;

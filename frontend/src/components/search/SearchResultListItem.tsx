@@ -22,10 +22,16 @@ export const SearchResultListItem: React.FC<SearchResultListItemProps> = ({
     const handleDownload = async () => {
         setDownloading(true);
         try {
+            // Convert series array to string representation
+            const seriesString = result.series && result.series.length > 0
+                ? result.series.map(s => `${s.name} #${s.number}`).join(', ')
+                : undefined;
+
             await createDownload({
                 title: result.title,
                 author: result.author,
-                series: result.series,
+                series: seriesString,
+                category: 'Audiobooks',
                 torrent_url: result.torrent_url,
                 magnet_link: result.magnet_link,
             });
@@ -46,8 +52,8 @@ export const SearchResultListItem: React.FC<SearchResultListItemProps> = ({
                 onClick={() => setExpanded(!expanded)}
             >
                 {/* Title & Author - Left side, flex-grow */}
-                <div className="flex-grow min-w-0 flex items-start justify-between md:block">
-                    <div className="min-w-0 flex-grow">
+                <div className="grow min-w-0 flex items-start justify-between md:block">
+                    <div className="min-w-0 grow">
                         <h3 className="text-sm font-semibold text-gray-900 truncate">
                             {result.title}
                         </h3>
@@ -56,7 +62,7 @@ export const SearchResultListItem: React.FC<SearchResultListItemProps> = ({
                         </p>
                     </div>
                     {/* Seeders on mobile - right aligned */}
-                    <div className="flex-shrink-0 md:hidden ml-3">
+                    <div className="shrink-0 md:hidden ml-3">
                         <span className="text-xs text-gray-500">Seeders: </span>
                         <span
                             className={`text-sm font-medium ${result.seeders > 10 ? 'text-green-600' : 'text-yellow-600'
@@ -68,7 +74,7 @@ export const SearchResultListItem: React.FC<SearchResultListItemProps> = ({
                 </div>
 
                 {/* Metadata columns - Desktop only */}
-                <div className="hidden md:flex md:items-center md:gap-3 md:flex-shrink-0">
+                <div className="hidden md:flex md:items-center md:gap-3 md:shrink-0">
                     {/* Seeders */}
                     <div className="w-16 text-right">
                         <span
@@ -88,7 +94,7 @@ export const SearchResultListItem: React.FC<SearchResultListItemProps> = ({
 
 
                     {/* Critical Badges */}
-                    <div className="flex gap-1 flex-shrink-0">
+                    <div className="flex gap-1 shrink-0">
                         {result.freeleech && (
                             <Badge variant="success" size="sm">
                                 FL
@@ -102,7 +108,7 @@ export const SearchResultListItem: React.FC<SearchResultListItemProps> = ({
                     </div>
 
                     {/* Download Button */}
-                    <div className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                    <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
                         <Button
                             variant="primary"
                             size="sm"
@@ -115,7 +121,7 @@ export const SearchResultListItem: React.FC<SearchResultListItemProps> = ({
                     </div>
 
                     {/* Expand Toggle */}
-                    <div className="flex-shrink-0">
+                    <div className="shrink-0">
                         <svg
                             className={`w-5 h-5 text-gray-400 transition-transform ${expanded ? 'rotate-180' : ''
                                 }`}
@@ -151,7 +157,7 @@ export const SearchResultListItem: React.FC<SearchResultListItemProps> = ({
                         )}
                     </div>
                     {/* Expand Toggle - Mobile */}
-                    <div className="flex-shrink-0">
+                    <div className="shrink-0">
                         <svg
                             className={`w-5 h-5 text-gray-400 transition-transform ${expanded ? 'rotate-180' : ''
                                 }`}
@@ -191,11 +197,11 @@ export const SearchResultListItem: React.FC<SearchResultListItemProps> = ({
                 <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
                     <div className="space-y-3">
                         {/* Series & Narrator */}
-                        {(result.series || result.narrator) && (
+                        {((result.series && result.series.length > 0) || result.narrator) && (
                             <div className="text-sm">
-                                {result.series && (
+                                {result.series && result.series.length > 0 && (
                                     <p className="text-gray-700">
-                                        <span className="font-medium">Series:</span> {result.series}
+                                        <span className="font-medium">Series:</span> {result.series.map(s => `${s.name} #${s.number}`).join(', ')}
                                     </p>
                                 )}
                                 {result.narrator && (
