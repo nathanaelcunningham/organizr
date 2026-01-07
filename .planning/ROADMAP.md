@@ -1,12 +1,25 @@
 # Roadmap: Organizr
 
-## Overview
+## Milestones
 
-Build complete audiobook automation from torrent discovery to organized files. Start with qBittorrent integration for torrent submission, add monitoring for download tracking, implement configurable folder organization, and connect frontend for real-time status updates. Each phase delivers a testable capability, culminating in end-to-end workflow validation.
+- ✅ [v1.0 MVP](milestones/v1.0-MVP.md) — Phases 1-6 (plus 1.1 inserted) — SHIPPED 2026-01-07
 
-## Domain Expertise
+## Completed Milestones
 
-None
+<details>
+<summary>✅ v1.0 MVP (Phases 1-6) — SHIPPED 2026-01-07</summary>
+
+Complete audiobook automation from torrent submission through organized files. Full qBittorrent integration, background monitoring, configurable folder templates, auto-organization, and comprehensive testing.
+
+**Stats:** 8 plans, 50 files, 8,968 LOC, 6 days
+
+See [milestones/v1.0-MVP.md](milestones/v1.0-MVP.md) for full details.
+
+</details>
+
+## Current Milestone
+
+(None - v1.0 shipped, planning next milestone)
 
 ## Phases
 
@@ -96,15 +109,12 @@ Plans:
 
 ## Progress
 
-**Execution Order:**
-Phases execute in numeric order: 1 → 1.1 → 2 → 3 → 4 → 5 → 6
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. qBittorrent Integration | 2/2 | Complete | 2026-01-06 |
-| 1.1 Connection Testing (INSERTED) | 1/1 | Complete | 2026-01-06 |
-| 2. Download Monitoring | 1/1 | Complete | 2026-01-06 |
-| 3. Configuration System | 1/1 | Complete | 2026-01-07 |
-| 4. File Organization Engine | 1/1 | Complete | 2026-01-07 |
-| 5. Frontend Integration | 1/1 | Complete | 2026-01-07 |
-| 6. End-to-End Testing | 1/1 | Complete | 2026-01-07 |
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 1. qBittorrent Integration | v1.0 | 2/2 | Complete | 2026-01-06 |
+| 1.1 Connection Testing (INSERTED) | v1.0 | 1/1 | Complete | 2026-01-06 |
+| 2. Download Monitoring | v1.0 | 1/1 | Complete | 2026-01-06 |
+| 3. Configuration System | v1.0 | 1/1 | Complete | 2026-01-07 |
+| 4. File Organization Engine | v1.0 | 1/1 | Complete | 2026-01-07 |
+| 5. Frontend Integration | v1.0 | 1/1 | Complete | 2026-01-07 |
+| 6. End-to-End Testing | v1.0 | 1/1 | Complete | 2026-01-07 |
