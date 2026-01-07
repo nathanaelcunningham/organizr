@@ -22,9 +22,9 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = ({
   const handleDownload = async () => {
     setDownloading(true);
     try {
-      // Convert series array to string representation
+      // Convert series array to string representation (names only, not numbers)
       const seriesString = result.series && result.series.length > 0
-        ? result.series.map(s => `${s.name} #${s.number}`).join(', ')
+        ? result.series.map(s => s.name).join(', ')
         : undefined;
 
       await createDownload({
