@@ -138,11 +138,12 @@ Urgent fix discovered during Phase 7 testing. When clicking download, the series
 ### Phase 8: Batch Operations
 **Goal**: Support adding multiple torrents simultaneously from search results
 **Depends on**: Phase 7
-**Research**: Unlikely (internal patterns, existing qBittorrent integration)
-**Plans**: TBD
+**Research**: Skipped (internal patterns, existing qBittorrent integration)
+**Plans**: 2 plans
 
 Plans:
-- [ ] 08-01: TBD (run /gsd:plan-phase 8 to break down)
+- [x] 08-01: Backend batch endpoint with partial success handling
+- [ ] 08-02: Frontend multi-select and batch UI
 
 ### Phase 9: Series Number Organization
 **Goal**: Add {series_number} template variable for folder organization
@@ -166,5 +167,5 @@ Plans:
 | 6. End-to-End Testing | v1.0 | 1/1 | Complete | 2026-01-07 |
 | 7. MAM Series Detection | v1.1 | 2/2 | Complete | 2026-01-07 |
 | 7.1 Fix Series Download Field (INSERTED) | v1.1 | 1/1 | Complete | 2026-01-08 |
-| 8. Batch Operations | v1.1 | 0/? | Not started | - |
+| 8. Batch Operations | v1.1 | 1/2 | In progress | - |
 | 9. Series Number Organization | v1.1 | 0/? | Not started | - |
