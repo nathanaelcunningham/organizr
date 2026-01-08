@@ -9,11 +9,17 @@ import { formatFileSize } from '../../utils/formatters';
 interface SearchResultListItemProps {
     result: SearchResult;
     showSeriesNumber?: boolean;
+    batchMode?: boolean;
+    selected?: boolean;
+    onToggleSelect?: (result: SearchResult) => void;
 }
 
 export const SearchResultListItem: React.FC<SearchResultListItemProps> = ({
     result,
     showSeriesNumber = false,
+    batchMode = false,
+    selected = false,
+    onToggleSelect,
 }) => {
     const navigate = useNavigate();
     const createDownload = useDownloadStore((state) => state.createDownload);
@@ -46,13 +52,34 @@ export const SearchResultListItem: React.FC<SearchResultListItemProps> = ({
         }
     };
 
+    const handleCheckboxClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (onToggleSelect) {
+            onToggleSelect(result);
+        }
+    };
+
     return (
         <div className="border-b border-gray-200 last:border-b-0">
             {/* Compact Row */}
             <div
-                className="flex flex-col md:flex-row md:items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer"
+                className={`flex flex-col md:flex-row md:items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer ${
+                    selected ? 'bg-blue-50' : ''
+                }`}
                 onClick={() => setExpanded(!expanded)}
             >
+                {/* Checkbox in batch mode */}
+                {batchMode && (
+                    <div className="shrink-0" onClick={handleCheckboxClick}>
+                        <input
+                            type="checkbox"
+                            checked={selected}
+                            onChange={() => {}}
+                            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 cursor-pointer"
+                        />
+                    </div>
+                )}
+
                 {/* Title & Author - Left side, flex-grow */}
                 <div className="grow min-w-0 flex items-start justify-between md:block">
                     <div className="min-w-0 grow">
