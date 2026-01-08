@@ -124,6 +124,17 @@ Plans:
 - [x] 07-01: Backend series parsing - return structured series data
 - [x] 07-02: Frontend series grouping and display
 
+### Phase 7.1: Fix Series Download Field (INSERTED)
+**Goal**: Fix download requests to send series name only, not name with number
+**Depends on**: Phase 7
+**Plans**: 1 plan
+
+Plans:
+- [x] 07.1-01: Fix series field in download handlers
+
+**Details:**
+Urgent fix discovered during Phase 7 testing. When clicking download, the series field being sent includes the series number (e.g., "Discworld #1" instead of "Discworld"), causing the organization function to create incorrect folder structures like `Discworld #1/book.m4b` instead of `Discworld/book.m4b`. Must extract series name only before sending to backend.
+
 ### Phase 8: Batch Operations
 **Goal**: Support adding multiple torrents simultaneously from search results
 **Depends on**: Phase 7
@@ -154,5 +165,6 @@ Plans:
 | 5. Frontend Integration | v1.0 | 1/1 | Complete | 2026-01-07 |
 | 6. End-to-End Testing | v1.0 | 1/1 | Complete | 2026-01-07 |
 | 7. MAM Series Detection | v1.1 | 2/2 | Complete | 2026-01-07 |
+| 7.1 Fix Series Download Field (INSERTED) | v1.1 | 1/1 | Complete | 2026-01-08 |
 | 8. Batch Operations | v1.1 | 0/? | Not started | - |
 | 9. Series Number Organization | v1.1 | 0/? | Not started | - |
