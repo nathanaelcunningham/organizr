@@ -319,7 +319,7 @@ func (s *Server) handlePreviewPath(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	allowedVars := []string{"author", "series", "title"}
+	allowedVars := []string{"author", "series", "series_number", "title"}
 
 	// Validate template
 	if err := fileutil.ValidateTemplate(req.Template, allowedVars); err != nil {
@@ -332,9 +332,10 @@ func (s *Server) handlePreviewPath(w http.ResponseWriter, r *http.Request) {
 
 	// Sanitize individual variables before parsing template (preserves directory structure)
 	vars := map[string]string{
-		"author": fileutil.SanitizePath(req.Author),
-		"series": fileutil.SanitizePath(req.Series),
-		"title":  fileutil.SanitizePath(req.Title),
+		"author":        fileutil.SanitizePath(req.Author),
+		"series":        fileutil.SanitizePath(req.Series),
+		"series_number": fileutil.SanitizePath(req.SeriesNumber),
+		"title":         fileutil.SanitizePath(req.Title),
 	}
 
 	// Parse template with sanitized values (directory separators preserved)

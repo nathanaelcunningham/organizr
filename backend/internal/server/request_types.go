@@ -54,10 +54,11 @@ type TestConnectionResponse struct {
 }
 
 type PreviewPathRequest struct {
-	Template string `json:"template"`
-	Author   string `json:"author"`
-	Series   string `json:"series,omitempty"`
-	Title    string `json:"title"`
+	Template     string `json:"template"`
+	Author       string `json:"author"`
+	Series       string `json:"series,omitempty"`
+	SeriesNumber string `json:"series_number,omitempty"`
+	Title        string `json:"title"`
 }
 
 type PreviewPathResponse struct {
