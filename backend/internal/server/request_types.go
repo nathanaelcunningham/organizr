@@ -1,5 +1,29 @@
 package server
 
+// API Type Conventions
+//
+// This file defines request and response types following consistent naming patterns:
+//
+// Request Types:
+//   - Pattern: <Operation><Resource>Request
+//   - Examples: CreateDownloadRequest, UpdateConfigRequest
+//
+// Response Types:
+//   - Pattern: <Operation><Resource>Response
+//   - Examples: CreateDownloadResponse, ListDownloadsResponse
+//   - All responses wrap their data for consistency and future extensibility
+//   - Single resources: {download: downloadDTO}
+//   - Lists: {downloads: []downloadDTO}
+//   - With metadata: {results: []searchResultDTO, count: int}
+//
+// JSON Field Naming:
+//   - All JSON tags use snake_case (e.g., series_number, torrent_url, created_at)
+//   - Maintains consistency with common REST API conventions
+//
+// Error Responses:
+//   - Defined in errors.go with typed helper functions
+//   - Consistent ErrorResponse structure across all endpoints
+
 type CreateDownloadRequest struct {
 	Title        string `json:"title"`
 	Author       string `json:"author"`

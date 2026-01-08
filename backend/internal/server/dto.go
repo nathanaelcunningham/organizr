@@ -6,6 +6,24 @@ import (
 	"github.com/nathanael/organizr/internal/models"
 )
 
+// DTO (Data Transfer Object) Conventions
+//
+// This file defines internal DTOs used for API responses.
+//
+// DTO Naming:
+//   - Pattern: <resource>DTO (lowercase first letter, unexported)
+//   - Examples: downloadDTO, searchResultDTO
+//   - DTOs are internal representations, not exposed directly to API consumers
+//
+// Purpose:
+//   - Separate API representation from internal domain models
+//   - Allows API changes without affecting internal models
+//   - Provides consistent JSON serialization format
+//
+// JSON Field Naming:
+//   - All JSON tags use snake_case (e.g., series_number, organized_path, created_at)
+//   - Maintains consistency with REST API conventions
+
 type downloadDTO struct {
 	ID            string     `json:"id"`
 	Title         string     `json:"title"`
