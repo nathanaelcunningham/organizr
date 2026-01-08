@@ -115,7 +115,9 @@ organizr/
 - `frontend/src/stores/` - Frontend state management
 
 **Testing:**
-- None detected
+- Backend: `backend/internal/server/handlers_test.go`, `backend/internal/downloads/monitor_test.go`, `backend/internal/persistence/sqlite/downloads_test.go`
+- Frontend: `frontend/src/test/` directory with Vitest setup
+- New tests: `*_test.go` alongside source (backend), `*.test.ts` or `test/` directory (frontend)
 
 **Documentation:**
 - `backend/README.md` - Backend documentation
@@ -202,5 +204,5 @@ Frontend (TypeScript/React):
 
 ---
 
-*Structure analysis: 2026-01-06*
+*Structure analysis: 2026-01-08 (v1.1 complete)*
 *Update when directory structure changes*

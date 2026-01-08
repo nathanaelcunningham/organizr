@@ -102,6 +102,21 @@ Blank line between groups, alphabetical within groups
 - Frontend: Catch at API boundary, display via notification store
 - Logging: Backend uses standard log package, frontend uses console in dev mode
 
+## Testing Conventions
+
+**Backend (Go):**
+- **Table-driven tests with subtests** - Test multiple cases efficiently using `t.Run()`
+- **Interface mocking for dependencies** - Repository and client interfaces enable mock implementations
+- **Race detection required** - All concurrent code must pass `go test -race`
+- **Test naming:** `Test<FunctionName>` (e.g., `TestDownloadService_CreateDownload`)
+- **File location:** `*_test.go` alongside source files
+
+**Frontend (TypeScript):**
+- **Vitest with jsdom** - DOM testing environment for React components
+- **Test stores and utilities** - Focus on logic, avoid implementation details
+- **Test naming:** `describe/it` blocks (e.g., `describe('formatFileSize', () => { it('formats bytes correctly', ...) })`)
+- **File location:** `*.test.ts` files or `test/` directory
+
 ## Logging
 
 **Backend:**
@@ -144,6 +159,32 @@ Blank line between groups, alphabetical within groups
 **TODO Comments:**
 - None detected in codebase
 
+## Commit Message Format
+
+**Convention:** Conventional Commits with phase-plan scoping
+
+**Format:** `type(scope): description`
+
+**Types:**
+- `feat` - New feature, endpoint, component
+- `fix` - Bug fix, error correction
+- `test` - Test-only changes
+- `refactor` - Code cleanup, no behavior change
+- `docs` - Documentation changes
+- `chore` - Config, tooling, dependencies
+
+**Scope:** Phase-plan format for milestone work (e.g., `09-02`, `10-01`) or general scope for standalone changes
+
+**Examples from recent commits:**
+```bash
+feat(09-02): add series_number template variable
+fix(07.1-01): extract series name only for downloads
+test(08-01): add batch handler integration tests
+docs(10-01): create Architecture Decision Record
+refactor(06-01): extract organization logic to service
+chore: update frontend dependencies
+```
+
 ## Function Design
 
 **Size:**
@@ -184,5 +225,5 @@ Blank line between groups, alphabetical within groups
 
 ---
 
-*Convention analysis: 2026-01-06*
+*Convention analysis: 2026-01-08 (v1.1 complete)*
 *Update when patterns change*

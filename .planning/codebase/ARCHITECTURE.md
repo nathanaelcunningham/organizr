@@ -206,10 +206,21 @@
 - Frontend: Environment variables via Vite (`frontend/src/utils/env.ts`)
 - No centralized config management
 
+**Testing Strategy:**
+- **Interface-based testing with mock dependencies:** Repository and client interfaces enable mock implementations for fast, isolated tests
+- **Comprehensive handler tests:** All HTTP handlers tested with success, validation, and error scenarios for API contract verification
+- **Race detection requirement:** All concurrent code must pass `go test -race` - zero race conditions achieved in v1.0-v1.1
+- **Table-driven tests:** Multiple test cases verified efficiently using subtests
+
+**Commit and Version Control:**
+- **Atomic commits per task:** Each task produces one commit (feat/fix/test/refactor), enabling precise git bisect and revert
+- **Conventional commit format:** `type(scope): description` with phase-plan scoping (e.g., `feat(09-02): add series_number`)
+- **Git history provides granular observability:** Each commit represents atomic unit of work, making AI-assisted future work more effective
+
 **Authentication:**
 - None implemented (security gap)
 
 ---
 
-*Architecture analysis: 2026-01-06*
+*Architecture analysis: 2026-01-08 (v1.1 complete)*
 *Update when major patterns change*
