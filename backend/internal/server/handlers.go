@@ -27,13 +27,13 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleCreateDownload(w http.ResponseWriter, r *http.Request) {
 	var req CreateDownloadRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid request body", err)
+		respondWithBadRequest(w, "invalid request body", err)
 		return
 	}
 
 	// Validate request
 	if err := validateDownloadRequest(req); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Validation failed", err)
+		respondWithBadRequest(w, "validation failed", err)
 		return
 	}
 
@@ -42,13 +42,13 @@ func (s *Server) handleCreateDownload(w http.ResponseWriter, r *http.Request) {
 	if req.TorrentID != "" {
 		torrentID, err := strconv.Atoi(req.TorrentID)
 		if err != nil {
-			respondWithError(w, http.StatusBadRequest, "Invalid torrent ID", err)
+			respondWithValidationError(w, "torrent ID", err)
 			return
 		}
 
 		torrentBytes, err = s.searchService.DownloadTorrent(r.Context(), torrentID)
 		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, "Failed to download torrent", err)
+			respondWithInternalError(w, "download torrent", err)
 			return
 		}
 	}
@@ -67,7 +67,7 @@ func (s *Server) handleCreateDownload(w http.ResponseWriter, r *http.Request) {
 
 	created, err := s.downloadService.CreateDownload(r.Context(), download)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Failed to create download", err)
+		respondWithInternalError(w, "create download", err)
 		return
 	}
 
@@ -77,7 +77,7 @@ func (s *Server) handleCreateDownload(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleListDownloads(w http.ResponseWriter, r *http.Request) {
 	downloads, err := s.downloadService.ListDownloads(r.Context())
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Failed to list downloads", err)
+		respondWithInternalError(w, "list downloads", err)
 		return
 	}
 
@@ -87,18 +87,18 @@ func (s *Server) handleListDownloads(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleGetDownload(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		respondWithError(w, http.StatusBadRequest, "Download ID is required", nil)
+		respondWithValidationError(w, "download ID", nil)
 		return
 	}
 
 	if err := validateUUID(id); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid download ID", err)
+		respondWithValidationError(w, "download ID", err)
 		return
 	}
 
 	download, err := s.downloadService.GetDownload(r.Context(), id)
 	if err != nil {
-		respondWithError(w, http.StatusNotFound, "Download not found", err)
+		respondWithNotFound(w, "download", err)
 		return
 	}
 
@@ -108,17 +108,17 @@ func (s *Server) handleGetDownload(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleCancelDownload(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		respondWithError(w, http.StatusBadRequest, "Download ID is required", nil)
+		respondWithValidationError(w, "download ID", nil)
 		return
 	}
 
 	if err := validateUUID(id); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid download ID", err)
+		respondWithValidationError(w, "download ID", err)
 		return
 	}
 
 	if err := s.downloadService.CancelDownload(r.Context(), id); err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Failed to cancel download", err)
+		respondWithInternalError(w, "cancel download", err)
 		return
 	}
 
@@ -128,17 +128,17 @@ func (s *Server) handleCancelDownload(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleOrganize(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		respondWithError(w, http.StatusBadRequest, "Download ID is required", nil)
+		respondWithValidationError(w, "download ID", nil)
 		return
 	}
 
 	if err := validateUUID(id); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid download ID", err)
+		respondWithValidationError(w, "download ID", err)
 		return
 	}
 
 	if err := s.downloadService.OrganizeDownload(r.Context(), id); err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Failed to organize download", err)
+		respondWithInternalError(w, "organize download", err)
 		return
 	}
 
@@ -148,18 +148,18 @@ func (s *Server) handleOrganize(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleGetConfig(w http.ResponseWriter, r *http.Request) {
 	key := chi.URLParam(r, "key")
 	if key == "" {
-		respondWithError(w, http.StatusBadRequest, "Config key is required", nil)
+		respondWithValidationError(w, "config key", nil)
 		return
 	}
 
 	if err := validateConfigKey(key); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid config key", err)
+		respondWithValidationError(w, "config key", err)
 		return
 	}
 
 	value, err := s.configService.Get(r.Context(), key)
 	if err != nil {
-		respondWithError(w, http.StatusNotFound, "Config not found", err)
+		respondWithNotFound(w, "config", err)
 		return
 	}
 
@@ -169,7 +169,7 @@ func (s *Server) handleGetConfig(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleGetAllConfig(w http.ResponseWriter, r *http.Request) {
 	configs, err := s.configService.GetAll(r.Context())
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Failed to get configuration", err)
+		respondWithInternalError(w, "get configuration", err)
 		return
 	}
 
@@ -179,18 +179,18 @@ func (s *Server) handleGetAllConfig(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleUpdateConfig(w http.ResponseWriter, r *http.Request) {
 	key := chi.URLParam(r, "key")
 	if key == "" {
-		respondWithError(w, http.StatusBadRequest, "Config key is required", nil)
+		respondWithValidationError(w, "config key", nil)
 		return
 	}
 
 	if err := validateConfigKey(key); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid config key", err)
+		respondWithValidationError(w, "config key", err)
 		return
 	}
 
 	var req UpdateConfigRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid request body", err)
+		respondWithBadRequest(w, "invalid request body", err)
 		return
 	}
 
@@ -208,12 +208,12 @@ func (s *Server) handleUpdateConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if req.Value == "" && requiredKeys[key] {
-		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Config key '%s' cannot be empty", key), nil)
+		respondWithBadRequest(w, fmt.Sprintf("config key '%s' cannot be empty", key), nil)
 		return
 	}
 
 	if err := s.configService.Set(r.Context(), key, req.Value); err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Failed to update config", err)
+		respondWithInternalError(w, "update config", err)
 		return
 	}
 
@@ -223,18 +223,18 @@ func (s *Server) handleUpdateConfig(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
 	if query == "" {
-		respondWithError(w, http.StatusBadRequest, "Query parameter 'q' is required", nil)
+		respondWithValidationError(w, "query parameter 'q'", nil)
 		return
 	}
 
 	if len(query) < 2 {
-		respondWithError(w, http.StatusBadRequest, "Query must be at least 2 characters", nil)
+		respondWithValidationError(w, "query length", nil)
 		return
 	}
 
 	results, err := s.searchService.Search(r.Context(), query)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Search failed", err)
+		respondWithInternalError(w, "search", err)
 		return
 	}
 
@@ -315,7 +315,7 @@ func (s *Server) handleTestQBittorrentConnection(w http.ResponseWriter, r *http.
 func (s *Server) handlePreviewPath(w http.ResponseWriter, r *http.Request) {
 	var req PreviewPathRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid request body", err)
+		respondWithBadRequest(w, "invalid request body", err)
 		return
 	}
 
@@ -350,19 +350,19 @@ func (s *Server) handlePreviewPath(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleBatchCreateDownload(w http.ResponseWriter, r *http.Request) {
 	var req BatchCreateDownloadRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid request body", err)
+		respondWithBadRequest(w, "invalid request body", err)
 		return
 	}
 
 	// Validate batch is not empty
 	if len(req.Downloads) == 0 {
-		respondWithError(w, http.StatusBadRequest, "Downloads array cannot be empty", nil)
+		respondWithValidationError(w, "downloads array", nil)
 		return
 	}
 
 	// Validate batch size limit (50 items max to prevent abuse)
 	if len(req.Downloads) > 50 {
-		respondWithError(w, http.StatusBadRequest, "Batch size cannot exceed 50 downloads", nil)
+		respondWithBadRequest(w, "batch size exceeds 50 item limit", nil)
 		return
 	}
 
