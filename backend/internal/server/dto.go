@@ -11,6 +11,7 @@ type downloadDTO struct {
 	Title         string     `json:"title"`
 	Author        string     `json:"author"`
 	Series        string     `json:"series,omitempty"`
+	SeriesNumber  string     `json:"series_number,omitempty"`
 	Category      string     `json:"category,omitempty"`
 	Status        string     `json:"status"`
 	Progress      float64    `json:"progress"`
@@ -27,6 +28,7 @@ func toDTO(d *models.Download) downloadDTO {
 		Title:         d.Title,
 		Author:        d.Author,
 		Series:        d.Series,
+		SeriesNumber:  d.SeriesNumber,
 		Category:      d.Category,
 		Status:        string(d.Status),
 		Progress:      d.Progress,

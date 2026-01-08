@@ -1,13 +1,14 @@
 package server
 
 type CreateDownloadRequest struct {
-	Title      string `json:"title"`
-	Author     string `json:"author"`
-	Series     string `json:"series"`
-	TorrentID  string `json:"torrent_id,omitempty"`
-	TorrentURL string `json:"torrent_url,omitempty"`
-	MagnetLink string `json:"magnet_link,omitempty"`
-	Category   string `json:"category,omitempty"`
+	Title        string `json:"title"`
+	Author       string `json:"author"`
+	Series       string `json:"series"`
+	SeriesNumber string `json:"series_number,omitempty"`
+	TorrentID    string `json:"torrent_id,omitempty"`
+	TorrentURL   string `json:"torrent_url,omitempty"`
+	MagnetLink   string `json:"magnet_link,omitempty"`
+	Category     string `json:"category,omitempty"`
 }
 
 type UpdateConfigRequest struct {
