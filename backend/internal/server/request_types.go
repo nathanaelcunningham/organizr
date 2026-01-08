@@ -64,3 +64,18 @@ type PreviewPathResponse struct {
 	Path  string `json:"path,omitempty"`
 	Error string `json:"error,omitempty"`
 }
+
+type BatchCreateDownloadRequest struct {
+	Downloads []CreateDownloadRequest `json:"downloads"`
+}
+
+type BatchDownloadError struct {
+	Index   int                   `json:"index"`
+	Request CreateDownloadRequest `json:"request"`
+	Error   string                `json:"error"`
+}
+
+type BatchCreateDownloadResponse struct {
+	Successful []downloadDTO        `json:"successful"`
+	Failed     []BatchDownloadError `json:"failed"`
+}
