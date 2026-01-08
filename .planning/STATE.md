@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-07 after v1.0 milestone)
 
 Milestone: v1.1 Enhancements
 Phase: 8 of 9 (Batch Operations)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-01-08 - Completed 08-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-01-08 - Completed 08-02-PLAN.md
 
-Progress: ████░░░░░░ 26%
+Progress: ████░░░░░░ 28%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
-- Average duration: ~55 minutes
-- Total execution time: 11.4 hours
+- Total plans completed: 13
+- Average duration: ~53 minutes
+- Total execution time: 11.6 hours
 
 **By Phase:**
 
@@ -37,11 +37,11 @@ Progress: ████░░░░░░ 26%
 | 6 | 1 | 0.3h | 16m |
 | 7 | 2 | 0.4h | 11m |
 | 7.1 | 1 | 0.05h | 3m |
-| 8 | 1 | 0.05h | 3m |
+| 8 | 2 | 0.17h | 5m |
 
 **Recent Trend:**
-- Last 5 plans: 07-01 (5m), 07-02 (17m), 07.1-01 (3m), 08-01 (3m)
-- Trend: Backend-only plans very efficient, frontend work moderate
+- Last 5 plans: 07-02 (17m), 07.1-01 (3m), 08-01 (3m), 08-02 (7m)
+- Trend: Small focused plans very efficient (3-7 min each)
 
 ## Accumulated Context
 
@@ -73,6 +73,9 @@ Recent decisions affecting current work:
 - **Sequential batch processing**: Process batch downloads sequentially rather than concurrently to avoid overwhelming qBittorrent
 - **Batch size limit**: 50-item maximum for batch operations to prevent abuse and maintain system stability
 - **Partial success pattern**: Batch operations return 200 OK with separate successful/failed arrays for graceful partial failure handling
+- **Selection ID strategy**: Use `result.id || result.title` as unique identifier for multi-select to handle results without ID fields
+- **Notification granularity**: Three notification states (all success, partial, all failed) provide clear user feedback for batch operations
+- **Indeterminate checkbox state**: Series groups show indeterminate checkbox when some (but not all) books are selected
 
 ### Roadmap Evolution
 
@@ -95,7 +98,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-08 03:57
-Stopped at: Completed 08-01-PLAN.md
+Last session: 2026-01-08 04:09
+Stopped at: Completed 08-02-PLAN.md (Phase 8 complete)
 Resume file: None
-Next action: Execute 08-02-PLAN.md (Frontend multi-select and batch UI)
+Next action: Plan Phase 9 (Series Number Organization) — /gsd:plan-phase 9

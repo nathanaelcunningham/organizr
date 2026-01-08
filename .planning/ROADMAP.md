@@ -40,7 +40,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Frontend Integration** - Connect UI to backend for real-time download status
 - [x] **Phase 6: End-to-End Testing** - Verify complete workflow from search to organized files
 - [ ] **Phase 7: MAM Series Detection** - Parse and display series information from MAM search results
-- [ ] **Phase 8: Batch Operations** - Support adding multiple torrents at once
+- [x] **Phase 8: Batch Operations** - Support adding multiple torrents at once
 - [ ] **Phase 9: Series Number Organization** - Add series_number template variable for folder organization
 
 ## Phase Details
@@ -167,5 +167,5 @@ Plans:
 | 6. End-to-End Testing | v1.0 | 1/1 | Complete | 2026-01-07 |
 | 7. MAM Series Detection | v1.1 | 2/2 | Complete | 2026-01-07 |
 | 7.1 Fix Series Download Field (INSERTED) | v1.1 | 1/1 | Complete | 2026-01-08 |
-| 8. Batch Operations | v1.1 | 1/2 | In progress | - |
+| 8. Batch Operations | v1.1 | 2/2 | Complete | 2026-01-08 |
 | 9. Series Number Organization | v1.1 | 0/? | Not started | - |
