@@ -86,7 +86,7 @@ Each task was committed atomically:
 - `frontend/src/api/config.ts` - Added seriesNumber to PreviewPathRequest interface
 - `frontend/src/components/search/SearchResultListItem.tsx` - Extract series_number from first series, send in single downloads
 - `frontend/src/components/search/SearchResults.tsx` - Extract series_number from first series, send in batch downloads
-- `frontend/src/components/config/ConfigForm.tsx` - Include seriesNumber: '1' in preview API calls
+- `frontend/src/components/config/ConfigForm.tsx` - Include seriesNumber: '1' in preview API calls, add {series_number} to help text
 
 ## Decisions Made
 
@@ -96,7 +96,21 @@ Each task was committed atomically:
 
 ## Deviations from Plan
 
-None - plan executed exactly as written.
+### Auto-fixed Issues
+
+**1. [Rule 2 - Missing Critical] Added {series_number} to template help text**
+
+- **Found during:** User testing after Task 3 completion
+- **Issue:** ConfigForm help text listed available template variables as "{author}, {series}, {title}" but didn't include {series_number}. Users had no way to discover the new variable existed.
+- **Fix:** Updated help text to "{author}, {series}, {series_number}, {title}"
+- **Files modified:** frontend/src/components/config/ConfigForm.tsx
+- **Verification:** Help text now documents all available variables
+- **Commit:** be60c50
+
+---
+
+**Total deviations:** 1 auto-fixed (1 missing critical), 0 deferred
+**Impact on plan:** Critical for usability - feature unusable if users don't know the variable exists. No scope creep.
 
 ## Issues Encountered
 
