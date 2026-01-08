@@ -40,10 +40,11 @@ See [milestones/v1.0-MVP.md](milestones/v1.0-MVP.md) for full details.
 **Goal**: Audit current structure, identify patterns, document architectural decisions, create contribution guidelines
 **Depends on**: Previous milestone complete (v1.1)
 **Research**: Unlikely (internal code review and documentation)
-**Plans**: TBD
+**Plans**: 1 complete
+**Status**: ✅ Complete (2026-01-08)
 
 Plans:
-- [ ] 10-01: TBD (run /gsd:plan-phase 10 to break down)
+- [x] 10-01: Architecture Decision Record, contribution guidelines, codebase documentation updates
 
 #### Phase 11: API Layer Cleanup
 **Goal**: Standardize error handling, improve request/response patterns, add OpenAPI/Swagger documentation
@@ -110,7 +111,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 7.1: Fix Series Download Field (INSERTED)** - Fix download requests to send series name only
 - [x] **Phase 8: Batch Operations** - Support adding multiple torrents at once
 - [x] **Phase 9: Series Number Organization** - Add series_number template variable for folder organization
-- [ ] **Phase 10: Code Organization & Architecture Review** - Audit structure, document decisions, create contribution guidelines
+- [x] **Phase 10: Code Organization & Architecture Review** - Audit structure, document decisions, create contribution guidelines
 - [ ] **Phase 11: API Layer Cleanup** - Standardize error handling, add OpenAPI/Swagger documentation
 - [ ] **Phase 12: Testing Infrastructure** - Integration test helpers, coverage reporting, test fixtures
 - [ ] **Phase 13: Developer Documentation** - Comprehensive README, architecture diagrams, setup guides
@@ -245,7 +246,7 @@ Plans:
 | 7.1 Fix Series Download Field (INSERTED) | v1.1 | 1/1 | ✅ Shipped | 2026-01-08 |
 | 8. Batch Operations | v1.1 | 2/2 | ✅ Shipped | 2026-01-08 |
 | 9. Series Number Organization | v1.1 | 3/3 | ✅ Shipped | 2026-01-08 |
-| 10. Code Organization & Architecture Review | v1.2 | 0/? | Not started | - |
+| 10. Code Organization & Architecture Review | v1.2 | 1/1 | ✅ Complete | 2026-01-08 |
 | 11. API Layer Cleanup | v1.2 | 0/? | Not started | - |
 | 12. Testing Infrastructure | v1.2 | 0/? | Not started | - |
 | 13. Developer Documentation | v1.2 | 0/? | Not started | - |
