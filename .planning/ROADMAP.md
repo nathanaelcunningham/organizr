@@ -149,11 +149,12 @@ Plans:
 **Goal**: Add {series_number} template variable for folder organization
 **Depends on**: Phase 8
 **Research**: Skipped (extending existing template system)
-**Plans**: 2 plans
+**Plans**: 3 plans
 
 Plans:
 - [x] 09-01: Backend data model - add SeriesNumber field to Download
-- [ ] 09-02: Template and organization - support {series_number} variable
+- [x] 09-02: Template and organization - support {series_number} variable
+- [ ] 09-03: Frontend integration - series_number input and display
 
 ## Progress
 
@@ -169,4 +170,4 @@ Plans:
 | 7. MAM Series Detection | v1.1 | 2/2 | Complete | 2026-01-07 |
 | 7.1 Fix Series Download Field (INSERTED) | v1.1 | 1/1 | Complete | 2026-01-08 |
 | 8. Batch Operations | v1.1 | 2/2 | Complete | 2026-01-08 |
-| 9. Series Number Organization | v1.1 | 1/2 | In progress | - |
+| 9. Series Number Organization | v1.1 | 2/3 | In progress | - |
