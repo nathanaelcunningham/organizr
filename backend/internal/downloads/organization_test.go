@@ -373,6 +373,85 @@ func TestOrganize(t *testing.T) {
 			wantErr:        true,
 			wantErrContain: "source file does not exist",
 		},
+		{
+			name: "template with series_number",
+			download: &models.Download{
+				ID:           "test-9",
+				Title:        "Book One",
+				Author:       "Test Author",
+				Series:       "Test Series",
+				SeriesNumber: "1",
+				QBitHash:     "series123",
+			},
+			configs: map[string]string{
+				"paths.destination":        "",
+				"paths.template":           "{author}/{series}/{series_number} - {title}",
+				"paths.no_series_template": "{author}/{title}",
+				"paths.operation":          "copy",
+			},
+			sourceFiles: map[string]string{
+				"Book One.m4b": "series content",
+			},
+			qbFiles: []*qbittorrent.TorrentFile{
+				{
+					Name: "Book One.m4b",
+					Path: "",
+					Size: 1024,
+				},
+			},
+			wantErr: false,
+			verifyFn: func(t *testing.T, destBase string, dl *models.Download) {
+				expectedPath := filepath.Join(destBase, "Test Author", "Test Series", "1 - Book One")
+				if dl.OrganizedPath != expectedPath {
+					t.Errorf("OrganizedPath = %v, want %v", dl.OrganizedPath, expectedPath)
+				}
+
+				destFile := filepath.Join(expectedPath, "Book One.m4b")
+				if _, err := os.Stat(destFile); os.IsNotExist(err) {
+					t.Errorf("destination file does not exist: %s", destFile)
+				}
+			},
+		},
+		{
+			name: "template with empty series_number",
+			download: &models.Download{
+				ID:           "test-10",
+				Title:        "Unnumbered Book",
+				Author:       "Test Author",
+				Series:       "Test Series",
+				SeriesNumber: "", // Empty series number
+				QBitHash:     "empty123",
+			},
+			configs: map[string]string{
+				"paths.destination":        "",
+				"paths.template":           "{author}/{series}/{series_number} - {title}",
+				"paths.no_series_template": "{author}/{title}",
+				"paths.operation":          "copy",
+			},
+			sourceFiles: map[string]string{
+				"Unnumbered Book.m4b": "unnumbered content",
+			},
+			qbFiles: []*qbittorrent.TorrentFile{
+				{
+					Name: "Unnumbered Book.m4b",
+					Path: "",
+					Size: 1024,
+				},
+			},
+			wantErr: false,
+			verifyFn: func(t *testing.T, destBase string, dl *models.Download) {
+				// Empty series_number replaced with empty string, leading to " - Title"
+				expectedPath := filepath.Join(destBase, "Test Author", "Test Series", " - Unnumbered Book")
+				if dl.OrganizedPath != expectedPath {
+					t.Errorf("OrganizedPath = %v, want %v", dl.OrganizedPath, expectedPath)
+				}
+
+				destFile := filepath.Join(expectedPath, "Unnumbered Book.m4b")
+				if _, err := os.Stat(destFile); os.IsNotExist(err) {
+					t.Errorf("destination file does not exist: %s", destFile)
+				}
+			},
+		},
 	}
 
 	for _, tt := range tests {

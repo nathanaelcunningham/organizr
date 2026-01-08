@@ -72,9 +72,10 @@ func (o *OrganizationService) Organize(ctx context.Context, dl *models.Download)
 
 	// Sanitize variables BEFORE template parsing (preserves directory structure)
 	sanitizedVars := map[string]string{
-		"author": fileutil.SanitizePath(dl.Author),
-		"series": fileutil.SanitizePath(dl.Series),
-		"title":  fileutil.SanitizePath(dl.Title),
+		"author":        fileutil.SanitizePath(dl.Author),
+		"series":        fileutil.SanitizePath(dl.Series),
+		"series_number": fileutil.SanitizePath(dl.SeriesNumber),
+		"title":         fileutil.SanitizePath(dl.Title),
 	}
 
 	// Parse template with sanitized variables
