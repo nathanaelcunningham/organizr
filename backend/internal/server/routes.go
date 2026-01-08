@@ -1,8 +1,16 @@
 package server
 
-import "github.com/go-chi/chi/v5"
+import (
+	"github.com/go-chi/chi/v5"
+	httpSwagger "github.com/swaggo/http-swagger"
+)
 
 func (s *Server) registerRoutes() {
+	// Swagger documentation
+	s.router.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("/swagger/doc.json"),
+	))
+
 	s.router.Route("/api", func(r chi.Router) {
 		r.Get("/health", s.handleHealth)
 

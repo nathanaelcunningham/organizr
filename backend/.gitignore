@@ -32,3 +32,8 @@ tmp/
 organizr
 organizr.db-shm
 organizr.db-wal
+
+# Generated Swagger docs (regenerated from source annotations)
+docs/docs.go
+docs/swagger.json
+docs/swagger.yaml
