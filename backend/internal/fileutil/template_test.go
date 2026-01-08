@@ -90,6 +90,24 @@ func TestValidateTemplate(t *testing.T) {
 			allowed:   allowedVars,
 			wantError: false,
 		},
+		{
+			name:      "Valid template with series_number",
+			template:  "{author}/{series}/{series_number} - {title}",
+			allowed:   []string{"author", "series", "series_number", "title"},
+			wantError: false,
+		},
+		{
+			name:      "Invalid template with series_number but not in allowed",
+			template:  "{author}/{invalid}/{series_number}",
+			allowed:   allowedVars,
+			wantError: true,
+		},
+		{
+			name:      "Template with only series_number",
+			template:  "{series_number}",
+			allowed:   []string{"series_number"},
+			wantError: false,
+		},
 	}
 
 	for _, tt := range tests {
