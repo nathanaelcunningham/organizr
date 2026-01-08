@@ -3,9 +3,20 @@
 ## Milestones
 
 - ✅ [v1.0 MVP](milestones/v1.0-MVP.md) — Phases 1-6 (plus 1.1 inserted) — SHIPPED 2026-01-07
-- 🚧 **v1.1 Enhancements** — Phases 7-9 (in progress)
+- ✅ [v1.1 Enhancements](milestones/v1.1-Enhancements.md) — Phases 7-9 (plus 7.1 inserted) — SHIPPED 2026-01-08
 
 ## Completed Milestones
+
+<details>
+<summary>✅ v1.1 Enhancements (Phases 7-9) — SHIPPED 2026-01-08</summary>
+
+Enhanced search and download experience with MAM series detection, batch operations for multiple downloads, and series number organization templates.
+
+**Stats:** 7 plans, 46 files, +3,636/-264 lines, 2 days
+
+See [milestones/v1.1-Enhancements.md](milestones/v1.1-Enhancements.md) for full details.
+
+</details>
 
 <details>
 <summary>✅ v1.0 MVP (Phases 1-6) — SHIPPED 2026-01-07</summary>
@@ -20,9 +31,7 @@ See [milestones/v1.0-MVP.md](milestones/v1.0-MVP.md) for full details.
 
 ## Current Milestone
 
-### 🚧 v1.1 Enhancements (In Progress)
-
-**Milestone Goal:** Polish and enhance v1.0 with MAM series support, batch operations, and series number organization
+(None - ready to plan next milestone)
 
 ## Phases
 
@@ -167,7 +176,7 @@ Plans:
 | 4. File Organization Engine | v1.0 | 1/1 | Complete | 2026-01-07 |
 | 5. Frontend Integration | v1.0 | 1/1 | Complete | 2026-01-07 |
 | 6. End-to-End Testing | v1.0 | 1/1 | Complete | 2026-01-07 |
-| 7. MAM Series Detection | v1.1 | 2/2 | Complete | 2026-01-07 |
-| 7.1 Fix Series Download Field (INSERTED) | v1.1 | 1/1 | Complete | 2026-01-08 |
-| 8. Batch Operations | v1.1 | 2/2 | Complete | 2026-01-08 |
-| 9. Series Number Organization | v1.1 | 3/3 | Complete | 2026-01-08 |
+| 7. MAM Series Detection | v1.1 | 2/2 | ✅ Shipped | 2026-01-07 |
+| 7.1 Fix Series Download Field (INSERTED) | v1.1 | 1/1 | ✅ Shipped | 2026-01-08 |
+| 8. Batch Operations | v1.1 | 2/2 | ✅ Shipped | 2026-01-08 |
+| 9. Series Number Organization | v1.1 | 3/3 | ✅ Shipped | 2026-01-08 |

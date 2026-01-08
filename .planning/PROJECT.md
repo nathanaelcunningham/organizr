@@ -22,10 +22,13 @@ Perfect folder structures and file placement every time - audiobooks land exactl
 - ✓ Configurable folder structure - support Author/Series/Book organization (and other patterns) — v1.0
 - ✓ Auto-organization on completion - create folders and copy files to final destination — v1.0
 - ✓ Real-time UI updates - frontend reflects current download status — v1.0
+- ✓ MAM series detection - parse and display series information from search results — v1.1
+- ✓ Batch download operations - add multiple torrents simultaneously — v1.1
+- ✓ Series number organization - support {series_number} in folder templates — v1.1
 
 ### Active
 
-(None - v1.0 MVP shipped)
+(None - ready to plan next milestone)
 
 ### Out of Scope
 
@@ -36,12 +39,12 @@ Perfect folder structures and file placement every time - audiobooks land exactl
 
 ## Context
 
-**Current State (v1.0 shipped 2026-01-07):**
-- **Codebase**: 8,968 LOC (5,060 Go backend + 3,908 TypeScript frontend)
+**Current State (v1.1 shipped 2026-01-08):**
+- **Codebase**: ~9,500 LOC (Go backend + TypeScript frontend)
 - **Tech Stack**: Go (Chi router, SQLite with WAL), React (TypeScript, Vite, Zustand), qBittorrent Web API
-- **Features**: Full qBittorrent integration with MAM authenticated downloads, background monitoring with 3-second polling, configurable folder templates with real-time preview, auto-organization on completion, comprehensive test coverage
-- **Testing**: 22 frontend tests (Vitest), comprehensive backend tests (handlers, monitor, organization), zero race conditions, manual E2E documentation with 7 scenarios
-- **Status**: Production-ready, ready for deployment and real-world usage
+- **Features**: Full qBittorrent integration, background monitoring, configurable folder templates with {series_number} support, auto-organization, MAM series detection with grouped display, batch downloads with multi-select UI
+- **Testing**: Comprehensive backend tests (handlers, monitor, organization, batch), frontend tests (Vitest), zero race conditions
+- **Status**: Production-ready with enhanced series support and batch operations
 
 **Established Patterns:**
 - Repository pattern for data access
@@ -51,6 +54,9 @@ Perfect folder structures and file placement every time - audiobooks land exactl
 - Template validation with real-time preview
 - All-or-nothing copy operations with automatic cleanup
 - Comprehensive error handling with user-friendly messages
+- Structured data models over string concatenation (SeriesInfo with ID, Name, Number)
+- Partial success patterns for batch operations
+- Client-side grouping and sorting for search results
 
 ## Constraints
 
@@ -72,6 +78,11 @@ Perfect folder structures and file placement every time - audiobooks land exactl
 | Context timeout for organization | 5-minute timeout for large file operations | ✓ Good - Prevents indefinite hanging during shutdown |
 | Interface-based testing | Refactored OrganizationService for dependency injection | ✓ Good - Enables comprehensive mocking and test coverage |
 | Race detection requirement | All concurrency code must pass go test -race | ✓ Good - Catches data races early, zero races in v1.0 |
+| Structured series data | SeriesInfo[] with ID, Name, Number instead of concatenated string | ✓ Good - Enables sorting, grouping, and better data fidelity |
+| Sequential batch processing | Process batch downloads sequentially rather than concurrently | ✓ Good - Prevents overwhelming qBittorrent, more predictable behavior |
+| Partial success pattern | Batch operations return 200 OK with separate success/failed arrays | ✓ Good - Graceful partial failure handling, clear user feedback |
+| First series as primary | Books in multiple series use first for organization | ✓ Good - Simple rule, typically the main series is listed first |
+| Empty series_number handling | Replace with empty string in templates | ✓ Good - Preserves user's template structure, simple and predictable |
 
 ---
-*Last updated: 2026-01-07 after v1.0 milestone*
+*Last updated: 2026-01-08 after v1.1 milestone*
