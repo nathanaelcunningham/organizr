@@ -58,7 +58,7 @@ function PathPreview({ template, hasSeries }: { template: string; hasSeries: boo
                     template,
                     author: 'Example Author',
                     series: hasSeries ? 'Example Series' : undefined,
-                    seriesNumber: hasSeries ? '1' : undefined,
+                    series_number: hasSeries ? '1' : undefined,
                     title: 'Example Book Title',
                 });
                 setPreview(result);

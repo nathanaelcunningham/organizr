@@ -5,7 +5,7 @@ export interface PreviewPathRequest {
     template: string;
     author: string;
     series?: string;
-    seriesNumber?: string;
+    series_number?: string;
     title: string;
 }
 
