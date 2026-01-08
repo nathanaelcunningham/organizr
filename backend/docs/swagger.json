@@ -1,0 +1,17 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "API for automating audiobook torrent downloads and organization with qBittorrent integration",
+        "title": "Organizr API",
+        "contact": {
+            "name": "Organizr"
+        },
+        "version": "1.2.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api",
+    "paths": {}
+}

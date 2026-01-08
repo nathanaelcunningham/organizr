@@ -16,7 +16,17 @@ import (
 	"github.com/nathanael/organizr/internal/qbittorrent"
 	"github.com/nathanael/organizr/internal/search"
 	"github.com/nathanael/organizr/internal/server"
+
+	_ "github.com/nathanael/organizr/docs" // Required for swag
 )
+
+// @title Organizr API
+// @version 1.2.0
+// @description API for automating audiobook torrent downloads and organization with qBittorrent integration
+// @contact.name Organizr
+// @host localhost:8080
+// @BasePath /api
+// @schemes http
 
 func main() {
 	if err := run(); err != nil {

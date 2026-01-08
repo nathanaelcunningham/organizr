@@ -1,0 +1,13 @@
+basePath: /api
+host: localhost:8080
+info:
+  contact:
+    name: Organizr
+  description: API for automating audiobook torrent downloads and organization with
+    qBittorrent integration
+  title: Organizr API
+  version: 1.2.0
+paths: {}
+schemes:
+- http
+swagger: "2.0"
