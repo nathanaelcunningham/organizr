@@ -301,7 +301,7 @@ export function ConfigForm() {
                         type="text"
                         {...register('pathsTemplate')}
                         required
-                        help="Template for organizing files with series. Variables: {author}, {series}, {title}"
+                        help="Template for organizing files with series. Variables: {author}, {series}, {series_number}, {title}"
                     />
                     <PathPreview template={pathsTemplate || ''} hasSeries={true} />
                 </div>
