@@ -50,10 +50,13 @@ Plans:
 **Goal**: Standardize error handling, improve request/response patterns, add OpenAPI/Swagger documentation
 **Depends on**: Phase 10
 **Research**: Unlikely (established patterns, standard API documentation tools)
-**Plans**: 1+ (in progress)
+**Plans**: 3 complete
+**Status**: ✅ Complete (2026-01-08)
 
 Plans:
 - [x] 11-01: Error handling standardization with typed helpers
+- [x] 11-02: OpenAPI/Swagger documentation
+- [x] 11-03: Response pattern standardization
 
 #### Phase 12: Testing Infrastructure
 **Goal**: Add integration test helpers, improve test coverage reporting, create test data fixtures, document testing patterns
@@ -247,7 +250,7 @@ Plans:
 | 8. Batch Operations | v1.1 | 2/2 | ✅ Shipped | 2026-01-08 |
 | 9. Series Number Organization | v1.1 | 3/3 | ✅ Shipped | 2026-01-08 |
 | 10. Code Organization & Architecture Review | v1.2 | 1/1 | ✅ Complete | 2026-01-08 |
-| 11. API Layer Cleanup | v1.2 | 1/? | In progress | - |
+| 11. API Layer Cleanup | v1.2 | 3/3 | ✅ Complete | 2026-01-08 |
 | 12. Testing Infrastructure | v1.2 | 0/? | Not started | - |
 | 13. Developer Documentation | v1.2 | 0/? | Not started | - |
 | 14. Code Quality Tools | v1.2 | 0/? | Not started | - |
