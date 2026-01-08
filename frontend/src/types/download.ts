@@ -11,6 +11,7 @@ export interface Download {
     title: string;
     author: string;
     series?: string;
+    seriesNumber?: string;
     status: DownloadStatus;
     progress: number; // 0-100
     organized_path?: string;
@@ -24,6 +25,7 @@ export interface CreateDownloadRequest {
     title: string;
     author: string;
     series?: string;
+    seriesNumber?: string;
     category: string;
     torrent_url?: string;
     magnet_link?: string;
