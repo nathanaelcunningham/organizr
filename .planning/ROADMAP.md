@@ -4,6 +4,7 @@
 
 - ✅ [v1.0 MVP](milestones/v1.0-MVP.md) — Phases 1-6 (plus 1.1 inserted) — SHIPPED 2026-01-07
 - ✅ [v1.1 Enhancements](milestones/v1.1-Enhancements.md) — Phases 7-9 (plus 7.1 inserted) — SHIPPED 2026-01-08
+- 🚧 **v1.2 Developer Experience** — Phases 10-15 — IN PROGRESS
 
 ## Completed Milestones
 
@@ -31,7 +32,64 @@ See [milestones/v1.0-MVP.md](milestones/v1.0-MVP.md) for full details.
 
 ## Current Milestone
 
-(None - ready to plan next milestone)
+### 🚧 v1.2 Developer Experience (In Progress)
+
+**Milestone Goal:** Improve code organization, documentation, testing infrastructure, and developer workflows to make the codebase more maintainable and contributor-friendly.
+
+#### Phase 10: Code Organization & Architecture Review
+**Goal**: Audit current structure, identify patterns, document architectural decisions, create contribution guidelines
+**Depends on**: Previous milestone complete (v1.1)
+**Research**: Unlikely (internal code review and documentation)
+**Plans**: TBD
+
+Plans:
+- [ ] 10-01: TBD (run /gsd:plan-phase 10 to break down)
+
+#### Phase 11: API Layer Cleanup
+**Goal**: Standardize error handling, improve request/response patterns, add OpenAPI/Swagger documentation
+**Depends on**: Phase 10
+**Research**: Unlikely (established patterns, standard API documentation tools)
+**Plans**: TBD
+
+Plans:
+- [ ] 11-01: TBD
+
+#### Phase 12: Testing Infrastructure
+**Goal**: Add integration test helpers, improve test coverage reporting, create test data fixtures, document testing patterns
+**Depends on**: Phase 11
+**Research**: Unlikely (extending existing test patterns)
+**Plans**: TBD
+
+Plans:
+- [ ] 12-01: TBD
+
+#### Phase 13: Developer Documentation
+**Goal**: Comprehensive README, architecture diagrams, API documentation, setup guides, troubleshooting docs
+**Depends on**: Phase 12
+**Research**: Unlikely (documentation of existing systems)
+**Plans**: TBD
+
+Plans:
+- [ ] 13-01: TBD
+
+#### Phase 14: Code Quality Tools
+**Goal**: Add linting (golangci-lint, ESLint configs), pre-commit hooks, CI pipeline improvements, code formatting standards
+**Depends on**: Phase 13
+**Research**: Likely (tool selection and configuration best practices)
+**Research topics**: golangci-lint configuration, ESLint + Prettier setup for TypeScript, pre-commit hooks, GitHub Actions workflows
+**Plans**: TBD
+
+Plans:
+- [ ] 14-01: TBD
+
+#### Phase 15: Refactoring Opportunities
+**Goal**: Address technical debt, improve naming consistency, extract reusable utilities, optimize hot paths
+**Depends on**: Phase 14
+**Research**: Unlikely (internal refactoring based on established patterns)
+**Plans**: TBD
+
+Plans:
+- [ ] 15-01: TBD
 
 ## Phases
 
@@ -48,9 +106,16 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: File Organization Engine** - Create folder structures and copy files on completion
 - [x] **Phase 5: Frontend Integration** - Connect UI to backend for real-time download status
 - [x] **Phase 6: End-to-End Testing** - Verify complete workflow from search to organized files
-- [ ] **Phase 7: MAM Series Detection** - Parse and display series information from MAM search results
+- [x] **Phase 7: MAM Series Detection** - Parse and display series information from MAM search results
+- [x] **Phase 7.1: Fix Series Download Field (INSERTED)** - Fix download requests to send series name only
 - [x] **Phase 8: Batch Operations** - Support adding multiple torrents at once
-- [ ] **Phase 9: Series Number Organization** - Add series_number template variable for folder organization
+- [x] **Phase 9: Series Number Organization** - Add series_number template variable for folder organization
+- [ ] **Phase 10: Code Organization & Architecture Review** - Audit structure, document decisions, create contribution guidelines
+- [ ] **Phase 11: API Layer Cleanup** - Standardize error handling, add OpenAPI/Swagger documentation
+- [ ] **Phase 12: Testing Infrastructure** - Integration test helpers, coverage reporting, test fixtures
+- [ ] **Phase 13: Developer Documentation** - Comprehensive README, architecture diagrams, setup guides
+- [ ] **Phase 14: Code Quality Tools** - Linting, pre-commit hooks, CI improvements, formatting standards
+- [ ] **Phase 15: Refactoring Opportunities** - Address technical debt, improve consistency, optimize hot paths
 
 ## Phase Details
 
@@ -180,3 +245,9 @@ Plans:
 | 7.1 Fix Series Download Field (INSERTED) | v1.1 | 1/1 | ✅ Shipped | 2026-01-08 |
 | 8. Batch Operations | v1.1 | 2/2 | ✅ Shipped | 2026-01-08 |
 | 9. Series Number Organization | v1.1 | 3/3 | ✅ Shipped | 2026-01-08 |
+| 10. Code Organization & Architecture Review | v1.2 | 0/? | Not started | - |
+| 11. API Layer Cleanup | v1.2 | 0/? | Not started | - |
+| 12. Testing Infrastructure | v1.2 | 0/? | Not started | - |
+| 13. Developer Documentation | v1.2 | 0/? | Not started | - |
+| 14. Code Quality Tools | v1.2 | 0/? | Not started | - |
+| 15. Refactoring Opportunities | v1.2 | 0/? | Not started | - |
