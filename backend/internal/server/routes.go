@@ -8,6 +8,7 @@ func (s *Server) registerRoutes() {
 
 		r.Route("/downloads", func(r chi.Router) {
 			r.Post("/", s.handleCreateDownload)
+			r.Post("/batch", s.handleBatchCreateDownload)
 			r.Get("/", s.handleListDownloads)
 			r.Get("/{id}", s.handleGetDownload)
 			r.Delete("/{id}", s.handleCancelDownload)

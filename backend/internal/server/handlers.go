@@ -344,3 +344,95 @@ func (s *Server) handlePreviewPath(w http.ResponseWriter, r *http.Request) {
 		Path:  path,
 	})
 }
+
+func (s *Server) handleBatchCreateDownload(w http.ResponseWriter, r *http.Request) {
+	var req BatchCreateDownloadRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request body", err)
+		return
+	}
+
+	// Validate batch is not empty
+	if len(req.Downloads) == 0 {
+		respondWithError(w, http.StatusBadRequest, "Downloads array cannot be empty", nil)
+		return
+	}
+
+	// Validate batch size limit (50 items max to prevent abuse)
+	if len(req.Downloads) > 50 {
+		respondWithError(w, http.StatusBadRequest, "Batch size cannot exceed 50 downloads", nil)
+		return
+	}
+
+	var successful []downloadDTO
+	var failed []BatchDownloadError
+
+	// Process downloads sequentially
+	for i, downloadReq := range req.Downloads {
+		// Validate request
+		if err := validateDownloadRequest(downloadReq); err != nil {
+			failed = append(failed, BatchDownloadError{
+				Index:   i,
+				Request: downloadReq,
+				Error:   fmt.Sprintf("Validation failed: %v", err),
+			})
+			continue
+		}
+
+		// Download torrent file if torrent ID is provided
+		var torrentBytes []byte
+		if downloadReq.TorrentID != "" {
+			torrentID, err := strconv.Atoi(downloadReq.TorrentID)
+			if err != nil {
+				failed = append(failed, BatchDownloadError{
+					Index:   i,
+					Request: downloadReq,
+					Error:   fmt.Sprintf("Invalid torrent ID: %v", err),
+				})
+				continue
+			}
+
+			torrentBytes, err = s.searchService.DownloadTorrent(r.Context(), torrentID)
+			if err != nil {
+				failed = append(failed, BatchDownloadError{
+					Index:   i,
+					Request: downloadReq,
+					Error:   fmt.Sprintf("Failed to download torrent: %v", err),
+				})
+				continue
+			}
+		}
+
+		download := &models.Download{
+			Title:        downloadReq.Title,
+			Author:       downloadReq.Author,
+			Series:       downloadReq.Series,
+			TorrentURL:   downloadReq.TorrentURL,
+			MagnetLink:   downloadReq.MagnetLink,
+			TorrentBytes: torrentBytes,
+			Category:     downloadReq.Category,
+			CreatedAt:    time.Now(),
+		}
+
+		created, err := s.downloadService.CreateDownload(r.Context(), download)
+		if err != nil {
+			failed = append(failed, BatchDownloadError{
+				Index:   i,
+				Request: downloadReq,
+				Error:   fmt.Sprintf("Failed to create download: %v", err),
+			})
+			continue
+		}
+
+		successful = append(successful, toDTO(created))
+	}
+
+	// Log batch results
+	fmt.Printf("Batch download processed: %d successful, %d failed (total: %d)\n",
+		len(successful), len(failed), len(req.Downloads))
+
+	respondWithJSON(w, http.StatusOK, BatchCreateDownloadResponse{
+		Successful: successful,
+		Failed:     failed,
+	})
+}
