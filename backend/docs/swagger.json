@@ -13,5 +13,792 @@
     },
     "host": "localhost:8080",
     "basePath": "/api",
-    "paths": {}
+    "paths": {
+        "/config": {
+            "get": {
+                "description": "Get all configuration key-value pairs",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "Get all configuration values",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/server.GetAllConfigResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/config/preview-path": {
+            "post": {
+                "description": "Preview the result of applying a path template with given audiobook metadata",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "Preview path template",
+                "parameters": [
+                    {
+                        "description": "Path preview request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server.PreviewPathRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/server.PreviewPathResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/config/{key}": {
+            "get": {
+                "description": "Get the value of a specific configuration key",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "Get a configuration value",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Configuration key",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/server.GetConfigResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid config key",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Config key not found",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the value of a specific configuration key",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "Update a configuration value",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Configuration key",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New configuration value",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server.UpdateConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Configuration updated successfully"
+                    },
+                    "400": {
+                        "description": "Invalid request body or validation failed",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/downloads": {
+            "get": {
+                "description": "Get a list of all downloads with their status and progress",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "downloads"
+                ],
+                "summary": "List all downloads",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/server.ListDownloadsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new audiobook download from torrent URL, magnet link, or torrent ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "downloads"
+                ],
+                "summary": "Create a new download",
+                "parameters": [
+                    {
+                        "description": "Download request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server.CreateDownloadRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/server.CreateDownloadResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body or validation failed",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/downloads/batch": {
+            "post": {
+                "description": "Create multiple audiobook downloads in a single request (max 50 items)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "downloads"
+                ],
+                "summary": "Create multiple downloads in batch",
+                "parameters": [
+                    {
+                        "description": "Batch download request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server.BatchCreateDownloadRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns successful and failed downloads",
+                        "schema": {
+                            "$ref": "#/definitions/server.BatchCreateDownloadResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body or batch size exceeded",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/downloads/{id}": {
+            "get": {
+                "description": "Get detailed information about a specific download by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "downloads"
+                ],
+                "summary": "Get a specific download",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Download ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/server.GetDownloadResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid download ID",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Download not found",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Cancel an active download and remove it from qBittorrent",
+                "tags": [
+                    "downloads"
+                ],
+                "summary": "Cancel a download",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Download ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Download cancelled successfully"
+                    },
+                    "400": {
+                        "description": "Invalid download ID",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/downloads/{id}/organize": {
+            "post": {
+                "description": "Move and organize a completed download to the configured destination path",
+                "tags": [
+                    "downloads"
+                ],
+                "summary": "Organize a completed download",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Download ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Download organized successfully"
+                    },
+                    "400": {
+                        "description": "Invalid download ID",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "description": "Check API and dependency health status",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "system"
+                ],
+                "summary": "Health check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/server.HealthResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/qbittorrent/test": {
+            "get": {
+                "description": "Test connectivity to the configured qBittorrent instance",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "qbittorrent"
+                ],
+                "summary": "Test qBittorrent connection",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/server.TestConnectionResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/search": {
+            "get": {
+                "description": "Search for audiobooks on configured providers (e.g., MyAnonamouse)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "search"
+                ],
+                "summary": "Search for audiobooks",
+                "parameters": [
+                    {
+                        "minLength": 2,
+                        "type": "string",
+                        "description": "Search query",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/server.SearchResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid query parameter",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/search/test": {
+            "post": {
+                "description": "Test connectivity to the configured search provider (e.g., MyAnonamouse)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "search"
+                ],
+                "summary": "Test search provider connection",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/server.TestConnectionResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.SeriesInfo": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                }
+            }
+        },
+        "server.BatchCreateDownloadRequest": {
+            "type": "object",
+            "properties": {
+                "downloads": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/server.CreateDownloadRequest"
+                    }
+                }
+            }
+        },
+        "server.BatchCreateDownloadResponse": {
+            "type": "object",
+            "properties": {
+                "failed": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/server.BatchDownloadError"
+                    }
+                },
+                "successful": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/server.downloadDTO"
+                    }
+                }
+            }
+        },
+        "server.BatchDownloadError": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "index": {
+                    "type": "integer"
+                },
+                "request": {
+                    "$ref": "#/definitions/server.CreateDownloadRequest"
+                }
+            }
+        },
+        "server.CreateDownloadRequest": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "magnet_link": {
+                    "type": "string"
+                },
+                "series": {
+                    "type": "string"
+                },
+                "series_number": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "torrent_id": {
+                    "type": "string"
+                },
+                "torrent_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "server.CreateDownloadResponse": {
+            "type": "object",
+            "properties": {
+                "download": {
+                    "$ref": "#/definitions/server.downloadDTO"
+                }
+            }
+        },
+        "server.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "server.GetAllConfigResponse": {
+            "type": "object",
+            "properties": {
+                "configs": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "server.GetConfigResponse": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "server.GetDownloadResponse": {
+            "type": "object",
+            "properties": {
+                "download": {
+                    "$ref": "#/definitions/server.downloadDTO"
+                }
+            }
+        },
+        "server.HealthResponse": {
+            "type": "object",
+            "properties": {
+                "database": {
+                    "type": "string"
+                },
+                "monitor": {
+                    "type": "string"
+                },
+                "qbittorrent": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "server.ListDownloadsResponse": {
+            "type": "object",
+            "properties": {
+                "downloads": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/server.downloadDTO"
+                    }
+                }
+            }
+        },
+        "server.PreviewPathRequest": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "series": {
+                    "type": "string"
+                },
+                "series_number": {
+                    "type": "string"
+                },
+                "template": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "server.PreviewPathResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "valid": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "server.SearchResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "results": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/server.searchResultDTO"
+                    }
+                }
+            }
+        },
+        "server.TestConnectionResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "server.UpdateConfigRequest": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "server.downloadDTO": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "completed_at": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "error_message": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "organized_at": {
+                    "type": "string"
+                },
+                "organized_path": {
+                    "type": "string"
+                },
+                "progress": {
+                    "type": "number"
+                },
+                "series": {
+                    "type": "string"
+                },
+                "series_number": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "server.searchResultDTO": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "magnet_link": {
+                    "type": "string"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "seeders": {
+                    "type": "integer"
+                },
+                "series": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.SeriesInfo"
+                    }
+                },
+                "size": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "torrent_url": {
+                    "type": "string"
+                }
+            }
+        }
+    }
 }

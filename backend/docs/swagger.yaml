@@ -1,4 +1,206 @@
 basePath: /api
+definitions:
+  models.SeriesInfo:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      number:
+        type: string
+    type: object
+  server.BatchCreateDownloadRequest:
+    properties:
+      downloads:
+        items:
+          $ref: '#/definitions/server.CreateDownloadRequest'
+        type: array
+    type: object
+  server.BatchCreateDownloadResponse:
+    properties:
+      failed:
+        items:
+          $ref: '#/definitions/server.BatchDownloadError'
+        type: array
+      successful:
+        items:
+          $ref: '#/definitions/server.downloadDTO'
+        type: array
+    type: object
+  server.BatchDownloadError:
+    properties:
+      error:
+        type: string
+      index:
+        type: integer
+      request:
+        $ref: '#/definitions/server.CreateDownloadRequest'
+    type: object
+  server.CreateDownloadRequest:
+    properties:
+      author:
+        type: string
+      category:
+        type: string
+      magnet_link:
+        type: string
+      series:
+        type: string
+      series_number:
+        type: string
+      title:
+        type: string
+      torrent_id:
+        type: string
+      torrent_url:
+        type: string
+    type: object
+  server.CreateDownloadResponse:
+    properties:
+      download:
+        $ref: '#/definitions/server.downloadDTO'
+    type: object
+  server.ErrorResponse:
+    properties:
+      code:
+        type: integer
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  server.GetAllConfigResponse:
+    properties:
+      configs:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
+  server.GetConfigResponse:
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+    type: object
+  server.GetDownloadResponse:
+    properties:
+      download:
+        $ref: '#/definitions/server.downloadDTO'
+    type: object
+  server.HealthResponse:
+    properties:
+      database:
+        type: string
+      monitor:
+        type: string
+      qbittorrent:
+        type: string
+      status:
+        type: string
+    type: object
+  server.ListDownloadsResponse:
+    properties:
+      downloads:
+        items:
+          $ref: '#/definitions/server.downloadDTO'
+        type: array
+    type: object
+  server.PreviewPathRequest:
+    properties:
+      author:
+        type: string
+      series:
+        type: string
+      series_number:
+        type: string
+      template:
+        type: string
+      title:
+        type: string
+    type: object
+  server.PreviewPathResponse:
+    properties:
+      error:
+        type: string
+      path:
+        type: string
+      valid:
+        type: boolean
+    type: object
+  server.SearchResponse:
+    properties:
+      count:
+        type: integer
+      results:
+        items:
+          $ref: '#/definitions/server.searchResultDTO'
+        type: array
+    type: object
+  server.TestConnectionResponse:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  server.UpdateConfigRequest:
+    properties:
+      value:
+        type: string
+    type: object
+  server.downloadDTO:
+    properties:
+      author:
+        type: string
+      category:
+        type: string
+      completed_at:
+        type: string
+      created_at:
+        type: string
+      error_message:
+        type: string
+      id:
+        type: string
+      organized_at:
+        type: string
+      organized_path:
+        type: string
+      progress:
+        type: number
+      series:
+        type: string
+      series_number:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+    type: object
+  server.searchResultDTO:
+    properties:
+      author:
+        type: string
+      id:
+        type: string
+      magnet_link:
+        type: string
+      provider:
+        type: string
+      seeders:
+        type: integer
+      series:
+        items:
+          $ref: '#/definitions/models.SeriesInfo'
+        type: array
+      size:
+        type: string
+      title:
+        type: string
+      torrent_url:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -7,7 +209,322 @@ info:
     qBittorrent integration
   title: Organizr API
   version: 1.2.0
-paths: {}
+paths:
+  /config:
+    get:
+      description: Get all configuration key-value pairs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.GetAllConfigResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+      summary: Get all configuration values
+      tags:
+      - config
+  /config/{key}:
+    get:
+      description: Get the value of a specific configuration key
+      parameters:
+      - description: Configuration key
+        in: path
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.GetConfigResponse'
+        "400":
+          description: Invalid config key
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+        "404":
+          description: Config key not found
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+      summary: Get a configuration value
+      tags:
+      - config
+    put:
+      consumes:
+      - application/json
+      description: Update the value of a specific configuration key
+      parameters:
+      - description: Configuration key
+        in: path
+        name: key
+        required: true
+        type: string
+      - description: New configuration value
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/server.UpdateConfigRequest'
+      responses:
+        "204":
+          description: Configuration updated successfully
+        "400":
+          description: Invalid request body or validation failed
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+      summary: Update a configuration value
+      tags:
+      - config
+  /config/preview-path:
+    post:
+      consumes:
+      - application/json
+      description: Preview the result of applying a path template with given audiobook
+        metadata
+      parameters:
+      - description: Path preview request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/server.PreviewPathRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.PreviewPathResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+      summary: Preview path template
+      tags:
+      - config
+  /downloads:
+    get:
+      description: Get a list of all downloads with their status and progress
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.ListDownloadsResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+      summary: List all downloads
+      tags:
+      - downloads
+    post:
+      consumes:
+      - application/json
+      description: Create a new audiobook download from torrent URL, magnet link,
+        or torrent ID
+      parameters:
+      - description: Download request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/server.CreateDownloadRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/server.CreateDownloadResponse'
+        "400":
+          description: Invalid request body or validation failed
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+      summary: Create a new download
+      tags:
+      - downloads
+  /downloads/{id}:
+    delete:
+      description: Cancel an active download and remove it from qBittorrent
+      parameters:
+      - description: Download ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: Download cancelled successfully
+        "400":
+          description: Invalid download ID
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+      summary: Cancel a download
+      tags:
+      - downloads
+    get:
+      description: Get detailed information about a specific download by ID
+      parameters:
+      - description: Download ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.GetDownloadResponse'
+        "400":
+          description: Invalid download ID
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+        "404":
+          description: Download not found
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+      summary: Get a specific download
+      tags:
+      - downloads
+  /downloads/{id}/organize:
+    post:
+      description: Move and organize a completed download to the configured destination
+        path
+      parameters:
+      - description: Download ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Download organized successfully
+        "400":
+          description: Invalid download ID
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+      summary: Organize a completed download
+      tags:
+      - downloads
+  /downloads/batch:
+    post:
+      consumes:
+      - application/json
+      description: Create multiple audiobook downloads in a single request (max 50
+        items)
+      parameters:
+      - description: Batch download request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/server.BatchCreateDownloadRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns successful and failed downloads
+          schema:
+            $ref: '#/definitions/server.BatchCreateDownloadResponse'
+        "400":
+          description: Invalid request body or batch size exceeded
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+      summary: Create multiple downloads in batch
+      tags:
+      - downloads
+  /health:
+    get:
+      description: Check API and dependency health status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.HealthResponse'
+      summary: Health check
+      tags:
+      - system
+  /qbittorrent/test:
+    get:
+      description: Test connectivity to the configured qBittorrent instance
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.TestConnectionResponse'
+      summary: Test qBittorrent connection
+      tags:
+      - qbittorrent
+  /search:
+    get:
+      description: Search for audiobooks on configured providers (e.g., MyAnonamouse)
+      parameters:
+      - description: Search query
+        in: query
+        minLength: 2
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.SearchResponse'
+        "400":
+          description: Invalid query parameter
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+      summary: Search for audiobooks
+      tags:
+      - search
+  /search/test:
+    post:
+      description: Test connectivity to the configured search provider (e.g., MyAnonamouse)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.TestConnectionResponse'
+      summary: Test search provider connection
+      tags:
+      - search
 schemes:
 - http
 swagger: "2.0"

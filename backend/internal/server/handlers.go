@@ -13,6 +13,13 @@ import (
 	"github.com/nathanael/organizr/internal/qbittorrent"
 )
 
+// handleHealth godoc
+// @Summary Health check
+// @Description Check API and dependency health status
+// @Tags system
+// @Produce json
+// @Success 200 {object} HealthResponse
+// @Router /health [get]
 func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	resp := HealthResponse{
 		Status:      "healthy",
@@ -24,6 +31,17 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, resp)
 }
 
+// handleCreateDownload godoc
+// @Summary Create a new download
+// @Description Create a new audiobook download from torrent URL, magnet link, or torrent ID
+// @Tags downloads
+// @Accept json
+// @Produce json
+// @Param request body CreateDownloadRequest true "Download request"
+// @Success 201 {object} CreateDownloadResponse
+// @Failure 400 {object} ErrorResponse "Invalid request body or validation failed"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /downloads [post]
 func (s *Server) handleCreateDownload(w http.ResponseWriter, r *http.Request) {
 	var req CreateDownloadRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -74,6 +92,14 @@ func (s *Server) handleCreateDownload(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusCreated, CreateDownloadResponse{Download: toDTO(created)})
 }
 
+// handleListDownloads godoc
+// @Summary List all downloads
+// @Description Get a list of all downloads with their status and progress
+// @Tags downloads
+// @Produce json
+// @Success 200 {object} ListDownloadsResponse
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /downloads [get]
 func (s *Server) handleListDownloads(w http.ResponseWriter, r *http.Request) {
 	downloads, err := s.downloadService.ListDownloads(r.Context())
 	if err != nil {
@@ -84,6 +110,16 @@ func (s *Server) handleListDownloads(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, ListDownloadsResponse{Downloads: toDTOList(downloads)})
 }
 
+// handleGetDownload godoc
+// @Summary Get a specific download
+// @Description Get detailed information about a specific download by ID
+// @Tags downloads
+// @Produce json
+// @Param id path string true "Download ID (UUID)"
+// @Success 200 {object} GetDownloadResponse
+// @Failure 400 {object} ErrorResponse "Invalid download ID"
+// @Failure 404 {object} ErrorResponse "Download not found"
+// @Router /downloads/{id} [get]
 func (s *Server) handleGetDownload(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
@@ -105,6 +141,15 @@ func (s *Server) handleGetDownload(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, GetDownloadResponse{Download: toDTO(download)})
 }
 
+// handleCancelDownload godoc
+// @Summary Cancel a download
+// @Description Cancel an active download and remove it from qBittorrent
+// @Tags downloads
+// @Param id path string true "Download ID (UUID)"
+// @Success 204 "Download cancelled successfully"
+// @Failure 400 {object} ErrorResponse "Invalid download ID"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /downloads/{id} [delete]
 func (s *Server) handleCancelDownload(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
@@ -125,6 +170,15 @@ func (s *Server) handleCancelDownload(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// handleOrganize godoc
+// @Summary Organize a completed download
+// @Description Move and organize a completed download to the configured destination path
+// @Tags downloads
+// @Param id path string true "Download ID (UUID)"
+// @Success 200 "Download organized successfully"
+// @Failure 400 {object} ErrorResponse "Invalid download ID"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /downloads/{id}/organize [post]
 func (s *Server) handleOrganize(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
@@ -145,6 +199,16 @@ func (s *Server) handleOrganize(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// handleGetConfig godoc
+// @Summary Get a configuration value
+// @Description Get the value of a specific configuration key
+// @Tags config
+// @Produce json
+// @Param key path string true "Configuration key"
+// @Success 200 {object} GetConfigResponse
+// @Failure 400 {object} ErrorResponse "Invalid config key"
+// @Failure 404 {object} ErrorResponse "Config key not found"
+// @Router /config/{key} [get]
 func (s *Server) handleGetConfig(w http.ResponseWriter, r *http.Request) {
 	key := chi.URLParam(r, "key")
 	if key == "" {
@@ -166,6 +230,14 @@ func (s *Server) handleGetConfig(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, GetConfigResponse{Key: key, Value: value})
 }
 
+// handleGetAllConfig godoc
+// @Summary Get all configuration values
+// @Description Get all configuration key-value pairs
+// @Tags config
+// @Produce json
+// @Success 200 {object} GetAllConfigResponse
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /config [get]
 func (s *Server) handleGetAllConfig(w http.ResponseWriter, r *http.Request) {
 	configs, err := s.configService.GetAll(r.Context())
 	if err != nil {
@@ -176,6 +248,17 @@ func (s *Server) handleGetAllConfig(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, GetAllConfigResponse{Configs: configs})
 }
 
+// handleUpdateConfig godoc
+// @Summary Update a configuration value
+// @Description Update the value of a specific configuration key
+// @Tags config
+// @Accept json
+// @Param key path string true "Configuration key"
+// @Param request body UpdateConfigRequest true "New configuration value"
+// @Success 204 "Configuration updated successfully"
+// @Failure 400 {object} ErrorResponse "Invalid request body or validation failed"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /config/{key} [put]
 func (s *Server) handleUpdateConfig(w http.ResponseWriter, r *http.Request) {
 	key := chi.URLParam(r, "key")
 	if key == "" {
@@ -220,6 +303,16 @@ func (s *Server) handleUpdateConfig(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// handleSearch godoc
+// @Summary Search for audiobooks
+// @Description Search for audiobooks on configured providers (e.g., MyAnonamouse)
+// @Tags search
+// @Produce json
+// @Param q query string true "Search query" minlength(2)
+// @Success 200 {object} SearchResponse
+// @Failure 400 {object} ErrorResponse "Invalid query parameter"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /search [get]
 func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
 	if query == "" {
@@ -244,6 +337,13 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// handleTestConnection godoc
+// @Summary Test search provider connection
+// @Description Test connectivity to the configured search provider (e.g., MyAnonamouse)
+// @Tags search
+// @Produce json
+// @Success 200 {object} TestConnectionResponse
+// @Router /search/test [post]
 func (s *Server) handleTestConnection(w http.ResponseWriter, r *http.Request) {
 	err := s.searchService.TestConnection(r.Context())
 	if err != nil {
@@ -260,6 +360,13 @@ func (s *Server) handleTestConnection(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// handleTestQBittorrentConnection godoc
+// @Summary Test qBittorrent connection
+// @Description Test connectivity to the configured qBittorrent instance
+// @Tags qbittorrent
+// @Produce json
+// @Success 200 {object} TestConnectionResponse
+// @Router /qbittorrent/test [get]
 func (s *Server) handleTestQBittorrentConnection(w http.ResponseWriter, r *http.Request) {
 	// Get qBittorrent config from ConfigService
 	url, err := s.configService.Get(r.Context(), "qbittorrent.url")
@@ -312,6 +419,16 @@ func (s *Server) handleTestQBittorrentConnection(w http.ResponseWriter, r *http.
 	})
 }
 
+// handlePreviewPath godoc
+// @Summary Preview path template
+// @Description Preview the result of applying a path template with given audiobook metadata
+// @Tags config
+// @Accept json
+// @Produce json
+// @Param request body PreviewPathRequest true "Path preview request"
+// @Success 200 {object} PreviewPathResponse
+// @Failure 400 {object} ErrorResponse "Invalid request body"
+// @Router /config/preview-path [post]
 func (s *Server) handlePreviewPath(w http.ResponseWriter, r *http.Request) {
 	var req PreviewPathRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -347,6 +464,16 @@ func (s *Server) handlePreviewPath(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// handleBatchCreateDownload godoc
+// @Summary Create multiple downloads in batch
+// @Description Create multiple audiobook downloads in a single request (max 50 items)
+// @Tags downloads
+// @Accept json
+// @Produce json
+// @Param request body BatchCreateDownloadRequest true "Batch download request"
+// @Success 200 {object} BatchCreateDownloadResponse "Returns successful and failed downloads"
+// @Failure 400 {object} ErrorResponse "Invalid request body or batch size exceeded"
+// @Router /downloads/batch [post]
 func (s *Server) handleBatchCreateDownload(w http.ResponseWriter, r *http.Request) {
 	var req BatchCreateDownloadRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
