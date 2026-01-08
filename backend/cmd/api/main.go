@@ -135,6 +135,7 @@ func runMigrations(db *sql.DB) error {
 		{1, "./assets/migrations/001_init.up.sql"},
 		{2, "./assets/migrations/002_add_category.up.sql"},
 		{3, "./assets/migrations/003_add_path_prefix.up.sql"},
+		{4, "./assets/migrations/004_add_series_number.up.sql"},
 	}
 
 	for _, migration := range migrations {

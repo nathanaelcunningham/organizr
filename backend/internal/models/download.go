@@ -7,6 +7,7 @@ type Download struct {
 	Title         string
 	Author        string
 	Series        string
+	SeriesNumber  string
 	TorrentURL    string
 	MagnetLink    string
 	TorrentBytes  []byte

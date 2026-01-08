@@ -19,12 +19,12 @@ func NewDownloadRepository(db *sql.DB) *DownloadRepository {
 
 func (r *DownloadRepository) Create(ctx context.Context, d *models.Download) error {
 	query := `
-		INSERT INTO downloads (id, title, author, series, torrent_url, magnet_link, category, qbit_hash, status, created_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO downloads (id, title, author, series, series_number, torrent_url, magnet_link, category, qbit_hash, status, created_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	_, err := r.db.ExecContext(ctx, query,
-		d.ID, d.Title, d.Author, d.Series, d.TorrentURL, d.MagnetLink, d.Category, d.QBitHash, d.Status, d.CreatedAt,
+		d.ID, d.Title, d.Author, d.Series, d.SeriesNumber, d.TorrentURL, d.MagnetLink, d.Category, d.QBitHash, d.Status, d.CreatedAt,
 	)
 
 	if err != nil {
@@ -36,7 +36,7 @@ func (r *DownloadRepository) Create(ctx context.Context, d *models.Download) err
 
 func (r *DownloadRepository) GetByID(ctx context.Context, id string) (*models.Download, error) {
 	query := `
-		SELECT id, title, author, series, torrent_url, magnet_link, category, qbit_hash, status, progress,
+		SELECT id, title, author, series, series_number, torrent_url, magnet_link, category, qbit_hash, status, progress,
 		       download_path, organized_path, error_message, created_at, completed_at, organized_at
 		FROM downloads
 		WHERE id = ?
@@ -44,10 +44,12 @@ func (r *DownloadRepository) GetByID(ctx context.Context, id string) (*models.Do
 
 	var d models.Download
 	var completedAt, organizedAt sql.NullTime
+	var series, seriesNumber, torrentURL, magnetLink, category sql.NullString
+	var downloadPath, organizedPath, errorMessage sql.NullString
 
 	err := r.db.QueryRowContext(ctx, query, id).Scan(
-		&d.ID, &d.Title, &d.Author, &d.Series, &d.TorrentURL, &d.MagnetLink, &d.Category, &d.QBitHash,
-		&d.Status, &d.Progress, &d.DownloadPath, &d.OrganizedPath, &d.ErrorMessage,
+		&d.ID, &d.Title, &d.Author, &series, &seriesNumber, &torrentURL, &magnetLink, &category, &d.QBitHash,
+		&d.Status, &d.Progress, &downloadPath, &organizedPath, &errorMessage,
 		&d.CreatedAt, &completedAt, &organizedAt,
 	)
 
@@ -58,6 +60,31 @@ func (r *DownloadRepository) GetByID(ctx context.Context, id string) (*models.Do
 		return nil, fmt.Errorf("failed to query download: %w", err)
 	}
 
+	// Handle nullable fields
+	if series.Valid {
+		d.Series = series.String
+	}
+	if seriesNumber.Valid {
+		d.SeriesNumber = seriesNumber.String
+	}
+	if torrentURL.Valid {
+		d.TorrentURL = torrentURL.String
+	}
+	if magnetLink.Valid {
+		d.MagnetLink = magnetLink.String
+	}
+	if category.Valid {
+		d.Category = category.String
+	}
+	if downloadPath.Valid {
+		d.DownloadPath = downloadPath.String
+	}
+	if organizedPath.Valid {
+		d.OrganizedPath = organizedPath.String
+	}
+	if errorMessage.Valid {
+		d.ErrorMessage = errorMessage.String
+	}
 	if completedAt.Valid {
 		d.CompletedAt = &completedAt.Time
 	}
@@ -70,7 +97,7 @@ func (r *DownloadRepository) GetByID(ctx context.Context, id string) (*models.Do
 
 func (r *DownloadRepository) GetActive(ctx context.Context) ([]*models.Download, error) {
 	query := `
-		SELECT id, title, author, series, qbit_hash, status, progress
+		SELECT id, title, author, series, series_number, qbit_hash, status, progress
 		FROM downloads
 		WHERE status IN ('queued', 'downloading', 'completed')
 		ORDER BY created_at DESC
@@ -85,8 +112,15 @@ func (r *DownloadRepository) GetActive(ctx context.Context) ([]*models.Download,
 	var downloads []*models.Download
 	for rows.Next() {
 		var d models.Download
-		if err := rows.Scan(&d.ID, &d.Title, &d.Author, &d.Series, &d.QBitHash, &d.Status, &d.Progress); err != nil {
+		var series, seriesNumber sql.NullString
+		if err := rows.Scan(&d.ID, &d.Title, &d.Author, &series, &seriesNumber, &d.QBitHash, &d.Status, &d.Progress); err != nil {
 			return nil, fmt.Errorf("failed to scan download: %w", err)
+		}
+		if series.Valid {
+			d.Series = series.String
+		}
+		if seriesNumber.Valid {
+			d.SeriesNumber = seriesNumber.String
 		}
 		downloads = append(downloads, &d)
 	}
@@ -96,7 +130,7 @@ func (r *DownloadRepository) GetActive(ctx context.Context) ([]*models.Download,
 
 func (r *DownloadRepository) List(ctx context.Context) ([]*models.Download, error) {
 	query := `
-		SELECT id, title, author, series, qbit_hash, status, progress, created_at
+		SELECT id, title, author, series, series_number, qbit_hash, status, progress, created_at
 		FROM downloads
 		ORDER BY created_at DESC
 	`
@@ -110,8 +144,15 @@ func (r *DownloadRepository) List(ctx context.Context) ([]*models.Download, erro
 	var downloads []*models.Download
 	for rows.Next() {
 		var d models.Download
-		if err := rows.Scan(&d.ID, &d.Title, &d.Author, &d.Series, &d.QBitHash, &d.Status, &d.Progress, &d.CreatedAt); err != nil {
+		var series, seriesNumber sql.NullString
+		if err := rows.Scan(&d.ID, &d.Title, &d.Author, &series, &seriesNumber, &d.QBitHash, &d.Status, &d.Progress, &d.CreatedAt); err != nil {
 			return nil, fmt.Errorf("failed to scan download: %w", err)
+		}
+		if series.Valid {
+			d.Series = series.String
+		}
+		if seriesNumber.Valid {
+			d.SeriesNumber = seriesNumber.String
 		}
 		downloads = append(downloads, &d)
 	}
