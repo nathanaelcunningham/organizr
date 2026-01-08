@@ -30,15 +30,19 @@ export const SearchResultListItem: React.FC<SearchResultListItemProps> = ({
     const handleDownload = async () => {
         setDownloading(true);
         try {
-            // Convert series array to string representation (names only, not numbers)
-            const seriesString = result.series && result.series.length > 0
-                ? result.series.map(s => s.name).join(', ')
-                : undefined;
+            // Extract first series name and number (books can have multiple series, use primary)
+            const series = result.series && result.series.length > 0
+                ? result.series[0].name
+                : '';
+            const seriesNumber = result.series && result.series.length > 0
+                ? result.series[0].number
+                : '';
 
             await createDownload({
                 title: result.title,
                 author: result.author,
-                series: seriesString,
+                series: series,
+                seriesNumber: seriesNumber,
                 category: 'Audiobooks',
                 torrent_url: result.torrent_url,
                 magnet_link: result.magnet_link,
