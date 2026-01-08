@@ -50,10 +50,10 @@ Plans:
 **Goal**: Standardize error handling, improve request/response patterns, add OpenAPI/Swagger documentation
 **Depends on**: Phase 10
 **Research**: Unlikely (established patterns, standard API documentation tools)
-**Plans**: TBD
+**Plans**: 1+ (in progress)
 
 Plans:
-- [ ] 11-01: TBD
+- [x] 11-01: Error handling standardization with typed helpers
 
 #### Phase 12: Testing Infrastructure
 **Goal**: Add integration test helpers, improve test coverage reporting, create test data fixtures, document testing patterns
@@ -112,7 +112,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 8: Batch Operations** - Support adding multiple torrents at once
 - [x] **Phase 9: Series Number Organization** - Add series_number template variable for folder organization
 - [x] **Phase 10: Code Organization & Architecture Review** - Audit structure, document decisions, create contribution guidelines
-- [ ] **Phase 11: API Layer Cleanup** - Standardize error handling, add OpenAPI/Swagger documentation
+- [ ] **Phase 11: API Layer Cleanup** - Standardize error handling, add OpenAPI/Swagger documentation (1+ plans, in progress)
 - [ ] **Phase 12: Testing Infrastructure** - Integration test helpers, coverage reporting, test fixtures
 - [ ] **Phase 13: Developer Documentation** - Comprehensive README, architecture diagrams, setup guides
 - [ ] **Phase 14: Code Quality Tools** - Linting, pre-commit hooks, CI improvements, formatting standards
@@ -247,7 +247,7 @@ Plans:
 | 8. Batch Operations | v1.1 | 2/2 | ✅ Shipped | 2026-01-08 |
 | 9. Series Number Organization | v1.1 | 3/3 | ✅ Shipped | 2026-01-08 |
 | 10. Code Organization & Architecture Review | v1.2 | 1/1 | ✅ Complete | 2026-01-08 |
-| 11. API Layer Cleanup | v1.2 | 0/? | Not started | - |
+| 11. API Layer Cleanup | v1.2 | 1/? | In progress | - |
 | 12. Testing Infrastructure | v1.2 | 0/? | Not started | - |
 | 13. Developer Documentation | v1.2 | 0/? | Not started | - |
 | 14. Code Quality Tools | v1.2 | 0/? | Not started | - |

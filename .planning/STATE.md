@@ -10,10 +10,10 @@ See: .planning/PROJECT.md (updated 2026-01-08 after v1.1 milestone)
 ## Current Position
 
 Milestone: v1.2 Developer Experience
-Phase: 10 of 15 (Code Organization & Architecture Review)
-Plan: 1 of 1 complete
-Status: Phase 10 complete
-Last activity: 2026-01-08 - Completed 10-01-PLAN.md
+Phase: 11 of 15 (API Layer Cleanup)
+Plan: 1 of ? in current phase
+Status: In progress
+Last activity: 2026-01-08 - Completed 11-01-PLAN.md
 
 Progress: ███░░░░░░░ 17% (1/6 phases complete)
 
@@ -69,6 +69,7 @@ Recent decisions affecting current work:
 - **Indeterminate checkbox state**: Series groups show indeterminate checkbox when some (but not all) books are selected
 - **Empty series_number in templates**: Replace with empty string rather than removing placeholder (preserves user's template structure)
 - **First series as primary**: Books can have multiple series - use first series for folder organization (most relevant)
+- **Typed error helpers**: Function-based error helpers over map/enum approach for type safety and clear call site documentation
 
 ### Roadmap Evolution
 
@@ -91,6 +92,6 @@ None
 ## Session Continuity
 
 Last session: 2026-01-08
-Stopped at: Completed 10-01-PLAN.md
+Stopped at: Completed 11-01-PLAN.md
 Resume file: None
-Next action: Plan Phase 11 with `/gsd:plan-phase 11` (API Layer Cleanup)
+Next action: Continue Phase 11 or plan next phase
