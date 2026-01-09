@@ -5,6 +5,7 @@
 - ✅ [v1.0 MVP](milestones/v1.0-MVP.md) — Phases 1-6 (plus 1.1 inserted) — SHIPPED 2026-01-07
 - ✅ [v1.1 Enhancements](milestones/v1.1-Enhancements.md) — Phases 7-9 (plus 7.1 inserted) — SHIPPED 2026-01-08
 - ✅ [v1.2 Developer Experience](milestones/v1.2-Developer-Experience.md) — Phases 10-15 — SHIPPED 2026-01-09
+- 🚧 **v1.3 Production Deployment** — Phases 16-20 (in progress)
 
 ## Completed Milestones
 
@@ -43,7 +44,60 @@ See [milestones/v1.0-MVP.md](milestones/v1.0-MVP.md) for full details.
 
 ## Current Milestone
 
-No active milestone. Ready to plan v1.3.
+### 🚧 v1.3 Production Deployment (In Progress)
+
+**Milestone Goal:** Enable production deployment on Unraid via Docker with proper containerization, environment configuration, and comprehensive deployment documentation.
+
+#### Phase 16: Docker Foundation
+
+**Goal**: Create Dockerfiles for backend and frontend with multi-stage builds for production-ready images
+**Depends on**: Previous milestone complete
+**Research**: Likely (Docker best practices for Go and React apps)
+**Research topics**: Multi-stage Docker builds, Go binary optimization, React production builds, image size optimization
+**Plans**: TBD
+
+Plans:
+- [ ] 16-01: TBD (run /gsd:plan-phase 16 to break down)
+
+#### Phase 17: Docker Compose Setup
+
+**Goal**: Configure Docker Compose for multi-container orchestration with backend, frontend, and volume management
+**Depends on**: Phase 16
+**Research**: Unlikely (standard Docker Compose patterns)
+**Plans**: TBD
+
+Plans:
+- [ ] 17-01: TBD
+
+#### Phase 18: Environment Configuration
+
+**Goal**: Implement environment variable support and .env file configuration for flexible deployment settings
+**Depends on**: Phase 17
+**Research**: Unlikely (established patterns for env config in Go)
+**Plans**: TBD
+
+Plans:
+- [ ] 18-01: TBD
+
+#### Phase 19: Volume & Path Management
+
+**Goal**: Configure persistent volumes for database and downloads with proper path mapping documentation
+**Depends on**: Phase 18
+**Research**: Unlikely (standard Docker volume patterns)
+**Plans**: TBD
+
+Plans:
+- [ ] 19-01: TBD
+
+#### Phase 20: Deployment Documentation
+
+**Goal**: Create comprehensive installation guide for Unraid deployment with troubleshooting and configuration examples
+**Depends on**: Phase 19
+**Research**: Unlikely (documentation work)
+**Plans**: TBD
+
+Plans:
+- [ ] 20-01: TBD
 
 ## Phases
 
@@ -70,6 +124,11 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 13: Developer Documentation** - Comprehensive README, architecture diagrams, setup guides
 - [x] **Phase 14: Code Quality Tools** - Linting, pre-commit hooks, CI improvements, formatting standards
 - [x] **Phase 15: Refactoring Opportunities** - Address technical debt, improve consistency, optimize hot paths
+- [ ] **Phase 16: Docker Foundation** - Create Dockerfiles for backend and frontend with multi-stage builds
+- [ ] **Phase 17: Docker Compose Setup** - Multi-container orchestration with volume management
+- [ ] **Phase 18: Environment Configuration** - Env variable support and .env file configuration
+- [ ] **Phase 19: Volume & Path Management** - Persistent volumes for database and downloads
+- [ ] **Phase 20: Deployment Documentation** - Installation guide for Unraid deployment
 
 ## Phase Details
 
@@ -205,3 +264,8 @@ Plans:
 | 13. Developer Documentation | v1.2 | 2/2 | ✅ Shipped | 2026-01-09 |
 | 14. Code Quality Tools | v1.2 | 2/2 | ✅ Shipped | 2026-01-09 |
 | 15. Refactoring Opportunities | v1.2 | 2/2 | ✅ Shipped | 2026-01-09 |
+| 16. Docker Foundation | v1.3 | 0/? | Not started | - |
+| 17. Docker Compose Setup | v1.3 | 0/? | Not started | - |
+| 18. Environment Configuration | v1.3 | 0/? | Not started | - |
+| 19. Volume & Path Management | v1.3 | 0/? | Not started | - |
+| 20. Deployment Documentation | v1.3 | 0/? | Not started | - |
