@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-01-08 after v1.1 milestone)
 ## Current Position
 
 Milestone: v1.2 Developer Experience
-Phase: 11 of 15 (API Layer Cleanup)
-Plan: 3 of 3 in current phase
-Status: Phase complete
-Last activity: 2026-01-08 - Completed 11-03-PLAN.md
+Phase: 12 of 15 (Testing Infrastructure)
+Plan: 1 of ? in current phase
+Status: In progress
+Last activity: 2026-01-09 - Completed 12-01-PLAN.md
 
-Progress: ████░░░░░░ 33% (2/6 phases complete)
+Progress: █████░░░░░ 50% (3/6 phases complete)
 
 ## Performance Metrics
 
@@ -70,6 +70,10 @@ Recent decisions affecting current work:
 - **Empty series_number in templates**: Replace with empty string rather than removing placeholder (preserves user's template structure)
 - **First series as primary**: Books can have multiple series - use first series for folder organization (most relevant)
 - **Typed error helpers**: Function-based error helpers over map/enum approach for type safety and clear call site documentation
+- **60% coverage baseline**: Established 60% thresholds for both backend and frontend as realistic quality baseline (can increase over time)
+- **Functional options for Go fixtures**: Use functional options pattern for test fixtures (more idiomatic than struct overrides)
+- **Partial&lt;T&gt; for TypeScript fixtures**: Use Partial&lt;T&gt; pattern for type-safe test data overrides (familiar to TS developers)
+- **V8 coverage provider**: Vitest uses v8 provider (faster than c8, built-in support)
 
 ### Roadmap Evolution
 
@@ -91,7 +95,7 @@ None
 
 ## Session Continuity
 
-Last session: 2026-01-08
-Stopped at: Completed 11-03-PLAN.md (Phase 11 complete)
+Last session: 2026-01-09
+Stopped at: Completed 12-01-PLAN.md (Phase 12 plan 1 complete)
 Resume file: None
-Next action: Start Phase 12 (Testing Infrastructure) - run /gsd:plan-phase 12
+Next action: Continue Phase 12 or move to Phase 13 (Developer Documentation)
