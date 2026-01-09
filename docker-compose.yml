@@ -11,16 +11,18 @@ services:
       - QBITTORRENT_URL=${QBITTORRENT_URL}
       - QBITTORRENT_USERNAME=${QBITTORRENT_USERNAME}
       - QBITTORRENT_PASSWORD=${QBITTORRENT_PASSWORD}
-      - PATHS_DESTINATION=${PATHS_DESTINATION}
+      - PATHS_DESTINATION=${PATHS_DESTINATION:-/audiobooks}
       - PATHS_TEMPLATE=${PATHS_TEMPLATE:-{author}/{series}/{title}}
       - PATHS_NO_SERIES_TEMPLATE=${PATHS_NO_SERIES_TEMPLATE:-{author}/{title}}
       - PATHS_OPERATION=${PATHS_OPERATION:-copy}
-      - PATHS_LOCAL_MOUNT=${PATHS_LOCAL_MOUNT}
+      - PATHS_LOCAL_MOUNT=${PATHS_LOCAL_MOUNT:-/downloads}
       - MONITOR_INTERVAL_SECONDS=${MONITOR_INTERVAL_SECONDS:-30}
       - MONITOR_AUTO_ORGANIZE=${MONITOR_AUTO_ORGANIZE:-true}
       - MAM_BASEURL=${MAM_BASEURL:-https://www.myanonamouse.net}
       - MAM_SECRET=${MAM_SECRET}
     volumes:
+      - qbittorrent-downloads:/downloads
+      - audiobooks:/audiobooks
       - organizr-data:/data
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/health"]
@@ -50,6 +52,10 @@ services:
       - organizr-network
 
 volumes:
+  qbittorrent-downloads:
+    driver: local
+  audiobooks:
+    driver: local
   organizr-data:
     driver: local
 
