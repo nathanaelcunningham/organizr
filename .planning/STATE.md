@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-01-09 after v1.2 milestone)
 ## Current Position
 
 Milestone: v1.3 Production Deployment
-Phase: 20 of 20 (Deployment Documentation)
+Phase: 21 of 21 (Configurable Port Variables)
 Plan: 1 of 1 in current phase
 Status: Phase complete
-Last activity: 2026-01-09 - Completed 20-01-PLAN.md
+Last activity: 2026-01-09 - Completed 21-01-PLAN.md
 
-Progress: ██████████ 100%
+Progress: ██████████ 100% (21 of 21 phases complete)
 
 ## Performance Metrics
 
@@ -103,13 +103,15 @@ Recent decisions affecting current work:
 - **Set() database-only behavior**: Config.Set() writes to database only, environment variables are read-only at runtime
 - **Volume mount strategy**: Named volumes for development, host path mounts for production (Unraid/NAS deployments)
 - **Container path defaults**: PATHS_LOCAL_MOUNT=/downloads, PATHS_DESTINATION=/audiobooks match volume mount paths for zero-config development
+- **Port variables in Docker Compose only**: BACKEND_PORT and FRONTEND_PORT control host-to-container mappings but aren't passed to containers (internal ports fixed at 8080)
+- **Docker Compose default value syntax**: ${VAR:-default} parameter expansion provides inline defaults without requiring .env file
 
 ### Roadmap Evolution
 
 - v1.0 MVP shipped (2026-01-07): 8 plans across 7 phases
 - v1.1 Enhancements shipped (2026-01-08): 7 plans across 4 phases
 - v1.2 Developer Experience shipped (2026-01-09): 11 plans across 6 phases (10-15)
-- v1.3 Production Deployment created (2026-01-09): 5 phases (16-20), focus on Docker containerization for Unraid deployment
+- v1.3 Production Deployment shipped (2026-01-09): 6 phases (16-21), focus on Docker containerization for Unraid deployment with configurable ports
 
 ### Deferred Issues
 
@@ -125,7 +127,7 @@ None
 
 ## Session Continuity
 
-Last session: 2026-01-09T22:23:45Z
-Stopped at: Completed 20-01-PLAN.md (Deployment Documentation complete - v1.3 milestone complete)
+Last session: 2026-01-09T22:32:46Z
+Stopped at: Completed 21-01-PLAN.md (v1.3 milestone complete)
 Resume file: None
-Next action: /gsd:complete-milestone (or plan v1.4 milestone)
+Next action: /gsd:complete-milestone

@@ -5,20 +5,9 @@
 - ✅ [v1.0 MVP](milestones/v1.0-MVP.md) — Phases 1-6 (plus 1.1 inserted) — SHIPPED 2026-01-07
 - ✅ [v1.1 Enhancements](milestones/v1.1-Enhancements.md) — Phases 7-9 (plus 7.1 inserted) — SHIPPED 2026-01-08
 - ✅ [v1.2 Developer Experience](milestones/v1.2-Developer-Experience.md) — Phases 10-15 — SHIPPED 2026-01-09
-- ✅ [v1.3 Production Deployment](milestones/v1.3-Production-Deployment.md) — Phases 16-20 — SHIPPED 2026-01-09
+- 🔄 [v1.3 Production Deployment](milestones/v1.3-Production-Deployment.md) — Phases 16-21 — In Progress
 
 ## Completed Milestones
-
-<details>
-<summary>✅ v1.3 Production Deployment (Phases 16-20) — SHIPPED 2026-01-09</summary>
-
-Docker containerization with multi-stage builds, Docker Compose orchestration, environment variable configuration, volume management for Unraid, and comprehensive deployment documentation.
-
-**Stats:** 5 plans, Phases 16-20, same day
-
-See [milestones/v1.3-Production-Deployment.md](milestones/v1.3-Production-Deployment.md) for full details.
-
-</details>
 
 <details>
 <summary>✅ v1.2 Developer Experience (Phases 10-15) — SHIPPED 2026-01-09</summary>
@@ -55,7 +44,7 @@ See [milestones/v1.0-MVP.md](milestones/v1.0-MVP.md) for full details.
 
 ## Current Milestone
 
-None - v1.3 Production Deployment complete. Ready for milestone archival or next milestone planning.
+v1.3 Production Deployment (Phases 16-21) — Phase 21 added for configurable port variables
 
 #### Phase 16: Docker Foundation
 
@@ -113,6 +102,20 @@ Plans:
 Plans:
 - [x] 20-01: README deployment section and production callout
 
+#### Phase 21: Configurable Port Variables
+
+**Goal**: Add environment variables for frontend and backend port configuration in Docker Compose
+**Depends on**: Phase 20
+**Research**: Skipped (Level 0 - extending existing environment configuration)
+**Plans**: 1 plan complete
+**Status**: Complete (2026-01-09)
+
+Plans:
+- [x] 21-01: Port environment variables and docker-compose.yml updates
+
+**Details:**
+Frontend and backend ports are currently hardcoded in docker-compose.yml (8081:8080 and 8080:8080 respectively). For production deployment flexibility, both should be configurable via FRONTEND_PORT and BACKEND_PORT environment variables. This extends the environment configuration work from Phase 18 to cover service port mappings.
+
 ## Phases
 
 **Phase Numbering:**
@@ -143,6 +146,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 18: Environment Configuration** - Env variable support and .env file configuration
 - [x] **Phase 19: Volume & Path Management** - Persistent volumes for database and downloads
 - [x] **Phase 20: Deployment Documentation** - Installation guide for Unraid deployment
+- [ ] **Phase 21: Configurable Port Variables** - Add environment variables for frontend and backend port configuration
 
 ## Phase Details
 
@@ -283,3 +287,4 @@ Plans:
 | 18. Environment Configuration | v1.3 | 1/1 | ✅ Shipped | 2026-01-09 |
 | 19. Volume & Path Management | v1.3 | 1/1 | ✅ Shipped | 2026-01-09 |
 | 20. Deployment Documentation | v1.3 | 1/1 | ✅ Shipped | 2026-01-09 |
+| 21. Configurable Port Variables | v1.3 | 0/? | Not planned | - |
