@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-01-09 after v1.2 milestone)
 ## Current Position
 
 Milestone: v1.3 Production Deployment
-Phase: 18 of 20 (Environment Configuration)
+Phase: 19 of 20 (Volume & Path Management)
 Plan: 1 of 1 in current phase
 Status: Phase complete
-Last activity: 2026-01-09 - Completed 18-01-PLAN.md
+Last activity: 2026-01-09 - Completed 19-01-PLAN.md
 
-Progress: ███░░░░░░░ 45%
+Progress: ████░░░░░░ 50%
 
 ## Performance Metrics
 
@@ -99,6 +99,8 @@ Recent decisions affecting current work:
 - **Environment variable precedence**: ENV > Database > Defaults pattern enables deployment-time config without database access
 - **env_mapping centralization**: Single map of database keys to environment variable names for maintainability
 - **Set() database-only behavior**: Config.Set() writes to database only, environment variables are read-only at runtime
+- **Volume mount strategy**: Named volumes for development, host path mounts for production (Unraid/NAS deployments)
+- **Container path defaults**: PATHS_LOCAL_MOUNT=/downloads, PATHS_DESTINATION=/audiobooks match volume mount paths for zero-config development
 
 ### Roadmap Evolution
 
@@ -121,7 +123,7 @@ None
 
 ## Session Continuity
 
-Last session: 2026-01-09T21:57:53Z
-Stopped at: Completed 18-01-PLAN.md (Environment Configuration complete)
+Last session: 2026-01-09T22:09:46Z
+Stopped at: Completed 19-01-PLAN.md (Volume & Path Management complete)
 Resume file: None
-Next action: /gsd:plan-phase 19
+Next action: /gsd:plan-phase 20
