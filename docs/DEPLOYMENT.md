@@ -470,15 +470,368 @@ scp -r dist/* user@server:/var/www/organizr/
 
 ## Docker Deployment
 
-**Note:** Docker support is not yet implemented but planned for future release.
+Organizr runs in Docker containers with support for both development (named volumes) and production (host path mounts) deployments.
 
-**Planned Docker approach:**
-- Multi-stage Dockerfile for backend (Go build + runtime)
-- Frontend build stage producing static files
-- docker-compose.yml with backend, frontend (nginx), and qBittorrent services
-- Volume mounts for database, configuration, and audiobook files
+### Prerequisites
 
-Track progress on Docker support in GitHub issues.
+- Docker and Docker Compose installed
+- qBittorrent with Web UI enabled (running on host or in container)
+- MyAnonamouse account with API secret
+- Storage paths for downloads and audiobooks
+
+### Unraid Deployment
+
+Unraid is a popular NAS operating system with Docker support. This guide covers deploying Organizr to Unraid.
+
+#### Step 1: Prepare Directories
+
+Typical Unraid storage paths:
+- `/mnt/user/downloads` - qBittorrent download location
+- `/mnt/user/audiobooks` - Audiobookshelf library
+- `/mnt/user/appdata/organizr` - Organizr database
+
+Ensure these directories exist and have proper permissions:
+
+```bash
+# Create directories if needed
+mkdir -p /mnt/user/downloads
+mkdir -p /mnt/user/audiobooks
+mkdir -p /mnt/user/appdata/organizr
+
+# Set ownership (uid/gid 1001 matches container user)
+chown -R 1001:1001 /mnt/user/appdata/organizr
+```
+
+#### Step 2: Clone Repository
+
+```bash
+# Navigate to appdata
+cd /mnt/user/appdata
+
+# Clone repository
+git clone https://github.com/yourusername/organizr.git
+cd organizr
+```
+
+#### Step 3: Configure docker-compose.yml
+
+Replace named volumes with host paths. Edit `docker-compose.yml`:
+
+```yaml
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - ORGANIZR_DB_PATH=${ORGANIZR_DB_PATH:-/data/organizr.db}
+      - QBITTORRENT_URL=${QBITTORRENT_URL}
+      - QBITTORRENT_USERNAME=${QBITTORRENT_USERNAME}
+      - QBITTORRENT_PASSWORD=${QBITTORRENT_PASSWORD}
+      - PATHS_DESTINATION=${PATHS_DESTINATION:-/audiobooks}
+      - PATHS_TEMPLATE=${PATHS_TEMPLATE:-{author}/{series}/{title}}
+      - PATHS_NO_SERIES_TEMPLATE=${PATHS_NO_SERIES_TEMPLATE:-{author}/{title}}
+      - PATHS_OPERATION=${PATHS_OPERATION:-copy}
+      - PATHS_LOCAL_MOUNT=${PATHS_LOCAL_MOUNT:-/downloads}
+      - MONITOR_INTERVAL_SECONDS=${MONITOR_INTERVAL_SECONDS:-30}
+      - MONITOR_AUTO_ORGANIZE=${MONITOR_AUTO_ORGANIZE:-true}
+      - MAM_BASEURL=${MAM_BASEURL:-https://www.myanonamouse.net}
+      - MAM_SECRET=${MAM_SECRET}
+    volumes:
+      - /mnt/user/downloads:/downloads              # qBittorrent downloads
+      - /mnt/user/audiobooks:/audiobooks            # Organized audiobooks
+      - /mnt/user/appdata/organizr:/data            # Database
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - organizr-network
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8081:8080"
+    environment:
+      - VITE_API_URL=http://backend:8080
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - organizr-network
+
+networks:
+  organizr-network:
+    driver: bridge
+```
+
+**Note:** Remove the `volumes:` section at the bottom (no longer needed with host path mounts).
+
+#### Step 4: Configure Environment Variables
+
+Copy `.env.example` to `.env` and configure:
+
+```bash
+cp .env.example .env
+nano .env  # or your preferred editor
+```
+
+**Required configuration:**
+
+```bash
+# qBittorrent Connection
+# If qBittorrent in container on same network: http://container-name:8080
+# If qBittorrent on Unraid host: http://192.168.1.100:8080 (use Unraid IP)
+QBITTORRENT_URL=http://192.168.1.100:8080
+
+# qBittorrent credentials
+QBITTORRENT_USERNAME=admin
+QBITTORRENT_PASSWORD=your_password
+
+# MyAnonamouse API secret
+MAM_SECRET=your_mam_api_secret_here
+
+# Path configuration (container paths - match volume mounts)
+PATHS_LOCAL_MOUNT=/downloads
+PATHS_DESTINATION=/audiobooks
+
+# Path templates (customize folder structure)
+PATHS_TEMPLATE={author}/{series}/{title}
+PATHS_NO_SERIES_TEMPLATE={author}/{title}
+
+# Operation mode
+PATHS_OPERATION=copy
+```
+
+**Path Configuration Notes:**
+- `PATHS_LOCAL_MOUNT=/downloads` - Container path to qBittorrent downloads (matches volume mount)
+- `PATHS_DESTINATION=/audiobooks` - Container path for organized files (matches volume mount)
+- Host paths are configured in docker-compose.yml volumes section
+
+**qBittorrent URL Options:**
+- **qBittorrent in Docker:** Use container name (e.g., `http://qbittorrent:8080`)
+- **qBittorrent on Unraid host:** Use Unraid IP (e.g., `http://192.168.1.100:8080`)
+- **qBittorrent on different server:** Use that server's IP
+
+#### Step 5: Start Services
+
+```bash
+# Build and start containers
+docker-compose up -d
+
+# Check status
+docker-compose ps
+
+# View logs
+docker-compose logs -f
+```
+
+**Expected output:**
+```
+Creating organizr_backend_1  ... done
+Creating organizr_frontend_1 ... done
+```
+
+#### Step 6: Verify Configuration
+
+**Access UI:**
+- Navigate to `http://unraid-ip:8081` in your browser
+- You should see the Organizr interface
+
+**Test qBittorrent Connection:**
+1. Click **Config** in sidebar
+2. Verify qBittorrent connection settings
+3. Click **Test Connection** button
+4. Should see "Connection successful" message
+
+**Test Download and Organization:**
+1. Search for an audiobook
+2. Download a torrent
+3. Wait for download to complete
+4. Verify files organized to `/mnt/user/audiobooks`
+5. Check folder structure matches your template
+
+#### Step 7: Configure Audiobookshelf (Optional)
+
+If using Audiobookshelf on Unraid:
+
+1. Install Audiobookshelf from Community Applications
+2. Map library to `/mnt/user/audiobooks`
+3. Scan library to detect organized audiobooks
+4. Verify audiobooks appear with correct metadata
+
+### Docker Compose Deployment (Non-Unraid)
+
+For standard Docker Compose deployments:
+
+**1. Clone repository:**
+```bash
+git clone https://github.com/yourusername/organizr.git
+cd organizr
+```
+
+**2. Configure docker-compose.yml:**
+
+Adjust host paths in volumes section to match your system:
+
+```yaml
+volumes:
+  - /path/to/downloads:/downloads          # Your qBittorrent download path
+  - /path/to/audiobooks:/audiobooks        # Your audiobook library path
+  - /path/to/data:/data                    # Database persistence
+```
+
+**3. Configure .env:**
+
+```bash
+cp .env.example .env
+# Edit .env with your settings
+```
+
+**4. Start services:**
+
+```bash
+docker-compose up -d
+```
+
+**5. Access UI:**
+- Frontend: `http://localhost:8081`
+- Backend API: `http://localhost:8080`
+
+### Troubleshooting Docker Deployment
+
+#### qBittorrent Connection Failed
+
+**Symptom:** "Connection failed" when testing qBittorrent in Config
+
+**Solutions:**
+- **Check QBITTORRENT_URL:** Must be accessible from container
+  - Test from container: `docker-compose exec backend wget -O- http://your-qbittorrent-url`
+- **Verify Web UI enabled:** qBittorrent Settings → Web UI → Enable Web UI
+- **Check credentials:** Ensure username/password correct in .env
+- **Network issues:** If qBittorrent on host, use host IP not `localhost`
+  - Linux: Use host IP (e.g., `192.168.1.100:8080`)
+  - Mac/Windows: Use `host.docker.internal:8080`
+
+#### Files Not Organizing
+
+**Symptom:** Downloads complete but files don't move to audiobooks directory
+
+**Solutions:**
+- **Verify PATHS_LOCAL_MOUNT:** Must match qBittorrent download volume mount
+  - Check docker-compose.yml: If mounted as `/downloads`, set `PATHS_LOCAL_MOUNT=/downloads`
+- **Check logs:** `docker-compose logs backend | grep -i error`
+- **Verify download completion:** qBittorrent shows "Completed" status, not paused/seeding
+- **Check permissions:** Host directories must be readable/writable by uid 1001
+  ```bash
+  ls -la /mnt/user/downloads
+  ls -la /mnt/user/audiobooks
+  ```
+
+#### Permission Errors
+
+**Symptom:** "Permission denied" errors in logs
+
+**Solutions:**
+- **Container user:** Both containers run as uid/gid 1001 (non-root)
+- **Host permissions:** Ensure directories writable by uid 1001
+  ```bash
+  chown -R 1001:1001 /mnt/user/appdata/organizr
+  # Or grant world write (less secure)
+  chmod 777 /mnt/user/downloads /mnt/user/audiobooks
+  ```
+- **Unraid:** Set "Nobody" user permissions on shares (Shares → Edit Share → Security)
+
+#### Database Issues
+
+**Symptom:** Backend won't start, database errors in logs
+
+**Solutions:**
+- **Database location:** Verify mounted at `/data` in container
+  ```bash
+  docker-compose exec backend ls -la /data
+  ```
+- **Permissions:** Database directory must be writable
+  ```bash
+  ls -la /mnt/user/appdata/organizr
+  chown -R 1001:1001 /mnt/user/appdata/organizr
+  ```
+- **Backup and reset:** Stop containers, backup .db files, delete database, restart
+  ```bash
+  docker-compose down
+  cp /mnt/user/appdata/organizr/organizr.db /mnt/user/appdata/organizr/organizr.db.backup
+  rm /mnt/user/appdata/organizr/organizr.db*
+  docker-compose up -d
+  ```
+
+#### Container Won't Start
+
+**Symptom:** Container exits immediately or fails health check
+
+**Solutions:**
+- **Check logs:** `docker-compose logs backend` or `docker-compose logs frontend`
+- **Port conflicts:** Ensure ports 8080/8081 not in use
+  ```bash
+  netstat -tlnp | grep -E '8080|8081'
+  ```
+- **Missing .env:** Ensure .env file exists with required variables
+- **Build issues:** Rebuild containers
+  ```bash
+  docker-compose down
+  docker-compose build --no-cache
+  docker-compose up -d
+  ```
+
+### Upgrading Docker Deployment
+
+**1. Stop containers:**
+```bash
+docker-compose down
+```
+
+**2. Backup database:**
+```bash
+cp /mnt/user/appdata/organizr/organizr.db /mnt/user/appdata/organizr/organizr.db.backup
+```
+
+**3. Pull latest code:**
+```bash
+git pull origin main
+```
+
+**4. Rebuild and start:**
+```bash
+docker-compose build --no-cache
+docker-compose up -d
+```
+
+**5. Verify:**
+```bash
+docker-compose logs -f
+# Check for migration messages and startup success
+```
+
+### Alternative: Unraid Community Applications Template
+
+**Note:** Unraid Community Applications template is a future enhancement.
+
+**Planned features:**
+- UI-based installation from Community Applications
+- Pre-configured volume mappings
+- Web UI configuration fields
+- One-click updates
+
+For now, use docker-compose deployment method above.
 
 ---
 
