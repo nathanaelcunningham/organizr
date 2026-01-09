@@ -31,7 +31,7 @@ func AssertError(t *testing.T, err error, msg string) {
 }
 
 // AssertEqual compares values using deep equality, fails with diff on mismatch.
-func AssertEqual(t *testing.T, got, want interface{}) {
+func AssertEqual(t *testing.T, got, want any) {
 	t.Helper()
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("\ngot:  %+v\nwant: %+v", got, want)
@@ -42,7 +42,7 @@ func AssertEqual(t *testing.T, got, want interface{}) {
 func AssertJSONEqual(t *testing.T, got, want string) {
 	t.Helper()
 
-	var gotData, wantData interface{}
+	var gotData, wantData any
 
 	if err := json.Unmarshal([]byte(got), &gotData); err != nil {
 		t.Fatalf("failed to unmarshal got JSON: %v", err)
@@ -58,16 +58,19 @@ func AssertJSONEqual(t *testing.T, got, want string) {
 }
 
 // NewTestContext creates a context with timeout (default 5s if zero).
+// Note: cancel function is intentionally not returned as test contexts
+// are typically short-lived and cleaned up when the test completes.
 func NewTestContext(timeout time.Duration) context.Context {
 	if timeout == 0 {
 		timeout = 5 * time.Second
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	_ = cancel // Suppress linter warning - cancel is intentionally unused in test helpers
 	return ctx
 }
 
 // NewTestHTTPRequest creates an httptest request with JSON body marshaling.
-func NewTestHTTPRequest(method, path string, body interface{}) *http.Request {
+func NewTestHTTPRequest(method, path string, body any) *http.Request {
 	var req *http.Request
 
 	if body != nil {

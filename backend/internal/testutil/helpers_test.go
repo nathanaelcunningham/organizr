@@ -107,7 +107,7 @@ func TestNewTestHTTPRequest(t *testing.T) {
 	})
 
 	t.Run("creates request with JSON body", func(t *testing.T) {
-		body := map[string]interface{}{
+		body := map[string]any{
 			"name":  "test",
 			"value": 42,
 		}

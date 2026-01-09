@@ -1,6 +1,7 @@
 package testutil
 
 import (
+	"maps"
 	"time"
 
 	"github.com/google/uuid"
@@ -200,9 +201,7 @@ func NewTestConfig(overrides map[string]string) map[string]string {
 		"output.template":      "{author}/{series}/{title}",
 	}
 
-	for key, value := range overrides {
-		config[key] = value
-	}
+	maps.Copy(config, overrides)
 
 	return config
 }

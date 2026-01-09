@@ -164,8 +164,8 @@ func formatSeriesInfoForTest(seriesInfo string) string {
 		return ""
 	}
 	// MAM returns series info as: {"id": ["Series Name", "Book Number", numeric_value]}
-	// The array contains mixed types (strings and numbers), so we use []interface{}
-	seriesMap := make(map[string][]interface{})
+	// The array contains mixed types (strings and numbers), so we use []any
+	seriesMap := make(map[string][]any)
 	if err := json.Unmarshal([]byte(seriesInfo), &seriesMap); err != nil {
 		return ""
 	}
