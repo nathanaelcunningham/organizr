@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-01-08 after v1.1 milestone)
 
 Milestone: v1.2 Developer Experience
 Phase: 13 of 15 (Developer Documentation)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-01-09 - Completed 13-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-01-09 - Completed 13-02-PLAN.md
 
-Progress: ██████░░░░ 57% (4/7 plans complete in v1.2)
+Progress: ███████░░░ 71% (5/7 plans complete in v1.2)
 
 ## Performance Metrics
 
@@ -74,6 +74,9 @@ Recent decisions affecting current work:
 - **Functional options for Go fixtures**: Use functional options pattern for test fixtures (more idiomatic than struct overrides)
 - **Partial&lt;T&gt; for TypeScript fixtures**: Use Partial&lt;T&gt; pattern for type-safe test data overrides (familiar to TS developers)
 - **V8 coverage provider**: Vitest uses v8 provider (faster than c8, built-in support)
+- **Mermaid for architecture diagrams**: GitHub-native rendering, version control friendly (system overview, workflow, backend, frontend diagrams)
+- **systemd for backend service**: Standard on modern Linux, reliable process supervision with automatic restarts
+- **nginx reverse proxy pattern**: Serve frontend static files and proxy API requests to backend
 
 ### Roadmap Evolution
 
@@ -96,6 +99,6 @@ None
 ## Session Continuity
 
 Last session: 2026-01-09
-Stopped at: Completed 13-01-PLAN.md (Phase 13 plan 1 of 2 complete)
+Stopped at: Completed 13-02-PLAN.md (Phase 13 complete - all 2 plans finished)
 Resume file: None
-Next action: Continue Phase 13 plan 2 (Architecture diagrams and deployment guide)
+Next action: Proceed to Phase 14 (Code Quality Tools) - linting, pre-commit hooks, CI configuration
