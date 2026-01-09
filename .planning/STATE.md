@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-01-09 after v1.2 milestone)
 ## Current Position
 
 Milestone: v1.3 Production Deployment
-Phase: 17 of 20 (Docker Compose Setup)
+Phase: 18 of 20 (Environment Configuration)
 Plan: 1 of 1 in current phase
 Status: Phase complete
-Last activity: 2026-01-09 - Completed 17-01-PLAN.md
+Last activity: 2026-01-09 - Completed 18-01-PLAN.md
 
-Progress: ██░░░░░░░░ 40%
+Progress: ███░░░░░░░ 45%
 
 ## Performance Metrics
 
@@ -95,6 +95,10 @@ Recent decisions affecting current work:
 - **Volume mount at /data**: Mount database volume at /data instead of /app to avoid permission conflicts with non-root user ownership
 - **Frontend port mapping**: Map frontend to host port 8081 (container port 8080) to avoid conflict with backend on host port 8080
 - **Health check dependencies**: Frontend depends on backend health before starting to ensure database and API readiness
+- **godotenv for .env loading**: Simple, focused library for .env file support without config framework overhead
+- **Environment variable precedence**: ENV > Database > Defaults pattern enables deployment-time config without database access
+- **env_mapping centralization**: Single map of database keys to environment variable names for maintainability
+- **Set() database-only behavior**: Config.Set() writes to database only, environment variables are read-only at runtime
 
 ### Roadmap Evolution
 
@@ -117,7 +121,7 @@ None
 
 ## Session Continuity
 
-Last session: 2026-01-09T21:36:54Z
-Stopped at: Completed 17-01-PLAN.md (Docker Compose Setup complete)
+Last session: 2026-01-09T21:57:53Z
+Stopped at: Completed 18-01-PLAN.md (Environment Configuration complete)
 Resume file: None
-Next action: /gsd:plan-phase 18
+Next action: /gsd:plan-phase 19
