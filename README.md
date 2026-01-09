@@ -67,6 +67,33 @@ Visit `http://localhost:5173` to access the UI.
    - Default: `{author}/{title}` for standalone books
    - Preview your template before saving
 
+> **💡 Production Deployment:** The Quick Start above is for local development. For production deployment with Docker, see [Deployment](#deployment) below or jump directly to [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+## Deployment
+
+Organizr can be deployed with Docker (recommended for production) or as standalone binaries.
+
+**Docker Deployment (Recommended):**
+
+```bash
+# 1. Create .env file with your configuration
+cp .env.example .env
+# Edit .env with your qBittorrent URL, credentials, and paths
+
+# 2. Start services with Docker Compose
+docker compose up -d
+
+# 3. Access Organizr at http://localhost:3000
+```
+
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for comprehensive Docker deployment instructions, including environment variable configuration and health checks.
+
+**Unraid Deployment:** Organizr supports Unraid with docker-compose.yml deployment. See the [Unraid section](docs/DEPLOYMENT.md#unraid-deployment) for volume mapping examples and path configuration.
+
+**Bare Metal Deployment:** For systemd service deployment without Docker, see the [systemd section](docs/DEPLOYMENT.md#backend-deployment) for service configuration and binary installation.
+
+**Troubleshooting:** See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for Docker-specific issues, connection problems, and common deployment errors.
+
 ## Screenshots
 
 _Coming soon - screenshots of search interface, download monitoring, and configuration settings_
