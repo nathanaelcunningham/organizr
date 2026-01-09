@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-01-09 after v1.2 milestone)
 ## Current Position
 
 Milestone: v1.3 Production Deployment
-Phase: 19 of 20 (Volume & Path Management)
+Phase: 20 of 20 (Deployment Documentation)
 Plan: 1 of 1 in current phase
 Status: Phase complete
-Last activity: 2026-01-09 - Completed 19-01-PLAN.md
+Last activity: 2026-01-09 - Completed 20-01-PLAN.md
 
-Progress: ████░░░░░░ 50%
+Progress: ██████████ 100%
 
 ## Performance Metrics
 
@@ -41,6 +41,8 @@ Progress: ████░░░░░░ 50%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- **Documentation hierarchy**: README serves as navigation hub with quick starts and links to comprehensive guides in docs/ (prevents README bloat while ensuring discoverability)
+- **Deployment section placement**: Positioned between Quick Start and Screenshots for production user visibility
 - **MAM authenticated downloads**: MAM URLs trigger torrent file download before qBittorrent upload (required for private tracker authentication)
 - **Category support**: Categories are optional parameters passed through to qBittorrent for torrent organization
 - **Hash retrieval**: Query qBittorrent API after upload sorted by added_on timestamp (reliable for all torrent sources)
@@ -123,7 +125,7 @@ None
 
 ## Session Continuity
 
-Last session: 2026-01-09T22:09:46Z
-Stopped at: Completed 19-01-PLAN.md (Volume & Path Management complete)
+Last session: 2026-01-09T22:23:45Z
+Stopped at: Completed 20-01-PLAN.md (Deployment Documentation complete - v1.3 milestone complete)
 Resume file: None
-Next action: /gsd:plan-phase 20
+Next action: /gsd:complete-milestone (or plan v1.4 milestone)

@@ -5,9 +5,20 @@
 - ✅ [v1.0 MVP](milestones/v1.0-MVP.md) — Phases 1-6 (plus 1.1 inserted) — SHIPPED 2026-01-07
 - ✅ [v1.1 Enhancements](milestones/v1.1-Enhancements.md) — Phases 7-9 (plus 7.1 inserted) — SHIPPED 2026-01-08
 - ✅ [v1.2 Developer Experience](milestones/v1.2-Developer-Experience.md) — Phases 10-15 — SHIPPED 2026-01-09
-- 🚧 **v1.3 Production Deployment** — Phases 16-20 (in progress)
+- ✅ [v1.3 Production Deployment](milestones/v1.3-Production-Deployment.md) — Phases 16-20 — SHIPPED 2026-01-09
 
 ## Completed Milestones
+
+<details>
+<summary>✅ v1.3 Production Deployment (Phases 16-20) — SHIPPED 2026-01-09</summary>
+
+Docker containerization with multi-stage builds, Docker Compose orchestration, environment variable configuration, volume management for Unraid, and comprehensive deployment documentation.
+
+**Stats:** 5 plans, Phases 16-20, same day
+
+See [milestones/v1.3-Production-Deployment.md](milestones/v1.3-Production-Deployment.md) for full details.
+
+</details>
 
 <details>
 <summary>✅ v1.2 Developer Experience (Phases 10-15) — SHIPPED 2026-01-09</summary>
@@ -44,9 +55,7 @@ See [milestones/v1.0-MVP.md](milestones/v1.0-MVP.md) for full details.
 
 ## Current Milestone
 
-### 🚧 v1.3 Production Deployment (In Progress)
-
-**Milestone Goal:** Enable production deployment on Unraid via Docker with proper containerization, environment configuration, and comprehensive deployment documentation.
+None - v1.3 Production Deployment complete. Ready for milestone archival or next milestone planning.
 
 #### Phase 16: Docker Foundation
 
@@ -97,10 +106,12 @@ Plans:
 **Goal**: Enhance README with deployment quick start guide that directs users to comprehensive deployment documentation
 **Depends on**: Phase 19
 **Research**: Skipped (Level 0 - enhancing existing documentation)
+**Status**: Complete ✅
+**Completed**: 2026-01-09
 **Plans**: 1 plan
 
 Plans:
-- [ ] 20-01: README deployment section and production callout
+- [x] 20-01: README deployment section and production callout
 
 ## Phases
 
@@ -130,8 +141,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 16: Docker Foundation** - Create Dockerfiles for backend and frontend with multi-stage builds
 - [x] **Phase 17: Docker Compose Setup** - Multi-container orchestration with volume management
 - [x] **Phase 18: Environment Configuration** - Env variable support and .env file configuration
-- [ ] **Phase 19: Volume & Path Management** - Persistent volumes for database and downloads
-- [ ] **Phase 20: Deployment Documentation** - Installation guide for Unraid deployment
+- [x] **Phase 19: Volume & Path Management** - Persistent volumes for database and downloads
+- [x] **Phase 20: Deployment Documentation** - Installation guide for Unraid deployment
 
 ## Phase Details
 
@@ -267,8 +278,8 @@ Plans:
 | 13. Developer Documentation | v1.2 | 2/2 | ✅ Shipped | 2026-01-09 |
 | 14. Code Quality Tools | v1.2 | 2/2 | ✅ Shipped | 2026-01-09 |
 | 15. Refactoring Opportunities | v1.2 | 2/2 | ✅ Shipped | 2026-01-09 |
-| 16. Docker Foundation | v1.3 | 1/1 | ✅ Complete | 2026-01-09 |
-| 17. Docker Compose Setup | v1.3 | 1/1 | ✅ Complete | 2026-01-09 |
-| 18. Environment Configuration | v1.3 | 1/1 | ✅ Complete | 2026-01-09 |
-| 19. Volume & Path Management | v1.3 | 1/1 | ✅ Complete | 2026-01-09 |
-| 20. Deployment Documentation | v1.3 | 0/1 | Not started | - |
+| 16. Docker Foundation | v1.3 | 1/1 | ✅ Shipped | 2026-01-09 |
+| 17. Docker Compose Setup | v1.3 | 1/1 | ✅ Shipped | 2026-01-09 |
+| 18. Environment Configuration | v1.3 | 1/1 | ✅ Shipped | 2026-01-09 |
+| 19. Volume & Path Management | v1.3 | 1/1 | ✅ Shipped | 2026-01-09 |
+| 20. Deployment Documentation | v1.3 | 1/1 | ✅ Shipped | 2026-01-09 |
