@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+# Frontend checks (TypeScript, formatting, linting)
+echo "Running frontend checks..."
+cd frontend
+npm run format:check || exit 1
+npm run lint || exit 1
+npm run type-check || exit 1
+cd ..
+
+# Backend checks (Go linting)
+echo "Running backend checks..."
+cd backend
+make lint || exit 1
+cd ..
+
+echo "✓ Pre-commit checks passed"
