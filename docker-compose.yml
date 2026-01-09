@@ -2,7 +2,7 @@ services:
   backend:
     build: ./backend
     ports:
-      - "8080:8080"
+      - "${BACKEND_PORT:-8080}:8080"
     env_file:
       - .env
     environment:
@@ -36,7 +36,7 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "8081:8080"
+      - "${FRONTEND_PORT:-8081}:8080"
     environment:
       - VITE_API_URL=http://backend:8080
     depends_on:
