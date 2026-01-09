@@ -4,9 +4,20 @@
 
 - ✅ [v1.0 MVP](milestones/v1.0-MVP.md) — Phases 1-6 (plus 1.1 inserted) — SHIPPED 2026-01-07
 - ✅ [v1.1 Enhancements](milestones/v1.1-Enhancements.md) — Phases 7-9 (plus 7.1 inserted) — SHIPPED 2026-01-08
-- 🚧 **v1.2 Developer Experience** — Phases 10-15 — IN PROGRESS
+- ✅ [v1.2 Developer Experience](milestones/v1.2-Developer-Experience.md) — Phases 10-15 — SHIPPED 2026-01-09
 
 ## Completed Milestones
+
+<details>
+<summary>✅ v1.2 Developer Experience (Phases 10-15) — SHIPPED 2026-01-09</summary>
+
+Improved code organization, documentation, testing infrastructure, and developer workflows for better maintainability and contributor-friendliness.
+
+**Stats:** 11 plans, 129 files, +12,809/-2,445 lines, 2 days
+
+See [milestones/v1.2-Developer-Experience.md](milestones/v1.2-Developer-Experience.md) for full details.
+
+</details>
 
 <details>
 <summary>✅ v1.1 Enhancements (Phases 7-9) — SHIPPED 2026-01-08</summary>
@@ -32,77 +43,7 @@ See [milestones/v1.0-MVP.md](milestones/v1.0-MVP.md) for full details.
 
 ## Current Milestone
 
-### 🚧 v1.2 Developer Experience (In Progress)
-
-**Milestone Goal:** Improve code organization, documentation, testing infrastructure, and developer workflows to make the codebase more maintainable and contributor-friendly.
-
-#### Phase 10: Code Organization & Architecture Review
-**Goal**: Audit current structure, identify patterns, document architectural decisions, create contribution guidelines
-**Depends on**: Previous milestone complete (v1.1)
-**Research**: Unlikely (internal code review and documentation)
-**Plans**: 1 complete
-**Status**: ✅ Complete (2026-01-08)
-
-Plans:
-- [x] 10-01: Architecture Decision Record, contribution guidelines, codebase documentation updates
-
-#### Phase 11: API Layer Cleanup
-**Goal**: Standardize error handling, improve request/response patterns, add OpenAPI/Swagger documentation
-**Depends on**: Phase 10
-**Research**: Unlikely (established patterns, standard API documentation tools)
-**Plans**: 3 complete
-**Status**: ✅ Complete (2026-01-08)
-
-Plans:
-- [x] 11-01: Error handling standardization with typed helpers
-- [x] 11-02: OpenAPI/Swagger documentation
-- [x] 11-03: Response pattern standardization
-
-#### Phase 12: Testing Infrastructure
-**Goal**: Add integration test helpers, improve test coverage reporting, create test data fixtures, document testing patterns
-**Depends on**: Phase 11
-**Research**: Unlikely (extending existing test patterns)
-**Plans**: 1 complete
-**Status**: ✅ Complete (2026-01-09)
-
-Plans:
-- [x] 12-01: Test helpers, fixtures, and coverage reporting
-
-#### Phase 13: Developer Documentation
-**Goal**: Comprehensive README, architecture diagrams, API documentation, setup guides, troubleshooting docs
-**Depends on**: Phase 12
-**Research**: Unlikely (documentation of existing systems)
-**Plans**: 2 complete
-**Status**: ✅ Complete (2026-01-09)
-
-Plans:
-- [x] 13-01: Root README and troubleshooting guide
-- [x] 13-02: Architecture diagrams and deployment guide
-
-#### Phase 14: Code Quality Tools
-**Goal**: Add linting (golangci-lint, ESLint configs), pre-commit hooks, CI pipeline improvements, code formatting standards
-**Depends on**: Phase 13
-**Research**: Likely (tool selection and configuration best practices)
-**Research topics**: golangci-lint configuration, ESLint + Prettier setup for TypeScript, pre-commit hooks, GitHub Actions workflows
-**Plans**: 2 complete
-**Status**: ✅ Complete
-**Completed**: 2026-01-09
-
-Plans:
-- [x] 14-01: Backend linting (golangci-lint) and frontend formatting (Prettier)
-- [x] 14-02: Pre-commit hooks and CI configuration
-
-#### Phase 15: Refactoring Opportunities
-**Goal**: Address technical debt, improve naming consistency, extract reusable utilities, optimize hot paths
-**Depends on**: Phase 14
-**Research**: Skipped (internal refactoring based on established patterns, Level 0)
-**Plans**: 2 plans
-**Status**: ✅ Complete
-**Completed**: 2026-01-09
-
-Plans:
-- [x] 15-01: Error handling cleanup - fix errcheck violations, defer Close() patterns
-- [x] 15-02: Code quality improvements - consolidate duplicate logic, fix context misuse, extract utilities
+No active milestone. Ready to plan v1.3.
 
 ## Phases
 
@@ -124,10 +65,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 8: Batch Operations** - Support adding multiple torrents at once
 - [x] **Phase 9: Series Number Organization** - Add series_number template variable for folder organization
 - [x] **Phase 10: Code Organization & Architecture Review** - Audit structure, document decisions, create contribution guidelines
-- [ ] **Phase 11: API Layer Cleanup** - Standardize error handling, add OpenAPI/Swagger documentation (1+ plans, in progress)
-- [ ] **Phase 12: Testing Infrastructure** - Integration test helpers, coverage reporting, test fixtures
-- [ ] **Phase 13: Developer Documentation** - Comprehensive README, architecture diagrams, setup guides
-- [ ] **Phase 14: Code Quality Tools** - Linting, pre-commit hooks, CI improvements, formatting standards
+- [x] **Phase 11: API Layer Cleanup** - Standardize error handling, add OpenAPI/Swagger documentation
+- [x] **Phase 12: Testing Infrastructure** - Integration test helpers, coverage reporting, test fixtures
+- [x] **Phase 13: Developer Documentation** - Comprehensive README, architecture diagrams, setup guides
+- [x] **Phase 14: Code Quality Tools** - Linting, pre-commit hooks, CI improvements, formatting standards
 - [x] **Phase 15: Refactoring Opportunities** - Address technical debt, improve consistency, optimize hot paths
 
 ## Phase Details
@@ -258,9 +199,9 @@ Plans:
 | 7.1 Fix Series Download Field (INSERTED) | v1.1 | 1/1 | ✅ Shipped | 2026-01-08 |
 | 8. Batch Operations | v1.1 | 2/2 | ✅ Shipped | 2026-01-08 |
 | 9. Series Number Organization | v1.1 | 3/3 | ✅ Shipped | 2026-01-08 |
-| 10. Code Organization & Architecture Review | v1.2 | 1/1 | ✅ Complete | 2026-01-08 |
-| 11. API Layer Cleanup | v1.2 | 3/3 | ✅ Complete | 2026-01-08 |
-| 12. Testing Infrastructure | v1.2 | 1/1 | ✅ Complete | 2026-01-09 |
-| 13. Developer Documentation | v1.2 | 2/2 | ✅ Complete | 2026-01-09 |
-| 14. Code Quality Tools | v1.2 | 2/2 | ✅ Complete | 2026-01-09 |
-| 15. Refactoring Opportunities | v1.2 | 2/2 | ✅ Complete | 2026-01-09 |
+| 10. Code Organization & Architecture Review | v1.2 | 1/1 | ✅ Shipped | 2026-01-08 |
+| 11. API Layer Cleanup | v1.2 | 3/3 | ✅ Shipped | 2026-01-08 |
+| 12. Testing Infrastructure | v1.2 | 1/1 | ✅ Shipped | 2026-01-09 |
+| 13. Developer Documentation | v1.2 | 2/2 | ✅ Shipped | 2026-01-09 |
+| 14. Code Quality Tools | v1.2 | 2/2 | ✅ Shipped | 2026-01-09 |
+| 15. Refactoring Opportunities | v1.2 | 2/2 | ✅ Shipped | 2026-01-09 |

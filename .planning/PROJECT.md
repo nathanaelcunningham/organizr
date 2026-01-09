@@ -25,10 +25,17 @@ Perfect folder structures and file placement every time - audiobooks land exactl
 - ✓ MAM series detection - parse and display series information from search results — v1.1
 - ✓ Batch download operations - add multiple torrents simultaneously — v1.1
 - ✓ Series number organization - support {series_number} in folder templates — v1.1
+- ✓ Architecture documentation - ADR, contribution guidelines, codebase reference — v1.2
+- ✓ API standardization - typed error helpers, OpenAPI/Swagger documentation — v1.2
+- ✓ Testing infrastructure - test utilities, fixtures, coverage reporting — v1.2
+- ✓ Developer documentation - README, troubleshooting, architecture diagrams, deployment guide — v1.2
+- ✓ Code quality automation - linting, formatting, pre-commit hooks, CI workflows — v1.2
+- ✓ Error handling cleanup - zero errcheck violations, proper Close() handling — v1.2
 
 ### Active
 
-(None - ready to plan next milestone)
+- [ ] Improved user experience - better visual feedback and status display
+- [ ] Performance optimizations - reduce API calls and improve responsiveness
 
 ### Out of Scope
 
@@ -39,12 +46,14 @@ Perfect folder structures and file placement every time - audiobooks land exactl
 
 ## Context
 
-**Current State (v1.1 shipped 2026-01-08):**
-- **Codebase**: ~9,500 LOC (Go backend + TypeScript frontend)
+**Current State (v1.2 shipped 2026-01-09):**
+- **Codebase**: ~12,291 LOC (Go backend + TypeScript frontend)
 - **Tech Stack**: Go (Chi router, SQLite with WAL), React (TypeScript, Vite, Zustand), qBittorrent Web API
 - **Features**: Full qBittorrent integration, background monitoring, configurable folder templates with {series_number} support, auto-organization, MAM series detection with grouped display, batch downloads with multi-select UI
-- **Testing**: Comprehensive backend tests (handlers, monitor, organization, batch), frontend tests (Vitest), zero race conditions
-- **Status**: Production-ready with enhanced series support and batch operations
+- **Testing**: Comprehensive backend tests (handlers, monitor, organization, batch), frontend tests (Vitest), test utilities and fixtures, 60% coverage baseline, zero race conditions
+- **Documentation**: Complete README, ADR, CONTRIBUTING guide, API docs (Swagger), architecture diagrams, deployment guide, troubleshooting guide
+- **Quality**: golangci-lint + Prettier automation, pre-commit hooks, CI quality gates, zero errcheck violations
+- **Status**: Production-ready with professional developer experience and maintainable codebase
 
 **Established Patterns:**
 - Repository pattern for data access
@@ -57,6 +66,11 @@ Perfect folder structures and file placement every time - audiobooks land exactl
 - Structured data models over string concatenation (SeriesInfo with ID, Name, Number)
 - Partial success patterns for batch operations
 - Client-side grouping and sorting for search results
+- Typed error helpers for consistent API responses
+- Test utilities and fixtures for reduced boilerplate
+- Architecture Decision Record for documenting technical choices
+- Pre-commit hooks and CI workflows for automated quality checks
+- Zero-tolerance error handling policy (errcheck enabled)
 
 ## Constraints
 
@@ -83,6 +97,19 @@ Perfect folder structures and file placement every time - audiobooks land exactl
 | Partial success pattern | Batch operations return 200 OK with separate success/failed arrays | ✓ Good - Graceful partial failure handling, clear user feedback |
 | First series as primary | Books in multiple series use first for organization | ✓ Good - Simple rule, typically the main series is listed first |
 | Empty series_number handling | Replace with empty string in templates | ✓ Good - Preserves user's template structure, simple and predictable |
+| Typed error helpers | Function-based error helpers over map/enum approach | ✓ Good - Type safety and clear call site documentation |
+| 60% coverage baseline | Established 60% thresholds for both backend and frontend | ✓ Good - Realistic quality baseline, can increase over time |
+| Functional options for Go fixtures | Use functional options pattern for test fixtures | ✓ Good - More idiomatic than struct overrides |
+| Partial&lt;T&gt; for TypeScript fixtures | Use Partial&lt;T&gt; pattern for type-safe test data overrides | ✓ Good - Familiar to TS developers |
+| V8 coverage provider | Vitest uses v8 provider (faster than c8) | ✓ Good - Built-in support, better performance |
+| Mermaid for architecture diagrams | GitHub-native rendering, version control friendly | ✓ Good - Easy to maintain, automatically rendered |
+| golangci-lint pragmatic ruleset | govet, staticcheck, unused, misspell, goimports | ✓ Good - Focus on correctness, errcheck added in v1.2 |
+| Prettier for frontend formatting | Single quotes, no semicolons, 100 char width | ✓ Good - Separate from ESLint for performance |
+| Husky for pre-commit hooks | Standard in Node.js ecosystem | ✓ Good - Simple setup, reliable execution |
+| Parallel CI quality jobs | Quality checks run in parallel with tests | ✓ Good - Fast feedback and fail-fast behavior |
+| Pre-commit scope | Format + lint + type-check (skip tests) | ✓ Good - Tests too slow for pre-commit, remain in CI |
+| defer func() pattern for Close() errors | Use defer func() with proper error logging | ✓ Good - Proper error checking with cleanup guarantee |
+| Zero-tolerance error handling policy | errcheck enabled in CI with no exclusions | ✓ Good - Prevents error handling debt from accumulating |
 
 ---
-*Last updated: 2026-01-08 after v1.1 milestone*
+*Last updated: 2026-01-09 after v1.2 milestone*
