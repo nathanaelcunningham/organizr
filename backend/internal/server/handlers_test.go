@@ -113,7 +113,8 @@ func testHandleCreateDownload(w http.ResponseWriter, r *http.Request, downloadSv
 	var torrentBytes []byte
 	if req.TorrentID != "" {
 		torrentID := 0
-		fmt.Sscanf(req.TorrentID, "%d", &torrentID)
+		// Parse torrent ID - ignore parse errors, will use 0 if invalid
+		_, _ = fmt.Sscanf(req.TorrentID, "%d", &torrentID)
 
 		var err error
 		torrentBytes, err = searchSvc.DownloadTorrent(r.Context(), torrentID)
@@ -636,7 +637,8 @@ func testHandleBatchCreateDownload(w http.ResponseWriter, r *http.Request, downl
 		var torrentBytes []byte
 		if downloadReq.TorrentID != "" {
 			torrentID := 0
-			fmt.Sscanf(downloadReq.TorrentID, "%d", &torrentID)
+			// Parse torrent ID - ignore parse errors, will use 0 if invalid
+			_, _ = fmt.Sscanf(downloadReq.TorrentID, "%d", &torrentID)
 
 			var err error
 			torrentBytes, err = searchSvc.DownloadTorrent(r.Context(), torrentID)

@@ -167,8 +167,13 @@ func (m *Monitor) organizeDownload(ctx context.Context, dl *models.Download) {
 	// Perform organization
 	if err := m.orgService.Organize(ctx, dl); err != nil {
 		log.Printf("Failed to organize download %s: %v", dl.ID, err)
-		m.downloadRepo.UpdateError(ctx, dl.ID, err.Error())
-		m.downloadRepo.UpdateStatus(ctx, dl.ID, models.StatusFailed)
+		// Update error status in database - log if this also fails
+		if updateErr := m.downloadRepo.UpdateError(ctx, dl.ID, err.Error()); updateErr != nil {
+			log.Printf("Failed to update download error for %s: %v", dl.ID, updateErr)
+		}
+		if updateErr := m.downloadRepo.UpdateStatus(ctx, dl.ID, models.StatusFailed); updateErr != nil {
+			log.Printf("Failed to update download status for %s: %v", dl.ID, updateErr)
+		}
 		return
 	}
 

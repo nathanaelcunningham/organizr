@@ -5,28 +5,17 @@ run:
   tests: true
 
 linters:
-  disable:
-    - errcheck  # Disabled temporarily - requires code changes to handle defer Close() errors
   enable:
     - govet
     - ineffassign
     - staticcheck
     - unused
     - misspell
+    - errcheck  # Now enabled - all errors properly handled
 
 formatters:
   enable:
     - goimports
-
-linters-settings:
-  errcheck:
-    check-blank: false  # Don't require error checking for blank assignments in defer
-    exclude-functions:
-      - (*database/sql.DB).Close
-      - (*database/sql.Rows).Close
-      - (io.Closer).Close
-      - (*os.File).Close
-      - (*net/http.Response.Body).Close
 
 formatters-settings:
   goimports:
@@ -36,12 +25,3 @@ issues:
   exclude-use-default: false
   max-issues-per-linter: 0
   max-same-issues: 0
-  exclude:
-    # Allow unchecked errors for defer Close() - these are cleanup, errors typically not actionable
-    - 'Error return value of.*\.Close.* is not checked'
-    # Allow unchecked errors for UpdateError/UpdateStatus in error paths - best effort logging
-    - 'Error return value of.*\.Update(Error|Status).* is not checked'
-    # Allow unchecked fmt.Sscanf in tests - parsing test data, failures handled by test assertions
-    - 'Error return value of.*fmt\.Sscanf.* is not checked'
-    # Allow unchecked json.Encode in error handlers - if encoding fails, response fails anyway
-    - 'Error return value of.*json.*\.Encode.* is not checked'

@@ -303,8 +303,9 @@ func (m *testMonitor) organizeDownload(ctx context.Context, dl *models.Download)
 
 	// Perform organization
 	if err := m.orgService.Organize(ctx, dl); err != nil {
-		m.downloadRepo.UpdateError(ctx, dl.ID, err.Error())
-		m.downloadRepo.UpdateStatus(ctx, dl.ID, models.StatusFailed)
+		// Ignore update errors in test - we're testing organization failure handling
+		_ = m.downloadRepo.UpdateError(ctx, dl.ID, err.Error())
+		_ = m.downloadRepo.UpdateStatus(ctx, dl.ID, models.StatusFailed)
 		return
 	}
 
@@ -324,8 +325,10 @@ func (m *testMonitor) Run(ctx context.Context) error {
 	intervalStr, err := m.configService.Get(ctx, "monitor.interval_seconds")
 	if err == nil {
 		var seconds int
-		fmt.Sscanf(intervalStr, "%d", &seconds)
-		m.interval = time.Duration(seconds) * time.Second
+		// Parse interval - ignore parse errors and use default interval
+		if _, parseErr := fmt.Sscanf(intervalStr, "%d", &seconds); parseErr == nil && seconds > 0 {
+			m.interval = time.Duration(seconds) * time.Second
+		}
 	}
 
 	ticker := time.NewTicker(m.interval)

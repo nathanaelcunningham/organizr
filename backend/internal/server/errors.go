@@ -29,14 +29,20 @@ func respondWithError(w http.ResponseWriter, code int, message string, err error
 		errResp.Message = err.Error()
 	}
 
-	json.NewEncoder(w).Encode(errResp)
+	// Encode response - log if encoding fails (client will get partial response)
+	if encodeErr := json.NewEncoder(w).Encode(errResp); encodeErr != nil {
+		log.Printf("Failed to encode error response: %v", encodeErr)
+	}
 }
 
 // respondWithJSON sends a successful JSON response
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	json.NewEncoder(w).Encode(payload)
+	// Encode response - log if encoding fails (client will get partial response)
+	if encodeErr := json.NewEncoder(w).Encode(payload); encodeErr != nil {
+		log.Printf("Failed to encode JSON response: %v", encodeErr)
+	}
 }
 
 // respondWithNotFound sends a standardized 404 Not Found response
