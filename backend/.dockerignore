@@ -1,0 +1,20 @@
+# Build artifacts
+bin/
+*.db
+*.db-shm
+*.db-wal
+
+# Development files
+.air.toml
+coverage.html
+coverage.out
+*.test
+
+# Documentation
+README.md
+FIX_SUMMARY.md
+TEST_MAM_SERIES.md
+
+# Git
+.git/
+.gitignore
