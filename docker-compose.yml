@@ -3,8 +3,23 @@ services:
     build: ./backend
     ports:
       - "8080:8080"
+    env_file:
+      - .env
     environment:
-      - ORGANIZR_DB_PATH=/data/organizr.db
+      # Override specific variables if needed
+      - ORGANIZR_DB_PATH=${ORGANIZR_DB_PATH:-/data/organizr.db}
+      - QBITTORRENT_URL=${QBITTORRENT_URL}
+      - QBITTORRENT_USERNAME=${QBITTORRENT_USERNAME}
+      - QBITTORRENT_PASSWORD=${QBITTORRENT_PASSWORD}
+      - PATHS_DESTINATION=${PATHS_DESTINATION}
+      - PATHS_TEMPLATE=${PATHS_TEMPLATE:-{author}/{series}/{title}}
+      - PATHS_NO_SERIES_TEMPLATE=${PATHS_NO_SERIES_TEMPLATE:-{author}/{title}}
+      - PATHS_OPERATION=${PATHS_OPERATION:-copy}
+      - PATHS_LOCAL_MOUNT=${PATHS_LOCAL_MOUNT}
+      - MONITOR_INTERVAL_SECONDS=${MONITOR_INTERVAL_SECONDS:-30}
+      - MONITOR_AUTO_ORGANIZE=${MONITOR_AUTO_ORGANIZE:-true}
+      - MAM_BASEURL=${MAM_BASEURL:-https://www.myanonamouse.net}
+      - MAM_SECRET=${MAM_SECRET}
     volumes:
       - organizr-data:/data
     healthcheck:
