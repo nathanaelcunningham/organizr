@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/nathanael/organizr/internal/persistence"
 )
@@ -18,6 +19,14 @@ func NewService(repo persistence.ConfigRepository) *Service {
 }
 
 func (s *Service) Get(ctx context.Context, key string) (string, error) {
+	// Check environment variable first
+	if envKey := getEnvKey(key); envKey != "" {
+		if envVal := os.Getenv(envKey); envVal != "" {
+			return envVal, nil
+		}
+	}
+
+	// Fall back to database
 	value, err := s.repo.Get(ctx, key)
 	if err != nil {
 		return "", fmt.Errorf("failed to get config %s: %w", key, err)
@@ -26,10 +35,19 @@ func (s *Service) Get(ctx context.Context, key string) (string, error) {
 }
 
 func (s *Service) GetAll(ctx context.Context) (map[string]string, error) {
+	// Get database configs
 	configs, err := s.repo.GetAll(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get all configs: %w", err)
 	}
+
+	// Override with environment variables
+	for dbKey, envKey := range envKeyMap {
+		if envVal := os.Getenv(envKey); envVal != "" {
+			configs[dbKey] = envVal
+		}
+	}
+
 	return configs, nil
 }
 
