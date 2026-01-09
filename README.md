@@ -220,6 +220,9 @@ Quick checks:
 - **qBittorrent connection fails**: Verify Web UI enabled, check URL format, test credentials
 - **Downloads not organizing**: Check destination path exists, verify template syntax, ensure qBittorrent finished download
 - **Frontend can't reach backend**: Verify backend running on port 8080, check CORS settings
+- **Container won't start**: Check docker-compose logs, verify .env file exists
+- **Backend can't reach qBittorrent**: Ensure qBittorrent URL uses host networking or container name
+- **Permission errors with volumes**: Verify host path ownership (uid/gid 1001)
 
 ## License
 
