@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import { Input } from '../common/Input';
-import { Button } from '../common/Button';
-import { MIN_SEARCH_LENGTH } from '../../utils/constants';
+import React, { useState } from 'react'
+import { Input } from '../common/Input'
+import { Button } from '../common/Button'
+import { MIN_SEARCH_LENGTH } from '../../utils/constants'
 
 interface SearchBarProps {
-  onSearch: (query: string) => void;
-  loading?: boolean;
+  onSearch: (query: string) => void
+  loading?: boolean
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({ onSearch, loading }) => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (query.length >= MIN_SEARCH_LENGTH) {
-      onSearch(query);
+      onSearch(query)
     }
-  };
+  }
 
   return (
     <form onSubmit={handleSubmit} className="mb-6">
@@ -47,5 +47,5 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch, loading }) => {
         </p>
       )}
     </form>
-  );
-};
+  )
+}

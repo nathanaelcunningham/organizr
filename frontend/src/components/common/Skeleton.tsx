@@ -1,7 +1,7 @@
-import React from 'react';
+import React from 'react'
 
 interface SkeletonProps {
-  className?: string;
+  className?: string
 }
 
 export const Skeleton: React.FC<SkeletonProps> = ({ className = '' }) => {
@@ -11,8 +11,8 @@ export const Skeleton: React.FC<SkeletonProps> = ({ className = '' }) => {
       aria-live="polite"
       aria-busy="true"
     />
-  );
-};
+  )
+}
 
 export const SkeletonCard: React.FC = () => {
   return (
@@ -32,8 +32,8 @@ export const SkeletonCard: React.FC = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export const SkeletonList: React.FC<{ count?: number }> = ({ count = 3 }) => {
   return (
@@ -42,5 +42,5 @@ export const SkeletonList: React.FC<{ count?: number }> = ({ count = 3 }) => {
         <SkeletonCard key={i} />
       ))}
     </div>
-  );
-};
+  )
+}

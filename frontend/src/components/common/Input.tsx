@@ -1,10 +1,9 @@
-import React from 'react';
+import React from 'react'
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  error?: string;
-  help?: string;
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: string
+  error?: string
+  help?: string
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -30,13 +29,11 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           `}
           {...props}
         />
-        {help && !error && (
-          <p className="mt-1 text-sm text-gray-500">{help}</p>
-        )}
+        {help && !error && <p className="mt-1 text-sm text-gray-500">{help}</p>}
         {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
       </div>
-    );
+    )
   }
-);
+)
 
-Input.displayName = 'Input';
+Input.displayName = 'Input'

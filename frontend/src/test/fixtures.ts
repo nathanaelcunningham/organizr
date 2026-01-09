@@ -1,12 +1,12 @@
-import type { Download } from '../types/download';
-import type { SearchResult } from '../types/search';
-import type { AppConfig } from '../types/config';
+import type { Download } from '../types/download'
+import type { SearchResult } from '../types/search'
+import type { AppConfig } from '../types/config'
 
 /**
  * Create a test Download with defaults and optional overrides
  */
 export function createTestDownload(overrides?: Partial<Download>): Download {
-  const id = overrides?.id || `test-id-${Math.random().toString(36).substring(7)}`;
+  const id = overrides?.id || `test-id-${Math.random().toString(36).substring(7)}`
 
   return {
     id,
@@ -17,14 +17,14 @@ export function createTestDownload(overrides?: Partial<Download>): Download {
     progress: 50,
     created_at: new Date().toISOString(),
     ...overrides,
-  };
+  }
 }
 
 /**
  * Create a test SearchResult with defaults and optional overrides
  */
 export function createTestSearchResult(overrides?: Partial<SearchResult>): SearchResult {
-  const id = overrides?.id || `test-result-${Math.random().toString(36).substring(7)}`;
+  const id = overrides?.id || `test-result-${Math.random().toString(36).substring(7)}`
 
   return {
     id,
@@ -50,7 +50,7 @@ export function createTestSearchResult(overrides?: Partial<SearchResult>): Searc
     description: 'Test book description',
     added: '2024-01-01',
     ...overrides,
-  };
+  }
 }
 
 /**
@@ -66,5 +66,5 @@ export function createTestConfig(overrides?: Partial<AppConfig>): AppConfig {
     'paths.destination': '/tmp/audiobooks',
     'paths.template': '{author}/{series}/{title}',
     ...overrides,
-  };
+  }
 }

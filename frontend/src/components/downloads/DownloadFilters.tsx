@@ -1,12 +1,12 @@
-import React from 'react';
-import type { DownloadStatus } from '../../types/download';
+import React from 'react'
+import type { DownloadStatus } from '../../types/download'
 
-export type FilterStatus = 'all' | DownloadStatus;
+export type FilterStatus = 'all' | DownloadStatus
 
 interface DownloadFiltersProps {
-  activeFilter: FilterStatus;
-  onFilterChange: (filter: FilterStatus) => void;
-  counts: Record<FilterStatus, number>;
+  activeFilter: FilterStatus
+  onFilterChange: (filter: FilterStatus) => void
+  counts: Record<FilterStatus, number>
 }
 
 const filters: { value: FilterStatus; label: string }[] = [
@@ -17,7 +17,7 @@ const filters: { value: FilterStatus; label: string }[] = [
   { value: 'organizing', label: 'Organizing' },
   { value: 'organized', label: 'Organized' },
   { value: 'failed', label: 'Failed' },
-];
+]
 
 export const DownloadFilters: React.FC<DownloadFiltersProps> = ({
   activeFilter,
@@ -28,8 +28,8 @@ export const DownloadFilters: React.FC<DownloadFiltersProps> = ({
     <div className="mb-6 border-b border-gray-200 -mx-4 sm:mx-0 px-4 sm:px-0">
       <nav className="-mb-px flex gap-4 sm:gap-6 overflow-x-auto scrollbar-hide">
         {filters.map((filter) => {
-          const count = counts[filter.value] || 0;
-          const isActive = activeFilter === filter.value;
+          const count = counts[filter.value] || 0
+          const isActive = activeFilter === filter.value
 
           return (
             <button
@@ -50,20 +50,16 @@ export const DownloadFilters: React.FC<DownloadFiltersProps> = ({
                 <span
                   className={`
                   ml-2 py-0.5 px-2 rounded-full text-xs font-semibold
-                  ${
-                    isActive
-                      ? 'bg-blue-100 text-blue-600'
-                      : 'bg-gray-100 text-gray-600'
-                  }
+                  ${isActive ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'}
                 `}
                 >
                   {count}
                 </span>
               )}
             </button>
-          );
+          )
         })}
       </nav>
     </div>
-  );
-};
+  )
+}

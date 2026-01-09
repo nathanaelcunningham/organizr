@@ -1,11 +1,10 @@
-
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Layout } from './components/layout/Layout';
-import { Notifications } from './components/common/Notifications';
-import { SearchPage } from './pages/SearchPage';
-import { DownloadsPage } from './pages/DownloadsPage';
-import { ConfigPage } from './pages/ConfigPage';
-import { NotFoundPage } from './pages/NotFoundPage';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Layout } from './components/layout/Layout'
+import { Notifications } from './components/common/Notifications'
+import { SearchPage } from './pages/SearchPage'
+import { DownloadsPage } from './pages/DownloadsPage'
+import { ConfigPage } from './pages/ConfigPage'
+import { NotFoundPage } from './pages/NotFoundPage'
 
 function App() {
   return (
@@ -21,7 +20,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
-  );
+  )
 }
 
-export default App;
+export default App

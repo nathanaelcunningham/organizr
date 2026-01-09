@@ -1,7 +1,7 @@
-import React from 'react';
+import React from 'react'
 
 interface HeaderProps {
-  onMenuClick: () => void;
+  onMenuClick: () => void
 }
 
 export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
@@ -41,5 +41,5 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
         </div>
       </div>
     </header>
-  );
-};
+  )
+}

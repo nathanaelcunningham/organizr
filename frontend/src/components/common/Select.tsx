@@ -1,16 +1,15 @@
-import React from 'react';
+import React from 'react'
 
 export interface SelectOption {
-  value: string;
-  label: string;
+  value: string
+  label: string
 }
 
-export interface SelectProps
-  extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  label?: string;
-  error?: string;
-  help?: string;
-  options: SelectOption[];
+export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  label?: string
+  error?: string
+  help?: string
+  options: SelectOption[]
 }
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
@@ -42,13 +41,11 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             </option>
           ))}
         </select>
-        {help && !error && (
-          <p className="mt-1 text-sm text-gray-500">{help}</p>
-        )}
+        {help && !error && <p className="mt-1 text-sm text-gray-500">{help}</p>}
         {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
       </div>
-    );
+    )
   }
-);
+)
 
-Select.displayName = 'Select';
+Select.displayName = 'Select'

@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
-import { NavLink } from 'react-router-dom';
-import { useDownloadStore } from '../../stores/useDownloadStore';
+import React, { useMemo } from 'react'
+import { NavLink } from 'react-router-dom'
+import { useDownloadStore } from '../../stores/useDownloadStore'
 
 interface SidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen: boolean
+  onClose: () => void
 }
 
 const navItems = [
@@ -12,12 +12,7 @@ const navItems = [
     path: '/search',
     label: 'Search',
     icon: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -31,12 +26,7 @@ const navItems = [
     path: '/downloads',
     label: 'Downloads',
     icon: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -51,12 +41,7 @@ const navItems = [
     path: '/config',
     label: 'Configuration',
     icon: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -72,18 +57,15 @@ const navItems = [
       </svg>
     ),
   },
-];
+]
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  const downloads = useDownloadStore((state) => state.downloads);
+  const downloads = useDownloadStore((state) => state.downloads)
 
   const activeDownloads = useMemo(
-    () =>
-      downloads.filter((d) =>
-        ['queued', 'downloading', 'organizing'].includes(d.status)
-      ),
+    () => downloads.filter((d) => ['queued', 'downloading', 'organizing'].includes(d.status)),
     [downloads]
-  );
+  )
 
   return (
     <div
@@ -109,9 +91,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             onClick={() => onClose()}
             className={({ isActive }) =>
               `flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
-                isActive
-                  ? 'bg-blue-50 text-blue-700'
-                  : 'text-gray-700 hover:bg-gray-100'
+                isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
               }`
             }
           >
@@ -130,10 +110,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
       {/* Footer */}
       <div className="px-6 py-4 border-t border-gray-200">
-        <p className="text-xs text-gray-500">
-          Powered by qBittorrent
-        </p>
+        <p className="text-xs text-gray-500">Powered by qBittorrent</p>
       </div>
     </div>
-  );
-};
+  )
+}

@@ -1,4 +1,4 @@
-import { vi } from 'vitest';
+import { vi } from 'vitest'
 
 /**
  * Poll condition until true or timeout
@@ -7,20 +7,20 @@ import { vi } from 'vitest';
  * @returns Promise that resolves when condition is met or rejects on timeout
  */
 export async function waitFor(fn: () => boolean, timeout = 1000): Promise<void> {
-  const startTime = Date.now();
-  const pollInterval = 50;
+  const startTime = Date.now()
+  const pollInterval = 50
 
   return new Promise((resolve, reject) => {
     const interval = setInterval(() => {
       if (fn()) {
-        clearInterval(interval);
-        resolve();
+        clearInterval(interval)
+        resolve()
       } else if (Date.now() - startTime >= timeout) {
-        clearInterval(interval);
-        reject(new Error(`waitFor timeout after ${timeout}ms`));
+        clearInterval(interval)
+        reject(new Error(`waitFor timeout after ${timeout}ms`))
       }
-    }, pollInterval);
-  });
+    }, pollInterval)
+  })
 }
 
 /**
@@ -29,8 +29,8 @@ export async function waitFor(fn: () => boolean, timeout = 1000): Promise<void> 
  */
 export async function flushPromises(): Promise<void> {
   return new Promise((resolve) => {
-    setTimeout(resolve, 0);
-  });
+    setTimeout(resolve, 0)
+  })
 }
 
 /**
@@ -39,7 +39,7 @@ export async function flushPromises(): Promise<void> {
  */
 export function mockFetch(responses: Record<string, any>): void {
   global.fetch = vi.fn((url: string | URL | Request) => {
-    const urlString = typeof url === 'string' ? url : url.toString();
+    const urlString = typeof url === 'string' ? url : url.toString()
 
     // Find matching response by checking if URL contains the pattern
     for (const [pattern, responseData] of Object.entries(responses)) {
@@ -50,7 +50,7 @@ export function mockFetch(responses: Record<string, any>): void {
           json: async () => responseData,
           text: async () => JSON.stringify(responseData),
           headers: new Headers({ 'Content-Type': 'application/json' }),
-        } as Response);
+        } as Response)
       }
     }
 
@@ -61,14 +61,14 @@ export function mockFetch(responses: Record<string, any>): void {
       json: async () => ({ error: 'Not found' }),
       text: async () => JSON.stringify({ error: 'Not found' }),
       headers: new Headers({ 'Content-Type': 'application/json' }),
-    } as Response);
-  }) as any;
+    } as Response)
+  }) as any
 }
 
 /**
  * Reset all vi.mock() calls
  */
 export function resetMocks(): void {
-  vi.clearAllMocks();
-  vi.resetAllMocks();
+  vi.clearAllMocks()
+  vi.resetAllMocks()
 }

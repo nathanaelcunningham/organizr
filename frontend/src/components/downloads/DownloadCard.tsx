@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import { Card } from '../common/Card';
-import { Button } from '../common/Button';
-import { Badge } from '../common/Badge';
-import { ProgressBar } from '../common/ProgressBar';
-import type { Download } from '../../types/download';
-import { useDownloadStore } from '../../stores/useDownloadStore';
-import { useNotificationStore } from '../../stores/useNotificationStore';
-import { formatRelativeTime, capitalize } from '../../utils/formatters';
+import React, { useState } from 'react'
+import { Card } from '../common/Card'
+import { Button } from '../common/Button'
+import { Badge } from '../common/Badge'
+import { ProgressBar } from '../common/ProgressBar'
+import type { Download } from '../../types/download'
+import { useDownloadStore } from '../../stores/useDownloadStore'
+import { useNotificationStore } from '../../stores/useNotificationStore'
+import { formatRelativeTime, capitalize } from '../../utils/formatters'
 
 interface DownloadCardProps {
-  download: Download;
+  download: Download
 }
 
 export const DownloadCard: React.FC<DownloadCardProps> = ({ download }) => {
-  const { cancelDownload, organizeDownload } = useDownloadStore();
-  const { addNotification } = useNotificationStore();
-  const [actionLoading, setActionLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const { cancelDownload, organizeDownload } = useDownloadStore()
+  const { addNotification } = useNotificationStore()
+  const [actionLoading, setActionLoading] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   const handleCancel = async () => {
     if (
@@ -24,45 +24,45 @@ export const DownloadCard: React.FC<DownloadCardProps> = ({ download }) => {
         'Are you sure you want to cancel this download? This action cannot be undone.'
       )
     ) {
-      return;
+      return
     }
-    setActionLoading(true);
+    setActionLoading(true)
     try {
-      await cancelDownload(download.id);
+      await cancelDownload(download.id)
     } finally {
-      setActionLoading(false);
+      setActionLoading(false)
     }
-  };
+  }
 
   const handleOrganize = async () => {
-    setActionLoading(true);
+    setActionLoading(true)
     try {
-      await organizeDownload(download.id);
+      await organizeDownload(download.id)
     } finally {
-      setActionLoading(false);
+      setActionLoading(false)
     }
-  };
+  }
 
   const handleCopyPath = async () => {
-    if (!download.organized_path) return;
+    if (!download.organized_path) return
 
     try {
-      await navigator.clipboard.writeText(download.organized_path);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(download.organized_path)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      addNotification('error', 'Failed to copy path to clipboard');
+      addNotification('error', 'Failed to copy path to clipboard')
     }
-  };
+  }
 
   const showCancelButton =
     download.status === 'queued' ||
     download.status === 'downloading' ||
-    download.status === 'organizing';
+    download.status === 'organizing'
 
-  const showOrganizeButton = download.status === 'completed';
+  const showOrganizeButton = download.status === 'completed'
   const showRetryButton =
-    download.status === 'failed' && download.error_message?.includes('organiz');
+    download.status === 'failed' && download.error_message?.includes('organiz')
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -70,13 +70,9 @@ export const DownloadCard: React.FC<DownloadCardProps> = ({ download }) => {
         {/* Title and Author */}
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-semibold text-gray-900 truncate">
-              {download.title}
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900 truncate">{download.title}</h3>
             <p className="text-sm text-gray-600 mt-1">by {download.author}</p>
-            {download.series && (
-              <p className="text-sm text-gray-500">Series: {download.series}</p>
-            )}
+            {download.series && <p className="text-sm text-gray-500">Series: {download.series}</p>}
           </div>
           <Badge
             variant={download.status}
@@ -89,12 +85,7 @@ export const DownloadCard: React.FC<DownloadCardProps> = ({ download }) => {
 
         {/* Progress Bar for Active Downloads */}
         {download.status === 'downloading' && (
-          <ProgressBar
-            progress={download.progress}
-            status={download.status}
-            showLabel
-            size="md"
-          />
+          <ProgressBar progress={download.progress} status={download.status} showLabel size="md" />
         )}
 
         {/* Organization in Progress */}
@@ -111,9 +102,7 @@ export const DownloadCard: React.FC<DownloadCardProps> = ({ download }) => {
         {download.status === 'organized' && download.organized_path && (
           <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-xs text-emerald-700 font-medium">
-                Organized Path:
-              </p>
+              <p className="text-xs text-emerald-700 font-medium">Organized Path:</p>
               <button
                 onClick={handleCopyPath}
                 className="text-xs text-emerald-700 hover:text-emerald-800 font-medium px-2 py-1 rounded hover:bg-emerald-100 transition-colors"
@@ -187,5 +176,5 @@ export const DownloadCard: React.FC<DownloadCardProps> = ({ download }) => {
         )}
       </div>
     </Card>
-  );
-};
+  )
+}

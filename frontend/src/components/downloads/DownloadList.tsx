@@ -1,32 +1,24 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { DownloadCard } from './DownloadCard';
-import { EmptyState } from '../common/EmptyState';
-import { Button } from '../common/Button';
-import type { Download, DownloadStatus } from '../../types/download';
-import { capitalize } from '../../utils/formatters';
+import React from 'react'
+import { Link } from 'react-router-dom'
+import { DownloadCard } from './DownloadCard'
+import { EmptyState } from '../common/EmptyState'
+import { Button } from '../common/Button'
+import type { Download, DownloadStatus } from '../../types/download'
+import { capitalize } from '../../utils/formatters'
 
 interface DownloadListProps {
-  downloads: Download[];
-  groupByStatus?: boolean;
+  downloads: Download[]
+  groupByStatus?: boolean
 }
 
-export const DownloadList: React.FC<DownloadListProps> = ({
-  downloads,
-  groupByStatus = false,
-}) => {
+export const DownloadList: React.FC<DownloadListProps> = ({ downloads, groupByStatus = false }) => {
   if (downloads.length === 0) {
     return (
       <EmptyState
         title="No Downloads"
         description="Start by searching for audiobooks and clicking the download button"
         icon={
-          <svg
-            className="w-16 h-16"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
+          <svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -41,7 +33,7 @@ export const DownloadList: React.FC<DownloadListProps> = ({
           </Link>
         }
       />
-    );
+    )
   }
 
   if (!groupByStatus) {
@@ -51,7 +43,7 @@ export const DownloadList: React.FC<DownloadListProps> = ({
           <DownloadCard key={download.id} download={download} />
         ))}
       </div>
-    );
+    )
   }
 
   // Group downloads by status
@@ -62,18 +54,18 @@ export const DownloadList: React.FC<DownloadListProps> = ({
     'completed',
     'organized',
     'failed',
-  ];
+  ]
 
   const groupedDownloads = statusOrder.reduce(
     (acc, status) => {
-      const filtered = downloads.filter((d) => d.status === status);
+      const filtered = downloads.filter((d) => d.status === status)
       if (filtered.length > 0) {
-        acc[status] = filtered;
+        acc[status] = filtered
       }
-      return acc;
+      return acc
     },
     {} as Record<DownloadStatus, Download[]>
-  );
+  )
 
   return (
     <div className="space-y-6">
@@ -90,5 +82,5 @@ export const DownloadList: React.FC<DownloadListProps> = ({
         </div>
       ))}
     </div>
-  );
-};
+  )
+}

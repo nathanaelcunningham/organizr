@@ -1,31 +1,30 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card } from '../common/Card';
-import { Button } from '../common/Button';
-import { Badge } from '../common/Badge';
-import type { SearchResult } from '../../types/search';
-import { useDownloadStore } from '../../stores/useDownloadStore';
-import { formatFileSize, truncate } from '../../utils/formatters';
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Card } from '../common/Card'
+import { Button } from '../common/Button'
+import { Badge } from '../common/Badge'
+import type { SearchResult } from '../../types/search'
+import { useDownloadStore } from '../../stores/useDownloadStore'
+import { formatFileSize, truncate } from '../../utils/formatters'
 
 interface SearchResultCardProps {
-  result: SearchResult;
+  result: SearchResult
 }
 
-export const SearchResultCard: React.FC<SearchResultCardProps> = ({
-  result,
-}) => {
-  const navigate = useNavigate();
-  const createDownload = useDownloadStore((state) => state.createDownload);
-  const [downloading, setDownloading] = useState(false);
-  const [showDescription, setShowDescription] = useState(false);
+export const SearchResultCard: React.FC<SearchResultCardProps> = ({ result }) => {
+  const navigate = useNavigate()
+  const createDownload = useDownloadStore((state) => state.createDownload)
+  const [downloading, setDownloading] = useState(false)
+  const [showDescription, setShowDescription] = useState(false)
 
   const handleDownload = async () => {
-    setDownloading(true);
+    setDownloading(true)
     try {
       // Convert series array to string representation (names only, not numbers)
-      const seriesString = result.series && result.series.length > 0
-        ? result.series.map(s => s.name).join(', ')
-        : undefined;
+      const seriesString =
+        result.series && result.series.length > 0
+          ? result.series.map((s) => s.name).join(', ')
+          : undefined
 
       await createDownload({
         title: result.title,
@@ -34,34 +33,30 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = ({
         category: 'Audiobooks',
         torrent_url: result.torrent_url,
         magnet_link: result.magnet_link,
-      });
+      })
       // Navigate to downloads page after successful creation
-      navigate('/downloads');
+      navigate('/downloads')
     } catch (error) {
-      console.error('Failed to create download:', error);
+      console.error('Failed to create download:', error)
     } finally {
-      setDownloading(false);
+      setDownloading(false)
     }
-  };
+  }
 
   return (
     <Card className="hover:shadow-md transition-shadow">
       <div className="space-y-3">
         {/* Title and Author */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">
-            {result.title}
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900">{result.title}</h3>
           <p className="text-sm text-gray-600 mt-1">by {result.author}</p>
           {result.series && result.series.length > 0 && (
             <p className="text-sm text-gray-500 mt-1">
-              Series: {result.series.map(s => `${s.name} #${s.number}`).join(', ')}
+              Series: {result.series.map((s) => `${s.name} #${s.number}`).join(', ')}
             </p>
           )}
           {result.narrator && (
-            <p className="text-sm text-gray-500">
-              Narrated by: {result.narrator}
-            </p>
+            <p className="text-sm text-gray-500">Narrated by: {result.narrator}</p>
           )}
         </div>
 
@@ -69,9 +64,7 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = ({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
           <div>
             <span className="text-gray-500">Size:</span>
-            <span className="ml-2 font-medium text-gray-900">
-              {formatFileSize(result.size)}
-            </span>
+            <span className="ml-2 font-medium text-gray-900">{formatFileSize(result.size)}</span>
           </div>
           <div>
             <span className="text-gray-500">Seeders:</span>
@@ -85,15 +78,11 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = ({
           </div>
           <div>
             <span className="text-gray-500">Leechers:</span>
-            <span className="ml-2 font-medium text-gray-900">
-              {result.leechers}
-            </span>
+            <span className="ml-2 font-medium text-gray-900">{result.leechers}</span>
           </div>
           <div>
             <span className="text-gray-500">Provider:</span>
-            <span className="ml-2 font-medium text-gray-900">
-              {result.provider}
-            </span>
+            <span className="ml-2 font-medium text-gray-900">{result.provider}</span>
           </div>
         </div>
 
@@ -171,9 +160,7 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = ({
         {(result.num_files || result.times_completed || result.added) && (
           <div className="flex flex-wrap gap-4 text-xs text-gray-500">
             {result.num_files && <span>Files: {result.num_files}</span>}
-            {result.times_completed && (
-              <span>Downloads: {result.times_completed}</span>
-            )}
+            {result.times_completed && <span>Downloads: {result.times_completed}</span>}
             {result.added && <span>Added: {result.added}</span>}
           </div>
         )}
@@ -188,12 +175,10 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = ({
             disabled={!result.torrent_url && !result.magnet_link}
             className="w-full"
           >
-            {!result.torrent_url && !result.magnet_link
-              ? 'No Download Available'
-              : 'Download'}
+            {!result.torrent_url && !result.magnet_link ? 'No Download Available' : 'Download'}
           </Button>
         </div>
       </div>
     </Card>
-  );
-};
+  )
+}

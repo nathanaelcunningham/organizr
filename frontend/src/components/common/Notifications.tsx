@@ -1,15 +1,15 @@
-import React from 'react';
-import { useNotificationStore } from '../../stores/useNotificationStore';
+import React from 'react'
+import { useNotificationStore } from '../../stores/useNotificationStore'
 
 export const Notifications: React.FC = () => {
-  const { notifications, removeNotification } = useNotificationStore();
+  const { notifications, removeNotification } = useNotificationStore()
 
   const typeStyles = {
     success: 'bg-green-50 border-green-500 text-green-800',
     error: 'bg-red-50 border-red-500 text-red-800',
     warning: 'bg-yellow-50 border-yellow-500 text-yellow-800',
     info: 'bg-blue-50 border-blue-500 text-blue-800',
-  };
+  }
 
   const typeIcons = {
     success: (
@@ -48,7 +48,7 @@ export const Notifications: React.FC = () => {
         />
       </svg>
     ),
-  };
+  }
 
   return (
     <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 w-full max-w-sm sm:max-w-md lg:max-w-lg px-4 sm:px-0">
@@ -62,13 +62,9 @@ export const Notifications: React.FC = () => {
           `}
         >
           <div className="flex items-start gap-3">
-            <div className="flex-shrink-0">
-              {typeIcons[notification.type]}
-            </div>
+            <div className="flex-shrink-0">{typeIcons[notification.type]}</div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium break-words">
-                {notification.message}
-              </p>
+              <p className="text-sm font-medium break-words">{notification.message}</p>
             </div>
             <button
               onClick={() => removeNotification(notification.id)}
@@ -86,5 +82,5 @@ export const Notifications: React.FC = () => {
         </div>
       ))}
     </div>
-  );
-};
+  )
+}
