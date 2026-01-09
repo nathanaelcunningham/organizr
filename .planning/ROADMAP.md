@@ -94,13 +94,13 @@ Plans:
 
 #### Phase 20: Deployment Documentation
 
-**Goal**: Create comprehensive installation guide for Unraid deployment with troubleshooting and configuration examples
+**Goal**: Enhance README with deployment quick start guide that directs users to comprehensive deployment documentation
 **Depends on**: Phase 19
-**Research**: Unlikely (documentation work)
-**Plans**: TBD
+**Research**: Skipped (Level 0 - enhancing existing documentation)
+**Plans**: 1 plan
 
 Plans:
-- [ ] 20-01: TBD
+- [ ] 20-01: README deployment section and production callout
 
 ## Phases
 
@@ -269,6 +269,6 @@ Plans:
 | 15. Refactoring Opportunities | v1.2 | 2/2 | ✅ Shipped | 2026-01-09 |
 | 16. Docker Foundation | v1.3 | 1/1 | ✅ Complete | 2026-01-09 |
 | 17. Docker Compose Setup | v1.3 | 1/1 | ✅ Complete | 2026-01-09 |
-| 18. Environment Configuration | v1.3 | 0/1 | Not started | - |
-| 19. Volume & Path Management | v1.3 | 0/? | Not started | - |
-| 20. Deployment Documentation | v1.3 | 0/? | Not started | - |
+| 18. Environment Configuration | v1.3 | 1/1 | ✅ Complete | 2026-01-09 |
+| 19. Volume & Path Management | v1.3 | 1/1 | ✅ Complete | 2026-01-09 |
+| 20. Deployment Documentation | v1.3 | 0/1 | Not started | - |
