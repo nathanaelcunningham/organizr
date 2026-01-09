@@ -21,11 +21,11 @@ type mockDownloadRepo struct {
 	updateErrorFunc     func(ctx context.Context, id string, errorMsg string) error
 	updatePathFunc      func(ctx context.Context, id string, path string) error
 	// Track calls for verification
-	progressUpdates  map[string]float64
-	statusUpdates    map[string]models.DownloadStatus
-	completedCalls   []string
-	errorUpdates     map[string]string
-	pathUpdates      map[string]string
+	progressUpdates map[string]float64
+	statusUpdates   map[string]models.DownloadStatus
+	completedCalls  []string
+	errorUpdates    map[string]string
+	pathUpdates     map[string]string
 }
 
 func newMockDownloadRepo() *mockDownloadRepo {
@@ -170,8 +170,8 @@ func (m *mockQBClientForMonitor) DeleteTorrent(ctx context.Context, hash string,
 
 // mockOrgService for testing
 type mockOrgService struct {
-	mu           sync.Mutex
-	organizeFunc func(ctx context.Context, dl *models.Download) error
+	mu            sync.Mutex
+	organizeFunc  func(ctx context.Context, dl *models.Download) error
 	organizeCalls []string
 }
 
@@ -346,10 +346,10 @@ func (m *testMonitor) Run(ctx context.Context) error {
 
 func TestCheckDownloads_ProgressUpdates(t *testing.T) {
 	tests := []struct {
-		name             string
-		downloads        []*models.Download
-		statusResponses  map[string]statusResponse
-		wantProgress     map[string]float64
+		name            string
+		downloads       []*models.Download
+		statusResponses map[string]statusResponse
+		wantProgress    map[string]float64
 	}{
 		{
 			name: "updates progress for downloading torrents",
@@ -424,10 +424,10 @@ func TestCheckDownloads_ProgressUpdates(t *testing.T) {
 
 func TestCheckDownloads_CompletionDetection(t *testing.T) {
 	tests := []struct {
-		name            string
-		download        *models.Download
-		qbitStatus      string
-		wantCompleted   bool
+		name          string
+		download      *models.Download
+		qbitStatus    string
+		wantCompleted bool
 	}{
 		{
 			name:          "detects uploading as completed",
@@ -502,9 +502,9 @@ func TestCheckDownloads_CompletionDetection(t *testing.T) {
 
 func TestCheckDownloads_AutoOrganization(t *testing.T) {
 	tests := []struct {
-		name              string
-		autoOrgEnabled    string
-		wantOrganized     bool
+		name           string
+		autoOrgEnabled string
+		wantOrganized  bool
 	}{
 		{
 			name:           "triggers auto-organization when enabled",

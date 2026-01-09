@@ -203,8 +203,8 @@ func TestNewTestConfig(t *testing.T) {
 
 	t.Run("applies overrides", func(t *testing.T) {
 		overrides := map[string]string{
-			"qbittorrent.url":      "http://custom:9090",
-			"custom.key":           "custom value",
+			"qbittorrent.url": "http://custom:9090",
+			"custom.key":      "custom value",
 		}
 
 		config := NewTestConfig(overrides)

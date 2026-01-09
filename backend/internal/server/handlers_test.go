@@ -16,11 +16,11 @@ import (
 
 // Mock download service for testing
 type mockDownloadService struct {
-	createFunc    func(ctx context.Context, d *models.Download) (*models.Download, error)
-	getFunc       func(ctx context.Context, id string) (*models.Download, error)
-	listFunc      func(ctx context.Context) ([]*models.Download, error)
-	cancelFunc    func(ctx context.Context, id string) error
-	organizeFunc  func(ctx context.Context, id string) error
+	createFunc   func(ctx context.Context, d *models.Download) (*models.Download, error)
+	getFunc      func(ctx context.Context, id string) (*models.Download, error)
+	listFunc     func(ctx context.Context) ([]*models.Download, error)
+	cancelFunc   func(ctx context.Context, id string) error
+	organizeFunc func(ctx context.Context, id string) error
 }
 
 func (m *mockDownloadService) CreateDownload(ctx context.Context, d *models.Download) (*models.Download, error) {
@@ -682,13 +682,13 @@ func testHandleBatchCreateDownload(w http.ResponseWriter, r *http.Request, downl
 
 func TestHandleBatchCreateDownload(t *testing.T) {
 	tests := []struct {
-		name              string
-		requestBody       interface{}
-		mockCreate        func(ctx context.Context, d *models.Download) (*models.Download, error)
-		wantStatus        int
-		wantSuccessCount  int
-		wantFailedCount   int
-		wantErrContain    string
+		name             string
+		requestBody      interface{}
+		mockCreate       func(ctx context.Context, d *models.Download) (*models.Download, error)
+		wantStatus       int
+		wantSuccessCount int
+		wantFailedCount  int
+		wantErrContain   string
 	}{
 		{
 			name: "successful batch - all succeed",
@@ -732,13 +732,13 @@ func TestHandleBatchCreateDownload(t *testing.T) {
 						MagnetLink: "magnet:?xt=urn:btih:abc123",
 					},
 					{
-						Title:  "Missing Author",
-						Author: "",
+						Title:      "Missing Author",
+						Author:     "",
 						MagnetLink: "magnet:?xt=urn:btih:def456",
 					},
 					{
-						Title:      "No Torrent Source",
-						Author:     "Author",
+						Title:  "No Torrent Source",
+						Author: "Author",
 					},
 					{
 						Title:      "Valid Book 2",
@@ -790,8 +790,8 @@ func TestHandleBatchCreateDownload(t *testing.T) {
 						MagnetLink: "magnet:?xt=urn:btih:abc123",
 					},
 					{
-						Title:      "Book 2",
-						Author:     "Author 2",
+						Title:  "Book 2",
+						Author: "Author 2",
 					},
 					{
 						Title:      "",

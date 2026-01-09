@@ -21,8 +21,8 @@ func respondWithError(w http.ResponseWriter, code int, message string, err error
 	w.WriteHeader(code)
 
 	errResp := ErrorResponse{
-		Error:   message,
-		Code:    code,
+		Error: message,
+		Code:  code,
 	}
 
 	if err != nil {

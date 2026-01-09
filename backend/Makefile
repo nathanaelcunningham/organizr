@@ -1,4 +1,4 @@
-.PHONY: build run clean test test-coverage test-race tidy
+.PHONY: build run clean test test-coverage test-race tidy lint
 
 build:
 	CGO_ENABLED=1 go build -o bin/organizr ./cmd/api
@@ -22,3 +22,6 @@ test-race:
 
 tidy:
 	go mod tidy
+
+lint:
+	golangci-lint run ./...

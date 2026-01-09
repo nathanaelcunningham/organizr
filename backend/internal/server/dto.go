@@ -67,15 +67,15 @@ func toDTOList(downloads []*models.Download) []downloadDTO {
 }
 
 type searchResultDTO struct {
-	ID         string               `json:"id"`
-	Title      string               `json:"title"`
-	Author     string               `json:"author"`
-	Series     []models.SeriesInfo  `json:"series"`
-	TorrentURL string               `json:"torrent_url,omitempty"`
-	MagnetLink string               `json:"magnet_link,omitempty"`
-	Size       string               `json:"size"`
-	Seeders    int                  `json:"seeders"`
-	Provider   string               `json:"provider"`
+	ID         string              `json:"id"`
+	Title      string              `json:"title"`
+	Author     string              `json:"author"`
+	Series     []models.SeriesInfo `json:"series"`
+	TorrentURL string              `json:"torrent_url,omitempty"`
+	MagnetLink string              `json:"magnet_link,omitempty"`
+	Size       string              `json:"size"`
+	Seeders    int                 `json:"seeders"`
+	Provider   string              `json:"provider"`
 }
 
 func searchResultToDTO(s *models.SearchResult) searchResultDTO {
