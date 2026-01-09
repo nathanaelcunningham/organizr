@@ -72,22 +72,24 @@ Plans:
 **Goal**: Comprehensive README, architecture diagrams, API documentation, setup guides, troubleshooting docs
 **Depends on**: Phase 12
 **Research**: Unlikely (documentation of existing systems)
-**Plans**: 1 complete, 1 remaining
-**Status**: 🚧 In Progress
+**Plans**: 2 complete
+**Status**: ✅ Complete (2026-01-09)
 
 Plans:
 - [x] 13-01: Root README and troubleshooting guide
-- [ ] 13-02: Architecture diagrams and deployment guide
+- [x] 13-02: Architecture diagrams and deployment guide
 
 #### Phase 14: Code Quality Tools
 **Goal**: Add linting (golangci-lint, ESLint configs), pre-commit hooks, CI pipeline improvements, code formatting standards
 **Depends on**: Phase 13
 **Research**: Likely (tool selection and configuration best practices)
 **Research topics**: golangci-lint configuration, ESLint + Prettier setup for TypeScript, pre-commit hooks, GitHub Actions workflows
-**Plans**: TBD
+**Plans**: 1 complete, 1 remaining
+**Status**: 🚧 In Progress
 
 Plans:
-- [ ] 14-01: TBD
+- [x] 14-01: Backend linting (golangci-lint) and frontend formatting (Prettier)
+- [ ] 14-02: Pre-commit hooks and CI configuration
 
 #### Phase 15: Refactoring Opportunities
 **Goal**: Address technical debt, improve naming consistency, extract reusable utilities, optimize hot paths

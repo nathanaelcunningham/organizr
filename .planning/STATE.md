@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-01-08 after v1.1 milestone)
 ## Current Position
 
 Milestone: v1.2 Developer Experience
-Phase: 13 of 15 (Developer Documentation)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-01-09 - Completed 13-02-PLAN.md
+Phase: 14 of 15 (Code Quality Tools)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-01-09 - Completed 14-01-PLAN.md
 
-Progress: ███████░░░ 71% (5/7 plans complete in v1.2)
+Progress: ████████░░ 86% (6/7 plans complete in v1.2)
 
 ## Performance Metrics
 
@@ -77,6 +77,9 @@ Recent decisions affecting current work:
 - **Mermaid for architecture diagrams**: GitHub-native rendering, version control friendly (system overview, workflow, backend, frontend diagrams)
 - **systemd for backend service**: Standard on modern Linux, reliable process supervision with automatic restarts
 - **nginx reverse proxy pattern**: Serve frontend static files and proxy API requests to backend
+- **golangci-lint pragmatic ruleset**: govet, staticcheck, unused, misspell, goimports (errcheck deferred to phase 15)
+- **Prettier for frontend formatting**: Single quotes, no semicolons, 100 char width - separate from ESLint for performance
+- **errcheck deferral**: 31 defer Close() violations require refactoring - addressed in phase 15 (refactoring opportunities)
 
 ### Roadmap Evolution
 
@@ -95,10 +98,11 @@ None
 ### Technical Debt
 
 - Phase 07-03 plan created but not executed (pre-download confirmation modal) - could be addressed in future milestone if needed
+- errcheck violations: 31 defer Close() errors need refactoring (phase 15 target)
 
 ## Session Continuity
 
 Last session: 2026-01-09
-Stopped at: Completed 13-02-PLAN.md (Phase 13 complete - all 2 plans finished)
+Stopped at: Completed 14-01-PLAN.md
 Resume file: None
-Next action: Proceed to Phase 14 (Code Quality Tools) - linting, pre-commit hooks, CI configuration
+Next action: Execute 14-02-PLAN.md (Pre-commit hooks and CI configuration)
