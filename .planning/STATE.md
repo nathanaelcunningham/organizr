@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-01-09 after v1.2 milestone)
 ## Current Position
 
 Milestone: v1.3 Production Deployment
-Phase: 16 of 20 (Docker Foundation)
+Phase: 17 of 20 (Docker Compose Setup)
 Plan: 1 of 1 in current phase
 Status: Phase complete
-Last activity: 2026-01-09 - Completed 16-01-PLAN.md
+Last activity: 2026-01-09 - Completed 17-01-PLAN.md
 
-Progress: █░░░░░░░░░ 20%
+Progress: ██░░░░░░░░ 40%
 
 ## Performance Metrics
 
@@ -91,6 +91,10 @@ Recent decisions affecting current work:
 - **defer func() pattern for Close() errors**: Use `defer func() { if err := x.Close(); err != nil { log.Printf(...) } }()` for proper error checking
 - **Best-effort logging in error paths**: Database update failures in error handlers are logged but don't override the original error
 - **Zero-tolerance error handling policy**: errcheck linter enabled in CI with no exclusions - all errors must be handled or explicitly documented
+- **Environment variable for DB path**: ORGANIZR_DB_PATH env var allows configurable database location (defaults to ./organizr.db for backward compatibility)
+- **Volume mount at /data**: Mount database volume at /data instead of /app to avoid permission conflicts with non-root user ownership
+- **Frontend port mapping**: Map frontend to host port 8081 (container port 8080) to avoid conflict with backend on host port 8080
+- **Health check dependencies**: Frontend depends on backend health before starting to ensure database and API readiness
 
 ### Roadmap Evolution
 
@@ -113,7 +117,7 @@ None
 
 ## Session Continuity
 
-Last session: 2026-01-09T21:20:42Z
-Stopped at: Completed 16-01-PLAN.md (Docker Foundation phase complete)
+Last session: 2026-01-09T21:36:54Z
+Stopped at: Completed 17-01-PLAN.md (Docker Compose Setup complete)
 Resume file: None
-Next action: /gsd:plan-phase 17 (Docker Compose Setup)
+Next action: /gsd:plan-phase 18
