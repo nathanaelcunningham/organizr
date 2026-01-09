@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/nathanael/organizr/internal/config"
 	"github.com/nathanael/organizr/internal/downloads"
 	"github.com/nathanael/organizr/internal/persistence/sqlite"
@@ -35,6 +36,9 @@ func main() {
 }
 
 func run() error {
+	// Load .env file if it exists (ignore error if missing - env vars may be set directly)
+	_ = godotenv.Load()
+
 	// 1. Initialize database
 	dbPath := os.Getenv("ORGANIZR_DB_PATH")
 	if dbPath == "" {
