@@ -36,7 +36,11 @@ func main() {
 
 func run() error {
 	// 1. Initialize database
-	db, err := sqlite.NewDB("./organizr.db")
+	dbPath := os.Getenv("ORGANIZR_DB_PATH")
+	if dbPath == "" {
+		dbPath = "./organizr.db"
+	}
+	db, err := sqlite.NewDB(dbPath)
 	if err != nil {
 		return fmt.Errorf("failed to initialize database: %w", err)
 	}

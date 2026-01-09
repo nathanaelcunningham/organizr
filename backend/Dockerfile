@@ -23,8 +23,9 @@ FROM alpine:3.21
 # Install runtime dependencies
 RUN apk add --no-cache ca-certificates sqlite-libs
 
-# Create non-root user
-RUN addgroup -g 1001 app && adduser -S app -u 1001 -G app
+# Create non-root user and data directory
+RUN addgroup -g 1001 app && adduser -S app -u 1001 -G app && \
+    mkdir -p /data && chown -R app:app /data
 
 WORKDIR /app
 
