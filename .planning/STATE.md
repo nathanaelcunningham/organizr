@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-01-09 after v1.2 milestone)
 
 Milestone: v1.3 Production Deployment
 Phase: 16 of 20 (Docker Foundation)
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-01-09 - Milestone v1.3 created
+Plan: 1 of 1 in current phase
+Status: Phase complete
+Last activity: 2026-01-09 - Completed 16-01-PLAN.md
 
-Progress: ░░░░░░░░░░ 0%
+Progress: █░░░░░░░░░ 20%
 
 ## Performance Metrics
 
@@ -59,6 +59,11 @@ Recent decisions affecting current work:
 - **Concurrency test approach**: Use channels and synchronization primitives instead of time.Sleep for deterministic tests
 - **Race detection requirement**: All concurrency-related code must pass go test -race
 - **Structured series data**: Series field changed from concatenated string to []SeriesInfo array with ID, Name, Number fields
+- **Docker base image choice**: Alpine over scratch for ca-certificates (HTTPS) and sqlite-libs (database runtime)
+- **nginx for frontend serving**: nginx over Node.js for static file serving (more efficient, production-standard)
+- **Non-root container security**: Both containers run as non-root user (uid/gid 1001) for security
+- **nginx non-privileged port**: nginx listens on port 8080 instead of 80 for non-root compatibility
+- **nginx cache directory**: Use /tmp instead of /var/cache/nginx for non-root user write access
 - **Series Number as string**: Keep Number field as string to accommodate various formats ("1", "Book 1", "1.5") - frontend handles parsing
 - **Empty series array**: Return empty array instead of null for books without series (consistent API responses)
 - **Sequential batch processing**: Process batch downloads sequentially rather than concurrently to avoid overwhelming qBittorrent
@@ -108,7 +113,7 @@ None
 
 ## Session Continuity
 
-Last session: 2026-01-09
-Stopped at: Milestone v1.3 initialization
+Last session: 2026-01-09T21:20:42Z
+Stopped at: Completed 16-01-PLAN.md (Docker Foundation phase complete)
 Resume file: None
-Next action: /gsd:plan-phase 16 (Docker Foundation)
+Next action: /gsd:plan-phase 17 (Docker Compose Setup)

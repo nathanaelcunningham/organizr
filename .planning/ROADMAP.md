@@ -52,12 +52,12 @@ See [milestones/v1.0-MVP.md](milestones/v1.0-MVP.md) for full details.
 
 **Goal**: Create Dockerfiles for backend and frontend with multi-stage builds for production-ready images
 **Depends on**: Previous milestone complete
-**Research**: Likely (Docker best practices for Go and React apps)
+**Research**: Completed (Docker best practices for Go and React apps)
 **Research topics**: Multi-stage Docker builds, Go binary optimization, React production builds, image size optimization
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 16-01: TBD (run /gsd:plan-phase 16 to break down)
+- [x] 16-01: Production-ready Dockerfiles with multi-stage builds
 
 #### Phase 17: Docker Compose Setup
 
@@ -124,7 +124,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 13: Developer Documentation** - Comprehensive README, architecture diagrams, setup guides
 - [x] **Phase 14: Code Quality Tools** - Linting, pre-commit hooks, CI improvements, formatting standards
 - [x] **Phase 15: Refactoring Opportunities** - Address technical debt, improve consistency, optimize hot paths
-- [ ] **Phase 16: Docker Foundation** - Create Dockerfiles for backend and frontend with multi-stage builds
+- [x] **Phase 16: Docker Foundation** - Create Dockerfiles for backend and frontend with multi-stage builds
 - [ ] **Phase 17: Docker Compose Setup** - Multi-container orchestration with volume management
 - [ ] **Phase 18: Environment Configuration** - Env variable support and .env file configuration
 - [ ] **Phase 19: Volume & Path Management** - Persistent volumes for database and downloads
@@ -264,7 +264,7 @@ Plans:
 | 13. Developer Documentation | v1.2 | 2/2 | ✅ Shipped | 2026-01-09 |
 | 14. Code Quality Tools | v1.2 | 2/2 | ✅ Shipped | 2026-01-09 |
 | 15. Refactoring Opportunities | v1.2 | 2/2 | ✅ Shipped | 2026-01-09 |
-| 16. Docker Foundation | v1.3 | 0/? | Not started | - |
+| 16. Docker Foundation | v1.3 | 1/1 | ✅ Complete | 2026-01-09 |
 | 17. Docker Compose Setup | v1.3 | 0/? | Not started | - |
 | 18. Environment Configuration | v1.3 | 0/? | Not started | - |
 | 19. Volume & Path Management | v1.3 | 0/? | Not started | - |
