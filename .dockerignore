@@ -1,0 +1,41 @@
+# Version control
+.git/
+.github/
+.gitignore
+
+# Planning artifacts
+.planning/
+
+# Dependencies (handled by individual service Dockerfiles)
+node_modules/
+
+# Build artifacts
+backend/organizr
+backend/organizr-*
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Documentation (except README)
+*.md
+!README.md
+
+# Environment files
+.env
+.env.*
+
+# Logs
+*.log
