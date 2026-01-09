@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-01-08 after v1.1 milestone)
 ## Current Position
 
 Milestone: v1.2 Developer Experience
-Phase: 14 of 15 (Code Quality Tools)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-01-09 - Completed 14-02-PLAN.md
+Phase: 15 of 15 (Refactoring Opportunities)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-01-09 - Completed 15-01-PLAN.md
 
-Progress: █████████░ 100% (7/7 plans complete in v1.2)
+Progress: █████████░ 88% (8/9 plans complete in v1.2)
 
 ## Performance Metrics
 
@@ -83,6 +83,9 @@ Recent decisions affecting current work:
 - **Husky for pre-commit hooks**: Standard in Node.js ecosystem, simple setup for running quality checks before commit
 - **Parallel CI quality jobs**: Quality checks (lint, format, type-check) run in parallel with tests for fast feedback and fail-fast behavior
 - **Pre-commit scope**: Format + lint + type-check (skip tests - too slow), tests remain in CI only
+- **defer func() pattern for Close() errors**: Use `defer func() { if err := x.Close(); err != nil { log.Printf(...) } }()` for proper error checking
+- **Best-effort logging in error paths**: Database update failures in error handlers are logged but don't override the original error
+- **Zero-tolerance error handling policy**: errcheck linter enabled in CI with no exclusions - all errors must be handled or explicitly documented
 
 ### Roadmap Evolution
 
@@ -101,11 +104,10 @@ None
 ### Technical Debt
 
 - Phase 07-03 plan created but not executed (pre-download confirmation modal) - could be addressed in future milestone if needed
-- errcheck violations: 31 defer Close() errors need refactoring (phase 15 target)
 
 ## Session Continuity
 
 Last session: 2026-01-09
-Stopped at: Completed 14-02-PLAN.md
+Stopped at: Completed 15-01-PLAN.md
 Resume file: None
-Next action: Phase 14 complete. Phase 15 (Refactoring Opportunities) is final phase in v1.2 milestone
+Next action: Ready for 15-02-PLAN.md (final plan in v1.2 milestone)
