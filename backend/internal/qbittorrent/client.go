@@ -54,7 +54,12 @@ func (c *Client) Login(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to login: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			// Log close error as it may indicate network issues
+			fmt.Printf("warning: failed to close login response body: %v\n", err)
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		body, err := io.ReadAll(resp.Body)
@@ -108,7 +113,12 @@ func (c *Client) AddTorrent(ctx context.Context, magnetLink, torrentURL, categor
 	if err != nil {
 		return "", fmt.Errorf("failed to add torrent: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			// Log close error as it may indicate network issues
+			fmt.Printf("warning: failed to close add torrent response body: %v\n", err)
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("add torrent failed with status: %d", resp.StatusCode)
@@ -181,7 +191,12 @@ func (c *Client) AddTorrentFromFile(ctx context.Context, torrentData []byte, cat
 	if err != nil {
 		return "", fmt.Errorf("failed to add torrent: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			// Log close error as it may indicate network issues
+			fmt.Printf("warning: failed to close add torrent file response body: %v\n", err)
+		}
+	}()
 
 	// Check response status
 	if resp.StatusCode != http.StatusOK {
@@ -226,15 +241,18 @@ func (c *Client) AddTorrentFromFile(ctx context.Context, torrentData []byte, cat
 		}
 
 		if listResp.StatusCode != http.StatusOK {
-			listResp.Body.Close()
+			_ = listResp.Body.Close() // Ignore close error on early return path
 			return "", fmt.Errorf("torrent list query failed with status: %d", listResp.StatusCode)
 		}
 
 		if err := json.NewDecoder(listResp.Body).Decode(&torrents); err != nil {
-			listResp.Body.Close()
+			_ = listResp.Body.Close() // Ignore close error on early return path
 			return "", fmt.Errorf("failed to decode torrent list: %w", err)
 		}
-		listResp.Body.Close()
+		if err := listResp.Body.Close(); err != nil {
+			// Log close error as it may indicate network issues
+			fmt.Printf("warning: failed to close response body: %v\n", err)
+		}
 
 		if len(torrents) > 0 {
 			break
@@ -279,7 +297,12 @@ func (c *Client) GetTorrentStatus(ctx context.Context, hash string) (string, flo
 	if err != nil {
 		return "", 0, fmt.Errorf("failed to get torrent info: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			// Log close error as it may indicate network issues
+			fmt.Printf("warning: failed to close torrent status response body: %v\n", err)
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		return "", 0, fmt.Errorf("get torrent info failed with status: %d", resp.StatusCode)
@@ -315,7 +338,12 @@ func (c *Client) GetTorrentFiles(ctx context.Context, hash string) ([]*TorrentFi
 	if err != nil {
 		return nil, fmt.Errorf("failed to get torrent files: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			// Log close error as it may indicate network issues
+			fmt.Printf("warning: failed to close torrent files response body: %v\n", err)
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("get torrent files failed with status: %d", resp.StatusCode)
@@ -336,7 +364,12 @@ func (c *Client) GetTorrentFiles(ctx context.Context, hash string) ([]*TorrentFi
 	if err != nil {
 		return nil, fmt.Errorf("failed to get torrent info: %w", err)
 	}
-	defer infoResp.Body.Close()
+	defer func() {
+		if err := infoResp.Body.Close(); err != nil {
+			// Log close error as it may indicate network issues
+			fmt.Printf("warning: failed to close info response body: %v\n", err)
+		}
+	}()
 
 	var torrents []TorrentInfo
 	if err := json.NewDecoder(infoResp.Body).Decode(&torrents); err != nil {
@@ -385,7 +418,12 @@ func (c *Client) DeleteTorrent(ctx context.Context, hash string, deleteFiles boo
 	if err != nil {
 		return fmt.Errorf("failed to delete torrent: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			// Log close error as it may indicate network issues
+			fmt.Printf("warning: failed to close delete torrent response body: %v\n", err)
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("delete torrent failed with status: %d", resp.StatusCode)

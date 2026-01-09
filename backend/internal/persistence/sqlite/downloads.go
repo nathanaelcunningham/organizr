@@ -107,7 +107,12 @@ func (r *DownloadRepository) GetActive(ctx context.Context) ([]*models.Download,
 	if err != nil {
 		return nil, fmt.Errorf("failed to query active downloads: %w", err)
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			// Log close errors as they may indicate database issues
+			fmt.Printf("failed to close download rows: %v\n", err)
+		}
+	}()
 
 	var downloads []*models.Download
 	for rows.Next() {
@@ -139,7 +144,12 @@ func (r *DownloadRepository) List(ctx context.Context) ([]*models.Download, erro
 	if err != nil {
 		return nil, fmt.Errorf("failed to query downloads: %w", err)
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			// Log close errors as they may indicate database issues
+			fmt.Printf("failed to close download rows: %v\n", err)
+		}
+	}()
 
 	var downloads []*models.Download
 	for rows.Next() {

@@ -55,7 +55,12 @@ func (r *ConfigRepository) GetAll(ctx context.Context) (map[string]string, error
 	if err != nil {
 		return nil, fmt.Errorf("failed to query configs: %w", err)
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			// Log close errors as they may indicate database issues
+			fmt.Printf("failed to close config rows: %v\n", err)
+		}
+	}()
 
 	configs := make(map[string]string)
 	for rows.Next() {

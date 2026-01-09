@@ -66,7 +66,12 @@ func (p *MyAnonamouseProvider) Search(ctx context.Context, query string) ([]*mod
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			// Log close error as it may indicate network issues
+			fmt.Printf("warning: failed to close response body: %v\n", err)
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("API returned status %d", resp.StatusCode)
@@ -134,14 +139,25 @@ func (p *MyAnonamouseProvider) DownloadTorrent(ctx context.Context, torrent_id i
 		return nil, fmt.Errorf("connection failed: %w", err)
 	}
 
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			// Log close error as it may indicate network issues
+			fmt.Printf("warning: failed to close response body: %v\n", err)
+		}
+	}()
 	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusBadRequest {
-
-		body, _ := io.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			// If we can't read the error response, return the original HTTP error
+			return nil, fmt.Errorf("API error: status=%d (failed to read error response: %w)", resp.StatusCode, err)
+		}
 		return nil, fmt.Errorf("API error: status=%d, body=%s", resp.StatusCode, string(body))
 	}
 
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
 
 	return respBody, nil
 }
@@ -161,7 +177,12 @@ func (p *MyAnonamouseProvider) TestConnection(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("connection failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			// Log close error as it may indicate network issues
+			fmt.Printf("warning: failed to close response body: %v\n", err)
+		}
+	}()
 
 	if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden {
 		return fmt.Errorf("authentication failed: invalid credentials")

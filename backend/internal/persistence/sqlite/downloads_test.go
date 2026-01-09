@@ -14,7 +14,11 @@ func TestDownloadRepository_NullHandling(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create database: %v", err)
 	}
-	defer db.Close()
+	defer func() {
+		if err := db.Close(); err != nil {
+			t.Logf("failed to close test database: %v", err)
+		}
+	}()
 
 	// Create downloads table
 	schema := `

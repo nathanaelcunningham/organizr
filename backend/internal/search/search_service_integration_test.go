@@ -31,7 +31,11 @@ func TestMAMSearchIntegration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to connect to database: %v", err)
 	}
-	defer db.Close()
+	defer func() {
+		if err := db.Close(); err != nil {
+			t.Logf("failed to close test database: %v", err)
+		}
+	}()
 
 	// Create config repository
 	configRepo := sqlite.NewConfigRepository(db)
@@ -81,7 +85,11 @@ func TestMAMRawAPIResponse(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to connect to database: %v", err)
 	}
-	defer db.Close()
+	defer func() {
+		if err := db.Close(); err != nil {
+			t.Logf("failed to close test database: %v", err)
+		}
+	}()
 
 	configRepo := sqlite.NewConfigRepository(db)
 
