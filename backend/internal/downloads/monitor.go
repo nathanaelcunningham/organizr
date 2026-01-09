@@ -126,6 +126,9 @@ func (m *Monitor) checkDownloads(ctx context.Context) error {
 				orgCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
 
 				// Trigger organization in goroutine
+				// IMPORTANT: Pass parent-derived context (orgCtx) to ensure organization goroutines
+				// are cancelled when monitor stops. This prevents delayed shutdowns and goroutine leaks.
+				// The 5-minute timeout is applied on top of parent cancellation.
 				go func(ctx context.Context, download *models.Download) {
 					defer cancel()
 					m.organizeDownload(ctx, download)
