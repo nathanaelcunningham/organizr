@@ -27,11 +27,12 @@ services:
       - organizr-network
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        - VITE_API_URL=${VITE_API_URL}
     ports:
       - "${FRONTEND_PORT}:8080"
-    environment:
-      - VITE_API_URL=http://backend:8080
     depends_on:
       backend:
         condition: service_healthy
