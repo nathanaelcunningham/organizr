@@ -3,29 +3,22 @@ services:
     build: ./backend
     ports:
       - "${BACKEND_PORT:-8080}:8080"
-    env_file:
-      - .env
     environment:
-      # Override specific variables if needed
-      - ORGANIZR_DB_PATH=${ORGANIZR_DB_PATH:-/data/organizr.db}
-      - QBITTORRENT_URL=${QBITTORRENT_URL}
-      - QBITTORRENT_USERNAME=${QBITTORRENT_USERNAME}
-      - QBITTORRENT_PASSWORD=${QBITTORRENT_PASSWORD}
-      - PATHS_DESTINATION=${PATHS_DESTINATION:-/audiobooks}
-      - PATHS_TEMPLATE=${PATHS_TEMPLATE:-{author}/{series}/{title}}
-      - PATHS_NO_SERIES_TEMPLATE=${PATHS_NO_SERIES_TEMPLATE:-{author}/{title}}
-      - PATHS_OPERATION=${PATHS_OPERATION:-copy}
-      - PATHS_LOCAL_MOUNT=${PATHS_LOCAL_MOUNT:-/downloads}
-      - MONITOR_INTERVAL_SECONDS=${MONITOR_INTERVAL_SECONDS:-30}
-      - MONITOR_AUTO_ORGANIZE=${MONITOR_AUTO_ORGANIZE:-true}
-      - MAM_BASEURL=${MAM_BASEURL:-https://www.myanonamouse.net}
-      - MAM_SECRET=${MAM_SECRET}
+      - ORGANIZR_DB_PATH=/data/organizr.db
     volumes:
-      - qbittorrent-downloads:/downloads
-      - audiobooks:/audiobooks
-      - organizr-data:/data
+      - ./downloads:/downloads
+      - ./audiobooks:/audiobooks
+      - ./data:/data
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/health"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8080/api/health",
+        ]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -36,28 +29,28 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "${FRONTEND_PORT:-8081}:8080"
+      - "${FRONTEND_PORT}:8080"
     environment:
       - VITE_API_URL=http://backend:8080
     depends_on:
       backend:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8080",
+        ]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 5s
     networks:
       - organizr-network
-
-volumes:
-  qbittorrent-downloads:
-    driver: local
-  audiobooks:
-    driver: local
-  organizr-data:
-    driver: local
 
 networks:
   organizr-network:
