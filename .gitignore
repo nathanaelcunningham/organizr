@@ -6,3 +6,7 @@ backend/main
 backend/coverage.out
 backend/coverage.html
 frontend/coverage/
+
+# Agent sessions and archives (keep context versioned)
+.agent/sessions/
+.agent/archive/
