@@ -3,6 +3,8 @@ package qbittorrent
 import (
 	"bytes"
 	"context"
+	"crypto/sha1"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,7 +12,6 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
-	"sort"
 	"strings"
 	"time"
 )
@@ -144,6 +145,13 @@ func (c *Client) AddTorrentFromFile(ctx context.Context, torrentData []byte, cat
 		return "", fmt.Errorf("torrent data is empty")
 	}
 
+	// Calculate torrent hash before uploading to avoid race conditions
+	// when multiple torrents are added in quick succession
+	torrentHash, err := calculateTorrentHash(torrentData)
+	if err != nil {
+		return "", fmt.Errorf("failed to calculate torrent hash: %w", err)
+	}
+
 	// Authenticate first
 	if err := c.Login(ctx); err != nil {
 		return "", fmt.Errorf("failed to authenticate: %w", err)
@@ -220,17 +228,18 @@ func (c *Client) AddTorrentFromFile(ctx context.Context, torrentData []byte, cat
 		return "", fmt.Errorf("unexpected response from qBittorrent: %s", responseText)
 	}
 
-	// "Fails." often means duplicate - we'll check the torrent list to see if it exists
+	// "Fails." often means duplicate - we'll verify by checking for the specific hash
 	// "Ok." means successfully added
 
-	// Query torrents to get the hash of the just-added (or existing) torrent
+	// Verify the torrent exists in qBittorrent by querying for the specific hash
 	// Retry up to 3 times as qBittorrent may take 1-2 seconds to process the torrent
 	var torrents []TorrentInfo
 	maxRetries := 3
 	retryDelay := 500 * time.Millisecond
 
 	for attempt := 1; attempt <= maxRetries; attempt++ {
-		listReq, err := http.NewRequestWithContext(ctx, "GET", c.baseURL+"/api/v2/torrents/info?sort=added_on&reverse=true&limit=10", nil)
+		// Query for the specific torrent hash instead of "most recent"
+		listReq, err := http.NewRequestWithContext(ctx, "GET", c.baseURL+"/api/v2/torrents/info?hashes="+torrentHash, nil)
 		if err != nil {
 			return "", fmt.Errorf("failed to create torrent list request: %w", err)
 		}
@@ -268,19 +277,11 @@ func (c *Client) AddTorrentFromFile(ctx context.Context, torrentData []byte, cat
 		if responseText == "Fails." {
 			return "", fmt.Errorf("qBittorrent rejected torrent (response: Fails.) - check qBittorrent logs for details. Common causes: invalid save path, disk full, or invalid torrent file")
 		}
-		return "", fmt.Errorf("torrent not found after upload (tried %d times)", maxRetries)
+		return "", fmt.Errorf("torrent with hash %s not found after upload (tried %d times)", torrentHash, maxRetries)
 	}
 
-	// Sort by added time descending (most recent first)
-	// Even though we requested sorted in the query, be defensive
-	if len(torrents) > 1 {
-		sort.Slice(torrents, func(i, j int) bool {
-			return torrents[i].AddedOn > torrents[j].AddedOn
-		})
-	}
-
-	// Return the most recently added torrent's hash
-	return torrents[0].Hash, nil
+	// Return the pre-calculated hash (which we've now verified exists in qBittorrent)
+	return torrentHash, nil
 }
 
 func (c *Client) GetTorrentStatus(ctx context.Context, hash string) (string, float64, error) {
@@ -430,6 +431,166 @@ func (c *Client) DeleteTorrent(ctx context.Context, hash string, deleteFiles boo
 	}
 
 	return nil
+}
+
+// calculateTorrentHash computes the info hash from torrent file data.
+// The info hash is the SHA1 of the bencoded "info" dictionary.
+func calculateTorrentHash(torrentData []byte) (string, error) {
+	// Find the info dictionary in the torrent file
+	infoStart, infoEnd, err := findInfoDictionary(torrentData)
+	if err != nil {
+		return "", fmt.Errorf("failed to find info dictionary: %w", err)
+	}
+
+	// Extract the raw bytes of the info dictionary
+	infoBytes := torrentData[infoStart:infoEnd]
+
+	// Compute SHA1 hash
+	hash := sha1.Sum(infoBytes)
+	return hex.EncodeToString(hash[:]), nil
+}
+
+// findInfoDictionary locates the "info" dictionary in bencoded torrent data.
+// Returns the start and end byte offsets of the info dictionary value.
+func findInfoDictionary(data []byte) (int, int, error) {
+	if len(data) == 0 {
+		return 0, 0, fmt.Errorf("empty torrent data")
+	}
+
+	// Torrent file must start with 'd' (dictionary)
+	if data[0] != 'd' {
+		return 0, 0, fmt.Errorf("torrent data must start with dictionary")
+	}
+
+	pos := 1 // Skip initial 'd'
+
+	// Parse dictionary entries looking for "info" key
+	for pos < len(data) && data[pos] != 'e' {
+		// Parse key (must be a string)
+		keyStart := pos
+		keyLen, keyEnd, err := parseBencodeString(data, pos)
+		if err != nil {
+			return 0, 0, fmt.Errorf("failed to parse dictionary key at position %d: %w", pos, err)
+		}
+		key := string(data[keyStart+len(fmt.Sprintf("%d:", keyLen)) : keyEnd])
+		pos = keyEnd
+
+		// Check if this is the "info" key
+		if key == "info" {
+			// Record start of info value
+			infoStart := pos
+
+			// Skip the info value to find its end
+			infoEnd, err := skipBencodeValue(data, pos)
+			if err != nil {
+				return 0, 0, fmt.Errorf("failed to parse info dictionary: %w", err)
+			}
+
+			return infoStart, infoEnd, nil
+		}
+
+		// Skip the value for non-info keys
+		pos, err = skipBencodeValue(data, pos)
+		if err != nil {
+			return 0, 0, fmt.Errorf("failed to skip value at position %d: %w", pos, err)
+		}
+	}
+
+	return 0, 0, fmt.Errorf("info dictionary not found in torrent")
+}
+
+// parseBencodeString parses a bencode string at the given position.
+// Returns the string length, end position, and any error.
+func parseBencodeString(data []byte, pos int) (int, int, error) {
+	// Find the colon
+	colonPos := pos
+	for colonPos < len(data) && data[colonPos] != ':' {
+		if data[colonPos] < '0' || data[colonPos] > '9' {
+			return 0, 0, fmt.Errorf("invalid string length at position %d", pos)
+		}
+		colonPos++
+	}
+
+	if colonPos >= len(data) {
+		return 0, 0, fmt.Errorf("unexpected end of data while parsing string length")
+	}
+
+	// Parse the length
+	lengthStr := string(data[pos:colonPos])
+	var length int
+	if _, err := fmt.Sscanf(lengthStr, "%d", &length); err != nil {
+		return 0, 0, fmt.Errorf("invalid string length '%s': %w", lengthStr, err)
+	}
+
+	// Calculate end position (after the string content)
+	endPos := colonPos + 1 + length
+	if endPos > len(data) {
+		return 0, 0, fmt.Errorf("string length %d exceeds available data", length)
+	}
+
+	return length, endPos, nil
+}
+
+// skipBencodeValue skips a bencode value at the given position.
+// Returns the position after the value.
+func skipBencodeValue(data []byte, pos int) (int, error) {
+	if pos >= len(data) {
+		return 0, fmt.Errorf("unexpected end of data")
+	}
+
+	switch data[pos] {
+	case 'i': // Integer: i<number>e
+		endPos := pos + 1
+		for endPos < len(data) && data[endPos] != 'e' {
+			endPos++
+		}
+		if endPos >= len(data) {
+			return 0, fmt.Errorf("unterminated integer")
+		}
+		return endPos + 1, nil
+
+	case 'l': // List: l<items>e
+		pos++ // Skip 'l'
+		for pos < len(data) && data[pos] != 'e' {
+			var err error
+			pos, err = skipBencodeValue(data, pos)
+			if err != nil {
+				return 0, err
+			}
+		}
+		if pos >= len(data) {
+			return 0, fmt.Errorf("unterminated list")
+		}
+		return pos + 1, nil // Skip 'e'
+
+	case 'd': // Dictionary: d<key><value>...e
+		pos++ // Skip 'd'
+		for pos < len(data) && data[pos] != 'e' {
+			// Skip key (string)
+			_, keyEnd, err := parseBencodeString(data, pos)
+			if err != nil {
+				return 0, fmt.Errorf("failed to parse dictionary key: %w", err)
+			}
+			pos = keyEnd
+
+			// Skip value
+			pos, err = skipBencodeValue(data, pos)
+			if err != nil {
+				return 0, fmt.Errorf("failed to parse dictionary value: %w", err)
+			}
+		}
+		if pos >= len(data) {
+			return 0, fmt.Errorf("unterminated dictionary")
+		}
+		return pos + 1, nil // Skip 'e'
+
+	default: // String: <length>:<content>
+		if data[pos] >= '0' && data[pos] <= '9' {
+			_, endPos, err := parseBencodeString(data, pos)
+			return endPos, err
+		}
+		return 0, fmt.Errorf("unknown bencode type '%c' at position %d", data[pos], pos)
+	}
 }
 
 func extractHashFromMagnet(magnet string) string {
