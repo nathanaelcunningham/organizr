@@ -24,7 +24,7 @@ FROM alpine:3.21
 RUN apk add --no-cache ca-certificates sqlite-libs
 
 # Create non-root user and data directory
-RUN addgroup -g 1001 app && adduser -S app -u 1001 -G app && \
+RUN addgroup -g 1000 app && adduser -S app -u 1000 -G app && \
     mkdir -p /data && chown -R app:app /data
 
 WORKDIR /app
