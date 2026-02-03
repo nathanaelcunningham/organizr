@@ -24,7 +24,7 @@ FROM alpine:3.21
 RUN apk add --no-cache ca-certificates sqlite-libs shadow su-exec
 
 # Create app user/group with default Unraid IDs (99:100)
-RUN addgroup -g 100 app && adduser -S app -u 99 -G app && \
+RUN addgroup -g 1000 app && adduser -S app -u 1000 -G app && \
     mkdir -p /data && chown -R app:app /data
 
 WORKDIR /app
